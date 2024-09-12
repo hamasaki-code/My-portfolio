@@ -36,47 +36,64 @@ export default function Home() {
             <h2 className="text-4xl font-bold mb-6 text-black">Experience</h2>
             
             <div className="relative border-l-4 border-black ml-4">
-              {/* 1つ目の経験 */}
+              {/* 1つ目の経験 - 最新の経験 */}
               <div className="mb-10 ml-8">
                 <div className="absolute w-6 h-6 bg-black rounded-full -left-3"></div>
-                <time className="text-xl font-semibold text-gray-700">2024 - Present</time>
-                <h3 className="text-2xl font-bold mt-1">Webアプリケーションエンジニア - 〇〇株式会社</h3>
+                <time className="text-xl font-semibold text-gray-700">2024年4月 - 現在</time>
+                <h3 className="text-2xl font-bold mt-1">株式会社マイナビ - Webアプリケーションエンジニア</h3>
                 <p className="text-lg leading-relaxed text-gray-800 mt-2">
-                  Webアプリケーションエンジニアとして、モバイルアプリケーションの保守を担当し、Flutterを使用した開発を行っています。また、プロジェクト管理やコードレビューも担当しています。
+                  Webアプリケーションエンジニアとして、モバイルアプリケーションの保守を担当し、Flutterを使用した開発を行っています。また、プロジェクト管理やコードレビューに加え、PBI（プロダクトバックログアイテム）の管理および一部担当を行い、チーム内のスプリント計画にも貢献しています。
                 </p>
               </div>
 
               {/* 2つ目の経験 */}
               <div className="mb-10 ml-8">
                 <div className="absolute w-6 h-6 bg-black rounded-full -left-3"></div>
-                <time className="text-xl font-semibold text-gray-700">2020 - 2022</time>
-                <h3 className="text-2xl font-bold mt-1">フリーランスエンジニア</h3>
+                <time className="text-xl font-semibold text-gray-700">2023年6月 - 2024年3月</time>
+                <h3 className="text-2xl font-bold mt-1">株式会社LITALICO - LITALICOワンダー・セールス（アルバイト）</h3>
                 <p className="text-lg leading-relaxed text-gray-800 mt-2">
-                  フリーランスとして、Webアプリケーションやモバイルアプリの保守・新規開発を経験。クライアントのニーズに応じて、ReactやNext.js、Flutterを使用した開発を行いました。
+                  子供たちに向けたオンラインで行うIT×ものづくり（Scratch, Minecraft, Unity）の体験授業や入塾案内を担当しました。合計172件のクロージングを含めた体験授業を行い、そのうち44件の成約を取り、子供たちがLITALICOワンダーオンラインに入塾しました。
                 </p>
+
               </div>
 
               {/* 3つ目の経験 */}
               <div className="mb-10 ml-8">
                 <div className="absolute w-6 h-6 bg-black rounded-full -left-3"></div>
-                <time className="text-xl font-semibold text-gray-700">2020 - 202</time>
-                <h3 className="text-2xl font-bold mt-1">学生 - 情報理工学部</h3>
+                <time className="text-xl font-semibold text-gray-700">2021年4月 - 2023年3月</time>
+                <h3 className="text-2xl font-bold mt-1">株式会社インフラトップ - DMMWEBCAMP・メンター（インターン）</h3>
                 <p className="text-lg leading-relaxed text-gray-800 mt-2">
-                  情報理工学部でプログラミングやシステム開発について学びました。この期間中に、Webアプリケーション開発に興味を持ち、実際のプロジェクトに取り組みました。
+                  プログラミングスクール「DMM WEBCAMP」でメンターを務め、フロントエンドとバックエンドの技術指導を担当しました。主なフロントエンド技術として、HTML & CSS、Bootstrap、JavaScriptを指導し、バックエンドではRuby on Railsの基礎を教えました。また、バージョン管理にはGitを使用し、オンラインでの開発をサポートしました。
+                </p>
+              </div>
+
+              {/* 4つ目の経験 */}
+              <div className="mb-10 ml-8">
+                <div className="absolute w-6 h-6 bg-black rounded-full -left-3"></div>
+                <time className="text-xl font-semibold text-gray-700">2020年4月 - 2024年3月</time>
+                <h3 className="text-2xl font-bold mt-1">京都産業大学 - 情報理工学部 情報理工学科</h3>
+                <p className="text-lg leading-relaxed text-gray-800 mt-2">
+                  情報理工学部でプログラミングやシステム開発について学びました。この期間中に、Webアプリケーション開発に興味を持ち、実際のプロジェクトに取り組みました。卒業研究では、モーションキャプチャーとVRを用いたスポーツトレーニング支援システムの研究を行い、テニスコートをVR空間で再現し、モーションキャプチャーカメラを使用してフォームの改善を支援するフィードバックシステムを開発しました。研究では、Unity、MotionBuilder、Viconといった技術を活用しました。
                 </p>
               </div>
             </div>
           </section>
 
 
+
+
+
           {/* GitHubとXのリンクを追加 */}
           <p className="mt-6">
-            <strong className="text-xl text-black">Connect with me:</strong><br />
+            <strong className="text-xl text-black">SNS</strong><br />
             <a href="https://github.com/hamasaki-code" className="text-black font-bold hover:text-yellow-600 transition duration-300" target="_blank" rel="noopener noreferrer">
               GitHub
             </a> | 
             <a href="https://x.com/OnTAumv5KAoVGN5" className="text-black font-bold hover:text-yellow-600 transition duration-300 ml-2" target="_blank" rel="noopener noreferrer">
               X (Twitter)
+            </a> | 
+            <a href="https://www.wantedly.com/id/taishi_hamasaki" className="text-black font-bold hover:text-yellow-600 transition duration-300 ml-2" target="_blank" rel="noopener noreferrer">
+              Wantedlly
             </a>
           </p>
         </section>
