@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Image from 'next/image';
 
 export default function Home() {
   return (
@@ -24,15 +25,17 @@ export default function Home() {
 
       {/* メインセクション */}
       <main className="container mx-auto p-6">
-       {/* 自己紹介セクション */}
+        {/* 自己紹介セクション */}
         <section id="about" className="my-16 text-center">
           <h2 className="text-4xl font-bold mb-6 text-black">About Me</h2>
           {/* 丸いアイコン画像を追加 */}
           <div className="mb-6">
-            <img 
-              src="/app/public/profile.jpg" 
+            <Image 
+              src="/profile.jpg" 
               alt="Profile Picture" 
-              className="w-32 h-32 rounded-full mx-auto shadow-lg"
+              width={300} 
+              height={300} 
+              className="rounded-full shadow-lg mx-auto"
             />
           </div>
           <p className="text-lg leading-relaxed text-gray-800">
@@ -52,6 +55,27 @@ export default function Home() {
               Wantedlly
             </a>
           </p>
+        </section>
+
+        {/* プロジェクトセクション */}
+        <section id="projects" className="my-16">
+          <h2 className="text-4xl font-bold mb-6 text-black">Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* タスク管理アプリ */}
+            <div className="border border-black rounded-lg shadow-lg p-6 bg-white hover:shadow-xl transition duration-300">
+              <h3 className="text-2xl font-bold mb-2">タスク管理アプリ（Next.js）</h3>
+              <p>
+                タスク作成、完了、削除機能を持ち、詳細閲覧が可能なタスク管理アプリです。Next.jsを使用して開発され、効率的なタスク管理をサポートします。
+              </p>
+            </div>
+            {/* Bookers */}
+            <div className="border border-black rounded-lg shadow-lg p-6 bg-white hover:shadow-xl transition duration-300">
+              <h3 className="text-2xl font-bold mb-2">Bookers (Ruby on Rails)</h3>
+              <p>
+                本の投稿、編集、削除、コメント、いいね機能を提供するWebアプリケーションです。Ruby on Railsを使用して開発され、ユーザーが読書体験を共有し、他のユーザーと交流できます。
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* 経歴セクション */}
@@ -101,29 +125,7 @@ export default function Home() {
           </div>
         </section>
 
-
-
-        {/* プロジェクトセクション */}
-        <section id="projects" className="my-16">
-          <h2 className="text-4xl font-bold mb-6 text-black">Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* タスク管理アプリ */}
-            <div className="border border-black rounded-lg shadow-lg p-6 bg-white hover:shadow-xl transition duration-300">
-              <h3 className="text-2xl font-bold mb-2">タスク管理アプリ（Next.js）</h3>
-              <p>
-                タスク作成、完了、削除機能を持ち、詳細閲覧が可能なタスク管理アプリです。Next.jsを使用して開発され、効率的なタスク管理をサポートします。
-              </p>
-            </div>
-            {/* Bookers */}
-            <div className="border border-black rounded-lg shadow-lg p-6 bg-white hover:shadow-xl transition duration-300">
-              <h3 className="text-2xl font-bold mb-2">Bookers (Ruby on Rails)</h3>
-              <p>
-                本の投稿、編集、削除、コメント、いいね機能を提供するWebアプリケーションです。Ruby on Railsを使用して開発され、ユーザーが読書体験を共有し、他のユーザーと交流できます。
-              </p>
-            </div>
-          </div>
-        </section>
-
+        
 
         {/* コンテクトセクション */}
         <section id="contact" className="my-16">
