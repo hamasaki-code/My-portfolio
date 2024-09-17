@@ -135,12 +135,27 @@ export default function Home() {
         
 
         {/* コンテクトセクション */}
-        <section id="contact" className="my-16">
+        <section id="contact" className="my-16 bg-gray-100 p-8 rounded-lg shadow-md">
           <h2 className="text-4xl font-bold mb-6 text-black">Contact</h2>
-          <p className="text-lg leading-relaxed">
-            If you'd like to reach out, feel free to send me an email at <a href="mailto:dazhibinqi@gmail.com" className="text-black font-bold hover:text-yellow-600 transition duration-300">dazhibinqi@gmail.com</a>.
+          <p className="text-lg leading-relaxed text-gray-700 mb-6">
+            If you'd like to reach out, feel free to send me an email.
           </p>
+          
+          {/* メールアドレスボタン */}
+          <div className="flex justify-center">
+            <a 
+              href="mailto:dazhibinqi@gmail.com" 
+              className="inline-flex items-center px-6 py-3 bg-yellow-400 text-black font-bold rounded-lg shadow-lg hover:bg-yellow-500 transition duration-300"
+            >
+              {/* メールアイコン */}
+              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12H8m4 0V4m0 8v8m0-8l-8-8m8 8l8-8" />
+              </svg>
+              dazhibinqi@gmail.com
+            </a>
+          </div>
         </section>
+
       </main>
 
       {/* フッター */}
