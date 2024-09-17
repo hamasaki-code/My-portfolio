@@ -51,8 +51,8 @@ export default function Home() {
             <a href="https://x.com/OnTAumv5KAoVGN5" className="text-black font-bold hover:text-yellow-600 transition duration-300 ml-2" target="_blank" rel="noopener noreferrer">
               X (Twitter)
             </a> | 
-            <a href="https://www.wantedly.com/id/taishi_hamasaki" className="text-black font-bold hover:text-yellow-600 transition duration-300 ml-2" target="_blank" rel="noopener noreferrer">
-              Wantedlly
+            <a href="https://www.wantedly.com/id/develop_hama" className="text-black font-bold hover:text-yellow-600 transition duration-300 ml-2" target="_blank" rel="noopener noreferrer">
+              Wantedly
             </a>
           </p>
         </section>
@@ -73,6 +73,13 @@ export default function Home() {
               <h3 className="text-2xl font-bold mb-2">Bookers (Ruby on Rails)</h3>
               <p>
                 本の投稿、編集、削除、コメント、いいね機能を提供するWebアプリケーションです。Ruby on Railsを使用して開発され、ユーザーが読書体験を共有し、他のユーザーと交流できます。
+              </p>
+            </div>
+            {/* Portfolio */}
+            <div className='border border-black rounded-lg shadow-lg p-6 bg-white hover:shadow-xl transition duration-300'>
+              <h3 className='text-2xl font-bold mb-2'>Portfolio（Next.js）</h3>
+              <p>
+                このポートフォリオは、私のスキルやプロジェクトを視覚的かつ簡潔に紹介するために構築しました。モダンなデザインとシンプルなナビゲーションを重視し、レスポンシブ対応で様々なデバイスでの閲覧が可能です。使用技術としては、Next.jsをベースに、Tailwind CSSを用いたスタイルを採用しています。
               </p>
             </div>
           </div>
