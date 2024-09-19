@@ -1,5 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
+import { FaReact, FaNodeJs, FaGitAlt, FaHtml5, FaCss3Alt, FaJsSquare } from 'react-icons/fa';
+import { SiRuby, SiFlutter, SiUnity } from 'react-icons/si'; 
 
 export default function Home() {
   return (
@@ -57,6 +59,7 @@ export default function Home() {
           </p>
         </section>
 
+
         {/* プロジェクトセクション */}
         <section id="projects" className="my-16">
           <h2 className="text-4xl font-bold mb-6 text-black">Works</h2>
@@ -84,6 +87,59 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+
+        <section id="skills" className="my-16">
+          <h2 className="text-4xl font-bold mb-6 text-black">Skills & Technologies</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 text-center">
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+              <SiRuby className="text-red-500 w-12 h-12 mx-auto mb-2" />
+              <h3 className="text-2xl font-bold">Ruby on Rails</h3>
+              <p className="text-gray-700">MVC, RESTful API</p>
+            </div>
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+              <FaJsSquare className="text-yellow-500 w-12 h-12 mx-auto mb-2" />
+              <h3 className="text-2xl font-bold">JavaScript</h3>
+              <p className="text-gray-700">ES6, TypeScript</p>
+            </div>
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+              <FaReact className="text-blue-500 w-12 h-12 mx-auto mb-2" />
+              <h3 className="text-2xl font-bold">React</h3>
+              <p className="text-gray-700">Hooks, Context API</p>
+            </div>
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+              <FaNodeJs className="text-green-500 w-12 h-12 mx-auto mb-2" />
+              <h3 className="text-2xl font-bold">Node.js</h3>
+              <p className="text-gray-700">Express.js, REST APIs</p>
+            </div>
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+              <FaGitAlt className="text-orange-500 w-12 h-12 mx-auto mb-2" />
+              <h3 className="text-2xl font-bold">Git & GitHub</h3>
+              <p className="text-gray-700">Version Control</p>
+            </div>
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+              <FaHtml5 className="text-orange-600 w-12 h-12 mx-auto mb-2" />
+              <h3 className="text-2xl font-bold">HTML5</h3>
+              <p className="text-gray-700">Semantic HTML</p>
+            </div>
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+              <FaCss3Alt className="text-blue-500 w-12 h-12 mx-auto mb-2" />
+              <h3 className="text-2xl font-bold">CSS3</h3>
+              <p className="text-gray-700">Responsive Design</p>
+            </div>
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+              <SiFlutter className="text-blue-400 w-12 h-12 mx-auto mb-2" />
+              <h3 className="text-2xl font-bold">Flutter</h3>
+              <p className="text-gray-700">Cross-platform</p>
+            </div>
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+              <SiUnity className="text-gray-800 w-12 h-12 mx-auto mb-2" />
+              <h3 className="text-2xl font-bold">Unity</h3>
+              <p className="text-gray-700">Game Development</p>
+            </div>
+          </div>
+        </section>
+
 
         {/* 経歴セクション */}
         <section id="experience" className="my-16">
@@ -132,7 +188,6 @@ export default function Home() {
           </div>
         </section>
 
-        
 
         {/* コンテクトセクション */}
         <section id="contact" className="my-16 bg-gray-100 p-8 rounded-lg shadow-md">
