@@ -91,49 +91,49 @@ export default function Home() {
 
         <section id="skills" className="my-16">
           <h2 className="text-4xl font-bold mb-6 text-black">Skills & Technologies</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 text-center">
-            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-              <SiRuby className="text-red-500 w-12 h-12 mx-auto mb-2" />
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 text-center">
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition">
+              <SiRuby className="text-red-500 w-16 h-16 mx-auto mb-4" />
               <h3 className="text-2xl font-bold">Ruby on Rails</h3>
               <p className="text-gray-700">MVC, RESTful API</p>
             </div>
-            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-              <FaJsSquare className="text-yellow-500 w-12 h-12 mx-auto mb-2" />
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition">
+              <FaJsSquare className="text-yellow-500 w-16 h-16 mx-auto mb-4" />
               <h3 className="text-2xl font-bold">JavaScript</h3>
               <p className="text-gray-700">ES6, TypeScript</p>
             </div>
-            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-              <FaReact className="text-blue-500 w-12 h-12 mx-auto mb-2" />
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition">
+              <FaReact className="text-blue-500 w-16 h-16 mx-auto mb-4" />
               <h3 className="text-2xl font-bold">React</h3>
               <p className="text-gray-700">Hooks, Context API</p>
             </div>
-            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-              <FaNodeJs className="text-green-500 w-12 h-12 mx-auto mb-2" />
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition">
+              <FaNodeJs className="text-green-500 w-16 h-16 mx-auto mb-4" />
               <h3 className="text-2xl font-bold">Node.js</h3>
               <p className="text-gray-700">Express.js, REST APIs</p>
             </div>
-            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-              <FaGitAlt className="text-orange-500 w-12 h-12 mx-auto mb-2" />
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition">
+              <FaGitAlt className="text-orange-500 w-16 h-16 mx-auto mb-4" />
               <h3 className="text-2xl font-bold">Git & GitHub</h3>
               <p className="text-gray-700">Version Control</p>
             </div>
-            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-              <FaHtml5 className="text-orange-600 w-12 h-12 mx-auto mb-2" />
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition">
+              <FaHtml5 className="text-orange-600 w-16 h-16 mx-auto mb-4" />
               <h3 className="text-2xl font-bold">HTML5</h3>
               <p className="text-gray-700">Semantic HTML</p>
             </div>
-            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-              <FaCss3Alt className="text-blue-500 w-12 h-12 mx-auto mb-2" />
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition">
+              <FaCss3Alt className="text-blue-500 w-16 h-16 mx-auto mb-4" />
               <h3 className="text-2xl font-bold">CSS3</h3>
               <p className="text-gray-700">Responsive Design</p>
             </div>
-            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-              <SiFlutter className="text-blue-400 w-12 h-12 mx-auto mb-2" />
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition">
+              <SiFlutter className="text-blue-400 w-16 h-16 mx-auto mb-4" />
               <h3 className="text-2xl font-bold">Flutter</h3>
               <p className="text-gray-700">Cross-platform</p>
             </div>
-            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-              <SiUnity className="text-gray-800 w-12 h-12 mx-auto mb-2" />
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md hover:bg-gray-200 transition">
+              <SiUnity className="text-gray-800 w-16 h-16 mx-auto mb-4" />
               <h3 className="text-2xl font-bold">Unity</h3>
               <p className="text-gray-700">Game Development</p>
             </div>
