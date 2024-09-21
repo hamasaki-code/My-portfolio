@@ -1,9 +1,33 @@
+"use client";
+
 import Head from 'next/head';
 import Image from 'next/image';
 import { FaReact, FaNodeJs, FaGitAlt, FaHtml5, FaCss3Alt, FaJsSquare } from 'react-icons/fa';
 import { SiRuby, SiFlutter, SiUnity } from 'react-icons/si'; 
+import { EnvelopeIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
+  const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false); // メニューの状態を追加
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);  // ローディングを解除
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-yellow-400">
+        {/* ローディングアニメーション */}
+        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-black"></div>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* SEOやタイトル設定 */}
@@ -17,7 +41,19 @@ export default function Home() {
       <header className="bg-yellow-400 text-black p-6 border-b-4 border-black shadow-lg">
         <nav className="container mx-auto flex justify-between items-center">
           <h1 className="text-4xl font-extrabold tracking-wider">My Portfolio</h1>
-          <ul className="flex space-x-6">
+          
+          {/* ハンバーガーメニュー用ボタン */}
+          <button
+            className="block md:hidden text-black focus:outline-none"
+            onClick={() => setMenuOpen(!menuOpen)}  // メニューの開閉
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+          </button>
+          
+          {/* ナビゲーションメニュー */}
+          <ul className={`${menuOpen ? 'block' : 'hidden'} md:flex space-x-6`} id="menu">
             <li><a href="#about" className="hover:text-gray-700 font-semibold">About Me</a></li>
             <li><a href="#projects" className="hover:text-gray-700 font-semibold">Projects</a></li>
             <li><a href="#contact" className="hover:text-gray-700 font-semibold">Contact</a></li>
@@ -182,7 +218,7 @@ export default function Home() {
               <time className="text-xl font-semibold text-gray-700">2020年4月 - 2024年3月</time>
               <h3 className="text-2xl font-bold mt-1">京都産業大学 - 情報理工学部 情報理工学科</h3>
               <p className="text-lg leading-relaxed text-gray-800 mt-2">
-                情報理工学部でプログラミングやシステム開発について学びました。この期間中に、Webアプリケーション開発に興味を持ち、実際のプロジェクトに取り組みました。卒業研究では、モーションキャプチャーとVRを用いたスポーツトレーニング支援システムの研究を行い、テニスコートをVR空間で再現し、モーションキャプチャーカメラを使用してフォームの改善を支援するフィードバックシステムを開発しました。研究では、Unity、MotionBuilder、Viconといった技術を活用しました。
+                情報理工学部でプログラミングやシステム開発について学びました。この期間中に、Webアプリケーション開発に興味を持ち、インターンシップに取り組みました。卒業研究では、モーションキャプチャーとVRを用いたスポーツトレーニング支援システムの研究を行い、テニスコートをVR空間で再現し、モーションキャプチャーカメラを使用してフォームの改善を支援するフィードバックシステムを開発しました。研究では、Unity、MotionBuilder、Viconといった技術を活用しました。
               </p>
             </div>
           </div>
@@ -190,9 +226,9 @@ export default function Home() {
 
 
         {/* コンテクトセクション */}
-        <section id="contact" className="my-16 bg-gray-100 p-8 rounded-lg shadow-md">
-          <h2 className="text-4xl font-bold mb-6 text-black">Contact</h2>
-          <p className="text-lg leading-relaxed text-gray-700 mb-6">
+        <section id="contact" className="my-16 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 p-8 rounded-lg shadow-md">
+          <h2 className="text-4xl font-bold mb-6 text-black text-center">Contact Me</h2>
+          <p className="text-lg leading-relaxed text-gray-800 mb-8 text-center">
             If you'd like to reach out, feel free to send me an email.
           </p>
           
@@ -200,12 +236,10 @@ export default function Home() {
           <div className="flex justify-center">
             <a 
               href="mailto:dazhibinqi@gmail.com" 
-              className="inline-flex items-center px-6 py-3 bg-yellow-400 text-black font-bold rounded-lg shadow-lg hover:bg-yellow-500 transition duration-300"
+              className="inline-flex items-center px-8 py-4 bg-black text-white font-bold rounded-lg shadow-lg hover:bg-gray-900 transition duration-300 transform hover:scale-105"
             >
               {/* メールアイコン */}
-              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12H8m4 0V4m0 8v8m0-8l-8-8m8 8l8-8" />
-              </svg>
+              <EnvelopeIcon className="w-6 h-6 mr-2 text-yellow-400 hover:text-yellow-300 transition duration-300" />
               dazhibinqi@gmail.com
             </a>
           </div>
