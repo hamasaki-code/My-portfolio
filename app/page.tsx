@@ -33,8 +33,22 @@ export default function Home() {
       {/* SEOやタイトル設定 */}
       <Head>
         <title>My Portfolio</title>
-        <meta name="description" content="Welcome to my personal portfolio" />
+        <meta name="description" content="Welcome to my personal portfolio. Showcasing my skills and projects in web development, including React, Node.js, Flutter, and more." />
         <link rel="icon" href="/favicon.ico" />
+
+        {/* Open Graph meta tags */}
+        <meta property="og:title" content="My Portfolio" />
+        <meta property="og:description" content="Welcome to my personal portfolio. Showcasing my skills and projects in web development, including React, Node.js, Flutter, and more." />
+        <meta property="og:image" content="/profile.jpg" />
+        <meta property="og:url" content="https://my-portfolio-url.com" />
+        <meta property="og:type" content="website" />
+
+        {/* Twitter Card meta tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="My Portfolio" />
+        <meta name="twitter:description" content="Welcome to my personal portfolio. Showcasing my skills and projects in web development, including React, Node.js, Flutter, and more." />
+        <meta name="twitter:image" content="/profile.jpg" />
+        <meta name="twitter:site" content="@yourtwitterhandle" />
       </Head>
 
       {/* ヘッダーセクション */}
@@ -45,7 +59,7 @@ export default function Home() {
           {/* ハンバーガーメニュー用ボタン */}
           <button
             className="block md:hidden text-black focus:outline-none"
-            onClick={() => setMenuOpen(!menuOpen)}  // メニューの開閉
+            onClick={() => setMenuOpen(!menuOpen)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
