@@ -83,7 +83,7 @@ export default function Home() {
 
 
       {/* ヘッダーセクション */}
-      <header className="bg-yellow-400 dark:bg-gray-800 text-black dark:text-white p-6 border-b-4 border-black dark:border-white shadow-lg">
+      <header className="bg-yellow-400 dark:bg-gray-800 text-black dark:text-white p-6 border-b-4 border-black dark:border-white">
         <nav className="container mx-auto flex justify-between items-center">
           <h1 className="text-4xl font-extrabold tracking-wider">My Portfolio</h1>
 
