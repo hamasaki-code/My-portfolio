@@ -7,6 +7,7 @@ import { SiFlutter, SiUnity } from 'react-icons/si';
 import { useState, useEffect } from 'react';
 import { FaReact } from 'react-icons/fa';
 import { SiRuby } from 'react-icons/si'; 
+import { FaGithub, FaTwitter } from 'react-icons/fa';
 import { EnvelopeIcon } from '@heroicons/react/24/outline';
 
 export default function Home() {
@@ -39,14 +40,6 @@ export default function Home() {
       document.documentElement.classList.add('dark');
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-yellow-400 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-black dark:border-white"></div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
@@ -132,7 +125,7 @@ export default function Home() {
           <div className="mb-6">
             <Image 
               src="/profile.jpg" 
-              alt="Profile Picture" 
+              alt="Taishi Hamasaki - Web Engineer Profile Picture" 
               width={300} 
               height={300} 
               className="rounded-full shadow-lg mx-auto"
@@ -147,20 +140,34 @@ export default function Home() {
 
           {/* 自己紹介文 */}
           <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200 max-w-3xl mx-auto">
-            大阪府出身のエンジニア。大学では情報理工学部を卒業し、その後Webアプリケーションエンジニアとしてキャリアをスタートしました。現在は主にモバイルアプリ開発の保守を担当しており、開発環境としてFlutterを使用しています。これらの経験を通じて、モバイル開発に対する知識とスキルを日々磨いています。
+           大阪府出身のエンジニア。大学では情報理工学部を卒業し、その後Webアプリケーションエンジニアとしてキャリアをスタートしました。現在は主にモバイルアプリ開発の保守を担当しており、開発環境としてFlutterを使用しています。これらの経験を通じて、モバイル開発に対する知識とスキルを日々磨いています。加えて、Web系の開発にも強い興味があり、ReactやNext.jsを中心に新しい技術の習得に取り組んでいます。
           </p>
 
           {/* SNSリンク */}
           <div className="mt-8">
             <p className="text-xl font-bold text-gray-900 dark:text-white mb-4">Connect with me:</p>
             <div className="flex justify-center space-x-6">
-              <a href="https://github.com/hamasaki-code" className="text-gray-800 dark:text-gray-200 hover:text-yellow-500 dark:hover:text-yellow-300 transition duration-300 transform hover:scale-110" target="_blank" rel="noopener noreferrer">
+              {/* GitHub Icon */}
+              <a href="https://github.com/hamasaki-code" aria-label="GitHub profile" className="text-gray-800 dark:text-gray-200 hover:text-yellow-500 dark:hover:text-yellow-300 transition duration-300 transform hover:scale-110" target="_blank" rel="noopener noreferrer">
+                <FaGithub className="inline-block w-6 h-6 mr-2" />
                 GitHub
               </a>
-              <a href="https://x.com/OnTAumv5KAoVGN5" className="text-gray-800 dark:text-gray-200 hover:text-yellow-500 dark:hover:text-yellow-300 transition duration-300 transform hover:scale-110" target="_blank" rel="noopener noreferrer">
+
+              {/* Twitter Icon */}
+              <a href="https://x.com/OnTAumv5KAoVGN5" aria-label="Twitter profile" className="text-gray-800 dark:text-gray-200 hover:text-yellow-500 dark:hover:text-yellow-300 transition duration-300 transform hover:scale-110" target="_blank" rel="noopener noreferrer">
+                <FaTwitter className="inline-block w-6 h-6 mr-2" />
                 X (Twitter)
               </a>
-              <a href="https://www.wantedly.com/id/develop_hama" className="text-gray-800 dark:text-gray-200 hover:text-yellow-500 dark:hover:text-yellow-300 transition duration-300 transform hover:scale-110" target="_blank" rel="noopener noreferrer">
+
+              {/* Wantedly Icon */}
+              <a href="https://www.wantedly.com/id/develop_hama" aria-label="Wantedly profile" className="text-gray-800 dark:text-gray-200 hover:text-yellow-500 dark:hover:text-yellow-300 transition duration-300 transform hover:scale-110" target="_blank" rel="noopener noreferrer">
+                <Image
+                  src="/Wantedly_Mark_LightBG.png"
+                  alt="Wantedly"
+                  width={24}
+                  height={24}
+                  className="inline-block mr-2"
+                />
                 Wantedly
               </a>
             </div>
@@ -191,6 +198,13 @@ export default function Home() {
               <h3 className="text-2xl font-bold mb-2 text-black dark:text-white">Portfolio（Next.js）</h3>
               <p className="text-gray-800 dark:text-gray-200">
                 このポートフォリオは、私のスキルやプロジェクトを視覚的かつ簡潔に紹介するために構築しました。モダンなデザインとシンプルなナビゲーションを重視し、レスポンシブ対応で様々なデバイスでの閲覧が可能です。使用技術としては、Next.jsをベースに、Tailwind CSSを用いたスタイルを採用しています。
+              </p>
+            </div>
+            {/* 卒業研究 */}
+            <div className="border border-black dark:border-white rounded-lg shadow-lg p-6 bg-white dark:bg-gray-800 hover:shadow-xl transition duration-300">
+              <h3 className="text-2xl font-bold mb-2 text-black dark:text-white">モーションキャプチャーとVRを用いたスポーツトレーニング支援システムの研究 (Unity)</h3>
+              <p className="text-gray-800 dark:text-gray-200">
+              テニスコートをVR空間で再現し、モーションキャプチャーカメラやMotionBuilderなどを用いて、フォームの改善を行うフィードバックシステムを作成する卒業研究を行いました。
               </p>
             </div>
           </div>
@@ -308,15 +322,14 @@ export default function Home() {
           <div className="flex justify-center">
             <a
               href="mailto:dazhibinqi@gmail.com"
-              className="inline-flex items-center px-8 py-4 bg-black text-white font-bold rounded-lg shadow-lg hover:bg-gray-900 transition duration-300 transform hover:scale-105"
+              aria-label="Send an email to Taishi Hamasaki"
+              className="inline-flex items-center px-8 py-4 bg-black text-white font-bold rounded-lg shadow-lg hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-300 transform hover:scale-105"
             >
-              {/* メールアイコン */}
               <EnvelopeIcon className="w-6 h-6 mr-2 text-yellow-400 hover:text-yellow-300 transition duration-300" />
               Send Email
             </a>
           </div>
         </section>
-
       </main>
 
       {/* フッター */}
