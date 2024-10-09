@@ -1,6 +1,5 @@
 "use client";
 import { useState } from 'react';
-import { FaGithub, FaTwitter } from 'react-icons/fa';
 
 export default function Header({ toggleDarkMode, isDarkMode }) {
   const [menuOpen, setMenuOpen] = useState(false);
