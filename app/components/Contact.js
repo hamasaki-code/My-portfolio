@@ -5,7 +5,7 @@ export default function Contact() {
     <section id="contact" className="my-16 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 dark:from-gray-700 dark:via-gray-600 dark:to-gray-500 p-8 rounded-lg shadow-md">
       <h2 className="text-4xl font-bold mb-6 text-black dark:text-white text-center">Contact Me</h2>
       <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200 mb-4 text-center">
-        If you'd like to reach out, feel free to send me an email.
+        If you&apos;d like to reach out, feel free to send me an email.
       </p>
       <p className="text-lg text-center text-gray-800 dark:text-gray-200 mb-8">
         Send an email to me: <a href="mailto:dazhibinqi@gmail.com" className="text-blue-500 dark:text-yellow-300 font-semibold hover:underline">dazhibinqi@gmail.com</a>
