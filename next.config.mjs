@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
-
-export default {
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/<repo-name>/' : '',
-  basePath: process.env.NODE_ENV === 'production' ? '/<repo-name>' : '',
+const nextConfig = {
+  output: 'export',  // 静的エクスポートを有効にする
+  // 他の設定もここに追加できます
 };
+
+export default nextConfig;
