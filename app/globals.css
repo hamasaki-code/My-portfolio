@@ -21,7 +21,7 @@ body {
 }
 
 a:focus {
-  outline: 2px solid #facc15; /* 黄色でフォーカスを表示 */
+  outline: 2px solid #facc15;
 }
 
 @layer utilities {
