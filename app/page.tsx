@@ -4,7 +4,7 @@ import Header from './components/Header';
 import About from './components/About';
 import Projects from './components/Projects';
 import Skills from './components/Skills';
-import Experience from './components/Experience';
+import Career from './components/Career';
 import Contact from './components/Contact';
 import { useState, useEffect } from 'react';
 
@@ -55,7 +55,7 @@ export default function Home() {
         <About />
         <Projects />
         <Skills />
-        <Experience />
+        <Career />
         <Contact />
       </main>
     </div>
