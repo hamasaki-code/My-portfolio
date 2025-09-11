@@ -1,4 +1,4 @@
-import { GiTennisBall } from "react-icons/gi";
+// Project metadata for Works section
 
 export const projects = [
     {
