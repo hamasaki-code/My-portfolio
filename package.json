@@ -8,7 +8,8 @@
     "start": "next start",
     "export": "next export",
     "lint": "next lint",
-    "postbuild": "next-sitemap"
+    "postbuild": "next-sitemap",
+    "test": "echo \"No tests configured\" && exit 0"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
