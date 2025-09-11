@@ -1,36 +1,78 @@
+"use client";
+import Image from "next/image";
+import Link from "next/link";
+import { PhotoIcon } from "@heroicons/react/24/outline";
+import { useEffect, useRef } from "react";
+
+import { projects } from "../data/projects";
+
 export default function Projects() {
+  const cardRefs = useRef([]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.remove("opacity-0", "translate-y-4");
+            entry.target.classList.add("opacity-100", "translate-y-0");
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const refs = cardRefs.current;
+    refs.forEach((ref) => ref && observer.observe(ref));
+    return () => refs.forEach((ref) => ref && observer.unobserve(ref));
+  }, []);
+
   return (
     <section id="projects" className="my-16">
       <h2 className="text-4xl font-bold mb-6 text-black dark:text-white">Works</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {/* タスク管理アプリ */}
-        <div className="border border-black dark:border-white rounded-lg shadow-lg p-6 bg-white dark:bg-gray-800 hover:shadow-xl transition duration-300">
-          <h3 className="text-2xl font-bold mb-2 text-black dark:text-white">タスク管理アプリ（Next.js）</h3>
-          <p className="text-gray-800 dark:text-gray-200">
-            タスク作成、完了、削除機能を持ち、詳細閲覧が可能なタスク管理アプリです。Next.jsを使用して開発され、効率的なタスク管理をサポートします。
-          </p>
-        </div>
-        {/* Bookers */}
-        <div className="border border-black dark:border-white rounded-lg shadow-lg p-6 bg-white dark:bg-gray-800 hover:shadow-xl transition duration-300">
-          <h3 className="text-2xl font-bold mb-2 text-black dark:text-white">Bookers (Ruby on Rails)</h3>
-          <p className="text-gray-800 dark:text-gray-200">
-            本の投稿、編集、削除、コメント、いいね機能を提供するWebアプリケーションです。Ruby on Railsを使用して開発され、ユーザーが読書体験を共有し、他のユーザーと交流できます。
-          </p>
-        </div>
-        {/* Portfolio */}
-        <div className="border border-black dark:border-white rounded-lg shadow-lg p-6 bg-white dark:bg-gray-800 hover:shadow-xl transition duration-300">
-          <h3 className="text-2xl font-bold mb-2 text-black dark:text-white">Portfolio（Next.js）</h3>
-          <p className="text-gray-800 dark:text-gray-200">
-            このポートフォリオは、私のスキルやプロジェクトを視覚的かつ簡潔に紹介するために構築しました。モダンなデザインとシンプルなナビゲーションを重視し、レスポンシブ対応で様々なデバイスでの閲覧が可能です。使用技術としては、Next.jsをベースに、Tailwind CSSを用いたスタイルを採用しています。
-          </p>
-        </div>
-        {/* 卒業研究 */}
-        <div className="border border-black dark:border-white rounded-lg shadow-lg p-6 bg-white dark:bg-gray-800 hover:shadow-xl transition duration-300">
-          <h3 className="text-2xl font-bold mb-2 text-black dark:text-white">モーションキャプチャーとVRを用いたスポーツトレーニング支援システムの研究 (Unity)</h3>
-          <p className="text-gray-800 dark:text-gray-200">
-          テニスコートをVR空間で再現し、モーションキャプチャーカメラやMotionBuilderなどを用いて、フォームの改善を行うフィードバックシステムを作成する卒業研究を行いました。
-          </p>
-        </div>
+        {projects.map((project, index) => (
+          <div
+            key={project.slug}
+            ref={(el) => (cardRefs.current[index] = el)}
+            className="opacity-0 translate-y-4 transition-all duration-500 h-full w-full"
+          >
+            <Link
+              href={`/projects/${project.slug}`}
+              className="group relative flex flex-col h-full rounded-xl border border-black/10 dark:border-yellow-600 bg-white dark:bg-black p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-yellow-400 dark:hover:border-yellow-400"
+            >
+              <span className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-yellow-300 dark:bg-yellow-500" />
+              {project.image ? (
+                <div className="relative flex items-center justify-center w-full h-48 mb-4 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
+                  <Image
+                    src={project.image}
+                    alt={`${project.title} のスクリーンショット`}
+                    width={project.image.endsWith('.svg') ? 120 : 600}
+                    height={project.image.endsWith('.svg') ? 120 : 350}
+                    className="object-contain h-full w-auto transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+              ) : (
+                <div className="flex items-center justify-center w-full h-48 mb-4 rounded-lg bg-gray-100 dark:bg-gray-800">
+                  <PhotoIcon className="w-16 h-16 text-yellow-500" />
+                </div>
+              )}
+              <h3 className="text-2xl font-bold mb-4 text-black dark:text-yellow-100">
+                {project.title}
+              </h3>
+              <div className="mt-auto flex flex-wrap gap-2">
+                {project.tech.map((t) => (
+                  <span
+                    key={t}
+                    className="bg-yellow-300 text-black dark:bg-gray-700 dark:text-yellow-100 text-xs px-2 py-1 rounded"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </Link>
+          </div>
+        ))}
       </div>
     </section>
   );
