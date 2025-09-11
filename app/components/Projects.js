@@ -34,33 +34,36 @@ export default function Projects() {
           <div
             key={project.slug}
             ref={(el) => (cardRefs.current[index] = el)}
-            className="relative p-[2px] rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-lg overflow-hidden opacity-0 translate-y-4 transition-all duration-300"
+            className="opacity-0 translate-y-4 transition-all duration-500 h-full w-full"
           >
             <Link
               href={`/projects/${project.slug}`}
-              className="block h-full rounded-xl bg-gray-100 dark:bg-gray-800 p-6 transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl"
+              className="group relative flex flex-col h-full rounded-xl border border-black/10 dark:border-yellow-600 bg-white dark:bg-black p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-yellow-400 dark:hover:border-yellow-400"
             >
+              <span className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-yellow-300 dark:bg-yellow-500" />
               {project.image ? (
-                <Image
-                  src={project.image}
-                  alt={`${project.title} のスクリーンショット`}
-                  width={600}
-                  height={350}
-                  className="mb-4 rounded"
-                />
+                <div className="relative flex items-center justify-center w-full h-48 mb-4 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
+                  <Image
+                    src={project.image}
+                    alt={`${project.title} のスクリーンショット`}
+                    width={project.image.endsWith('.svg') ? 120 : 600}
+                    height={project.image.endsWith('.svg') ? 120 : 350}
+                    className="object-contain h-full w-auto transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
               ) : (
-                <div className="flex items-center justify-center w-full h-[200px] mb-4 rounded bg-gray-200 dark:bg-gray-700">
-                  <PhotoIcon className="w-16 h-16 text-gray-500" />
+                <div className="flex items-center justify-center w-full h-48 mb-4 rounded-lg bg-gray-100 dark:bg-gray-800">
+                  <PhotoIcon className="w-16 h-16 text-yellow-500" />
                 </div>
               )}
-              <h3 className="text-2xl font-bold mb-4 text-black dark:text-white">
+              <h3 className="text-2xl font-bold mb-4 text-black dark:text-yellow-100">
                 {project.title}
               </h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="mt-auto flex flex-wrap gap-2">
                 {project.tech.map((t) => (
                   <span
                     key={t}
-                    className="bg-gray-300 dark:bg-gray-600 text-xs px-2 py-1 rounded"
+                    className="bg-yellow-300 text-black dark:bg-gray-700 dark:text-yellow-100 text-xs px-2 py-1 rounded"
                   >
                     {t}
                   </span>
