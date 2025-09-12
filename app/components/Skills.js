@@ -92,7 +92,7 @@ export default function Skills({ lang = 'en' }) {
         },
         {
           name: 'Next.js',
-          icon: <SiNextdotjs className="text-black dark:text-white w-8 h-8" />,
+          icon: <SiNextdotjs className="text-black dark:text-yellow-400 w-8 h-8" />,
           description: 'React Framework',
           level: 3,
         },
@@ -131,7 +131,7 @@ export default function Skills({ lang = 'en' }) {
           icon: (
             <div className="flex justify-center space-x-2">
               <SiGit className="text-orange-500 w-8 h-8" />
-              <SiGithub className="text-black dark:text-white w-8 h-8" />
+              <SiGithub className="text-black dark:text-yellow-400 w-8 h-8" />
             </div>
           ),
           description: 'Version Control',
@@ -139,7 +139,7 @@ export default function Skills({ lang = 'en' }) {
         },
         {
           name: 'Vercel',
-          icon: <SiVercel className="text-black dark:text-white w-8 h-8" />,
+          icon: <SiVercel className="text-black dark:text-yellow-400 w-8 h-8" />,
           description: 'Deployment',
           level: 3,
         },
@@ -183,10 +183,10 @@ export default function Skills({ lang = 'en' }) {
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition
+            className={`px-4 py-2 rounded-full text-sm font-semibold border transition-colors
         ${activeCategory === cat
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-200 dark:bg-gray-700 text-black dark:text-white'
+                ? 'bg-yellow-400 text-black border-yellow-400'
+                : 'bg-gray-200 text-black border-yellow-400 dark:bg-black dark:text-yellow-400'
               }`}
           >
             {translations[lang]?.categories[cat] || cat}
