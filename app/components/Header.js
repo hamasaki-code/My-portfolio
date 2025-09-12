@@ -1,11 +1,17 @@
 "use client";
 import { useState } from 'react';
+import useScrollDirection from '../hooks/useScrollDirection';
 
 export default function Header({ toggleDarkMode, isDarkMode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const scrollDirection = useScrollDirection();
 
   return (
-    <header className="bg-yellow-400 dark:bg-gray-800 text-black dark:text-white p-6 border-b-4 border-black dark:border-white">
+    <header
+      className={`fixed top-0 w-full z-50 bg-yellow-400 dark:bg-gray-800 text-black dark:text-white p-6 border-b-4 border-black
+                  dark:border-white transform transition-transform transition-opacity duration-500 ease-in-out
+                  ${scrollDirection === 'down' && !menuOpen ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
+    >
       <nav className="container mx-auto flex justify-between items-center">
         <h1 className="text-4xl font-extrabold tracking-wider">My Portfolio</h1>
 

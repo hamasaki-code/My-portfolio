@@ -51,7 +51,7 @@ export default function Home() {
     <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
       <SeoHead />
       <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
-      <main className="container mx-auto p-6 bg-white dark:bg-gray-900">
+      <main className="container mx-auto p-6 pt-24 bg-white dark:bg-gray-900">
         <About />
         <Projects />
         <Skills />
