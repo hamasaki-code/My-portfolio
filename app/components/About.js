@@ -19,10 +19,10 @@ export default function About() {
       <h3 className="text-3xl font-extrabold text-gray-900 dark:text-gray-200">Taishi Hamasaki</h3>
       <p className="text-xl font-medium text-gray-700 dark:text-gray-400 mt-2 mb-6">Web Engineer</p>
       <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200 max-w-3xl mx-auto">
-      大阪府出身のエンジニア。大学では情報理工学部を卒業し、その後Webアプリケーションエンジニアとして
-      キャリアをスタートしました。現在は主にモバイルアプリ開発の保守を担当しており、開発環境としてFlutterを
-      使用しています。これらの経験を通じて、モバイル開発に対する知識とスキルを日々磨いています。加えて、Web系の
-      開発にも強い興味があり、ReactやNext.jsを中心に新しい技術の習得に取り組んでいます。
+        大阪府出身のエンジニア。大学では情報理工学部を卒業し、その後Webアプリケーションエンジニアとして
+        キャリアをスタートしました。現在は主にモバイルアプリ開発の保守を担当しており、開発環境としてFlutterを
+        使用しています。これらの経験を通じて、モバイル開発に対する知識とスキルを日々磨いています。加えて、Web系の
+        開発にも強い興味があり、ReactやNext.jsを中心に新しい技術の習得に取り組んでいます。
       </p>
 
       {/* SNSリンク */}
@@ -51,6 +51,42 @@ export default function About() {
               className="inline-block mr-2"
             />
             Wantedly
+          </a>
+
+          {/* YOUTRUST Icon */}
+          <a
+            href="https://youtrust.jp/users/develop_hama"
+            aria-label="YOUTRUST profile"
+            className="text-gray-800 dark:text-gray-200 hover:text-yellow-500 dark:hover:text-yellow-300 transition duration-300 transform hover:scale-110"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              src="/YOUTRUST.png"
+              alt="YOUTRUST"
+              width={24}
+              height={24}
+              className="inline-block mr-2"
+            />
+            YOUTRUST
+          </a>
+
+          {/* LinkedIn Icon */}
+          <a
+            href="https://www.linkedin.com/in/taishi-hamasaki-628424350/"
+            aria-label="LinkedIn profile"
+            className="text-gray-800 dark:text-gray-200 hover:text-yellow-500 dark:hover:text-yellow-300 transition duration-300 transform hover:scale-110"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              src="/LinkedIn.png"
+              alt="LinkedIn"
+              width={24}
+              height={24}
+              className="inline-block mr-2"
+            />
+            LinkedIn
           </a>
         </div>
       </div>
