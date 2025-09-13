@@ -1,25 +1,71 @@
-import { EnvelopeIcon } from '@heroicons/react/24/outline';
+"use client";
+import { useState } from 'react';
 
 export default function Contact() {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState('');
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('');
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      setStatus(data.message);
+      if (res.ok) {
+        setFormData({ name: '', email: '', message: '' });
+      }
+    } catch (error) {
+      setStatus('Failed to send message.');
+    }
+  };
+
   return (
-    <section id="contact" className="my-16 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 dark:from-gray-700 dark:via-gray-600 dark:to-gray-500 p-8 rounded-lg shadow-md scroll-mt-24">
+    <section id="contact" className="my-16 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 dark:from-gray-700 dark:via-gray-600 dark:to-gray-500 p-8 rounded-lg shadow-md">
       <h2 className="text-4xl font-bold mb-6 text-black dark:text-white text-center">Contact Me</h2>
-      <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200 mb-4 text-center">
-        If you&apos;d like to reach out, feel free to send me an email.
-      </p>
-      <p className="text-lg text-center text-gray-800 dark:text-gray-200 mb-8">
-        Send an email to me: <a href="mailto:dazhibinqi@gmail.com" className="text-blue-500 dark:text-yellow-300 font-semibold hover:underline">dazhibinqi@gmail.com</a>
-      </p>
-      <div className="flex justify-center">
-        <a
-          href="mailto:dazhibinqi@gmail.com"
-          aria-label="Send an email to Taishi Hamasaki"
-          className="inline-flex items-center px-8 py-4 bg-black text-white font-bold rounded-lg shadow-lg hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-300 transform hover:scale-105"
+      <form onSubmit={handleSubmit} className="max-w-xl mx-auto">
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Your Name"
+          className="w-full p-3 mb-4 border rounded"
+          required
+        />
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Your Email"
+          className="w-full p-3 mb-4 border rounded"
+          required
+        />
+        <textarea
+          name="message"
+          value={formData.message}
+          onChange={handleChange}
+          placeholder="Your Message"
+          className="w-full p-3 mb-4 border rounded h-32"
+          required
+        />
+        <button
+          type="submit"
+          className="w-full px-8 py-4 bg-black text-white font-bold rounded-lg shadow-lg hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-300"
         >
-          <EnvelopeIcon className="w-6 h-6 mr-2 text-yellow-400 hover:text-yellow-300 transition duration-300" />
-          Send Email
-        </a>
-      </div>
+          Send
+        </button>
+      </form>
+      {status && <p className="text-center mt-4 text-black dark:text-white">{status}</p>}
     </section>
   );
 }
