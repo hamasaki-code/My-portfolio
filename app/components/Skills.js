@@ -172,7 +172,7 @@ export default function Skills({ lang = 'en' }) {
   const categoryNames = ['All', ...allCategories.map((c) => c.name)];
 
   return (
-    <section id="skills" className="my-16 px-4">
+    <section id="skills" className="my-16 px-4 scroll-mt-24">
       <h2 className="text-4xl font-bold mb-6 text-black dark:text-white text-left">
         Skills & Technologies
       </h2>

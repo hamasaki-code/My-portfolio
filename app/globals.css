@@ -1,6 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  @apply transition-colors duration-700;
+}
 
 :root {
   --background: #ffffff;
@@ -17,11 +27,14 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
-a:focus {
+a:focus-visible,
+button:focus-visible {
   outline: 2px solid #facc15;
+  outline-offset: 4px;
+  border-radius: 6px;
 }
 
 @layer utilities {

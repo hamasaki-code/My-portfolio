@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function About() {
   return (
-    <section id="about" className="my-16 text-center">
+    <section id="about" className="my-16 text-center scroll-mt-24">
       <h2 className="text-4xl font-bold mb-6 text-black dark:text-white">About Me</h2>
       <div className="mb-6">
         <Image

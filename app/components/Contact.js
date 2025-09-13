@@ -2,7 +2,7 @@ import { EnvelopeIcon } from '@heroicons/react/24/outline';
 
 export default function Contact() {
   return (
-    <section id="contact" className="my-16 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 dark:from-gray-700 dark:via-gray-600 dark:to-gray-500 p-8 rounded-lg shadow-md">
+    <section id="contact" className="my-16 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 dark:from-gray-700 dark:via-gray-600 dark:to-gray-500 p-8 rounded-lg shadow-md scroll-mt-24">
       <h2 className="text-4xl font-bold mb-6 text-black dark:text-white text-center">Contact Me</h2>
       <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200 mb-4 text-center">
         If you&apos;d like to reach out, feel free to send me an email.
