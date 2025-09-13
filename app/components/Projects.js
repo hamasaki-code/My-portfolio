@@ -28,7 +28,7 @@ export default function Projects() {
   }, []);
 
   return (
-    <section id="projects" className="my-16">
+    <section id="projects" className="my-16 scroll-mt-24">
       <h2 className="text-4xl font-bold mb-6 text-black dark:text-white">Works</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {projects.map((project, index) => (

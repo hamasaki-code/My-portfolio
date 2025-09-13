@@ -1,6 +1,6 @@
 export default function Career() {
   return (
-    <section id="Career" className="my-16">
+    <section id="career" className="my-16 scroll-mt-24">
       <h2 className="text-4xl font-bold mb-6 text-black dark:text-white">Career</h2>
 
       <div className="relative border-l-4 border-gray-300 dark:border-gray-700 ml-4">
