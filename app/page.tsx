@@ -5,7 +5,7 @@ import About from './components/About';
 import Projects from './components/Projects';
 import Skills from './components/Skills';
 import Career from './components/Career';
-import Contact from './components/Contact';
+import ContactForm from './components/ContactForm';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
@@ -57,7 +57,7 @@ export default function Home() {
         <Projects />
         <Skills />
         <Career />
-        <Contact />
+        <ContactForm />
       </main>
     </div>
   );
