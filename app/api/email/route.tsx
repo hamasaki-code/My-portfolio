@@ -1,15 +1,46 @@
 import { NextResponse } from "next/server"
 import nodemailer from 'nodemailer'
 
+const rateLimitMap = new Map<string, number>()
+
 export async function POST(req: Request) {
     try {
-        const { email, message } = await req.json()
+        const { name, email, message, captcha } = await req.json()
+        const requireCaptcha = !!process.env.RECAPTCHA_SECRET_KEY
 
-        if (!email || !message) {
+        if (!name || !email || !message || (requireCaptcha && !captcha)) {
             return NextResponse.json(
                 { success: false, message: "All fields are required." },
                 { status: 400 }
             )
+        }
+
+        const ip = req.headers.get('x-forwarded-for') || 'unknown'
+        const now = Date.now()
+        const last = rateLimitMap.get(ip) || 0
+        if (now - last < 60_000) {
+            return NextResponse.json(
+                { success: false, message: "Too many requests. Please try again later." },
+                { status: 429 }
+            )
+        }
+        rateLimitMap.set(ip, now)
+
+        if (requireCaptcha) {
+            const captchaRes = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captcha}`,
+            })
+            const captchaData = await captchaRes.json()
+            if (!captchaData.success) {
+                return NextResponse.json(
+                    { success: false, message: "Captcha verification failed." },
+                    { status: 400 }
+                )
+            }
         }
 
         // メール送信の設定を修正
@@ -31,10 +62,7 @@ export async function POST(req: Request) {
             from: process.env.EMAIL_USER,
             to: process.env.RECIPIENT_EMAIL,
             subject: 'New Contact Form Submission',
-            text: `
-                From: ${email}
-                Message: ${message}
-            `
+            text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
         })
 
         return NextResponse.json(
