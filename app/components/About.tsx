@@ -1,5 +1,6 @@
 import { FaGithub, FaXTwitter, FaLinkedin } from "react-icons/fa6";
 import { SiWantedly } from "react-icons/si";
+import { FiMapPin } from "react-icons/fi";
 import Image from "next/image";
 
 export default function About(): JSX.Element {
@@ -35,14 +36,22 @@ export default function About(): JSX.Element {
               Taishi Hamasaki
             </h3>
             <p className="text-base font-medium text-gray-600 dark:text-yellow-400">
-              Web Engineer / Flutter Developer
+              Web Engineer
             </p>
+
+            {/* Location */}
+            <div className="flex items-center gap-2 text-gray-600 dark:text-yellow-300 text-sm">
+              <FiMapPin className="text-lg" />
+              <span>Kanagawa, Japan</span>
+            </div>
+
+            {/* Description */}
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base">
-              大阪府出身のエンジニア。大学で情報理工学部を卒業後、Webエンジニアとしてキャリアをスタート。
-              現在はFlutterを用いたモバイルアプリの保守開発を担当しながら、日々技術を磨いています。
+              大阪府出身のエンジニアです。大学では情報系の学部を卒業し、その後、Webアプリケーションエンジニアとして就職し、実務を通じて経験を重ねています。
+              現在は、Flutterを用いたモバイルアプリの保守開発に携わりながら、日々スキルを磨いています。
               <br />
               <br />
-              Web技術にも強い関心があり、ReactやNext.jsを用いた開発を通じて、UI/UXの向上や新しいフレームワークの習得に取り組んでいます。
+              また、Web系の技術にも強い関心があり、Next.jsやRuby on Railsを中心に、UI/UXの向上を意識した開発や、新しい技術の習得に積極的に取り組んでいます。
             </p>
           </div>
         </div>
@@ -50,7 +59,7 @@ export default function About(): JSX.Element {
         {/* Divider */}
         <div className="w-16 h-1 bg-yellow-300 mx-auto my-10 rounded-full animate-fade-in" />
 
-        {/* Social links */}
+        {/* Social Links */}
         <div className="mt-8 animate-fade-in">
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Social Links</h3>
           <div className="flex justify-center space-x-4">
@@ -65,7 +74,7 @@ export default function About(): JSX.Element {
               <FaGithub className="w-6 h-6" />
             </a>
 
-            {/* X (Twitter) */}
+            {/* Twitter / X */}
             <a
               href="https://x.com/OnTAumv5KAoVGN5"
               aria-label="X (Twitter)"

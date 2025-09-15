@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef } from "react";
 import {
     FiUser,
     FiMail,
@@ -10,64 +10,64 @@ import {
     FiCheck,
     FiGithub,
     FiMapPin,
-} from "react-icons/fi"
-import { RiTwitterXLine } from "react-icons/ri";
-import Recaptcha from "./Recaptcha"
+} from "react-icons/fi";
+import { RiTwitterXLine, RiAccountCircleLine } from "react-icons/ri";
+import { SiWantedly, SiLinkedin } from "react-icons/si";
+import Recaptcha from "./Recaptcha";
 
 export default function ContactForm() {
-    const [name, setName] = useState("")
-    const [email, setEmail] = useState("")
-    const [emailError, setEmailError] = useState("")
-    const [message, setMessage] = useState("")
-    const [captcha, setCaptcha] = useState<string | null>(null)
-    const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
-    const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-    const recaptchaEnabled = !!recaptchaSiteKey
-    const modalRef = useRef<HTMLDivElement>(null)
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [message, setMessage] = useState("");
+    const [captcha, setCaptcha] = useState<string | null>(null);
+    const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+    const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+    const recaptchaEnabled = !!recaptchaSiteKey;
+    const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (status === 'success' || status === 'error') {
-            const timer = setTimeout(() => setStatus('idle'), 4000)
-            if (status === 'success') {
-                modalRef.current?.focus()
+        if (status === "success" || status === "error") {
+            const timer = setTimeout(() => setStatus("idle"), 4000);
+            if (status === "success") {
+                modalRef.current?.focus();
             }
-            return () => clearTimeout(timer)
+            return () => clearTimeout(timer);
         }
-    }, [status])
+    }, [status]);
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setStatus('sending')
+        e.preventDefault();
+        setStatus("sending");
 
         try {
             const res = await fetch("/api/email", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, message, captcha })
-            })
+                body: JSON.stringify({ name, email, message, captcha }),
+            });
 
-            await res.json()
+            await res.json();
 
             if (res.ok) {
-                setStatus('success')
-                setName("")
-                setEmail("")
-                setMessage("")
-                setCaptcha(null)
+                setStatus("success");
+                setName("");
+                setEmail("");
+                setMessage("");
+                setCaptcha(null);
 
-                if (typeof window !== 'undefined') {
-                    const g = window.grecaptcha
-                    const api = g?.reset ? g : g?.enterprise
-                    api?.reset?.()
+                if (typeof window !== "undefined") {
+                    const g = window.grecaptcha;
+                    const api = g?.reset ? g : g?.enterprise;
+                    api?.reset?.();
                 }
             } else {
-                setStatus('error')
+                setStatus("error");
             }
-
         } catch (err) {
-            setStatus('error')
+            setStatus("error");
         }
-    }
+    };
 
     return (
         <section id="contact" className="my-16 px-4">
@@ -75,12 +75,12 @@ export default function ContactForm() {
                 <h2 className="text-4xl font-bold text-center mb-4">Contact Me</h2>
 
                 {/* ステータス */}
-                {status === 'error' && (
+                {status === "error" && (
                     <div className="bg-red-600 text-white text-center py-3 px-4 rounded-md">
                         Something went wrong. Please try again.
                     </div>
                 )}
-                {status === 'success' && (
+                {status === "success" && (
                     <div
                         ref={modalRef}
                         tabIndex={-1}
@@ -95,7 +95,9 @@ export default function ContactForm() {
                     {/* Name & Email */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label htmlFor="name" className="block mb-2 font-semibold">Name</label>
+                            <label htmlFor="name" className="block mb-2 font-semibold">
+                                Name
+                            </label>
                             <div className="relative">
                                 <FiUser className="absolute left-3 top-3 text-yellow-400" />
                                 <input
@@ -110,7 +112,9 @@ export default function ContactForm() {
                             </div>
                         </div>
                         <div>
-                            <label htmlFor="email" className="block mb-2 font-semibold">Email</label>
+                            <label htmlFor="email" className="block mb-2 font-semibold">
+                                Email
+                            </label>
                             <div className="relative">
                                 <FiMail className="absolute left-3 top-3 text-yellow-400" />
                                 <input
@@ -118,9 +122,9 @@ export default function ContactForm() {
                                     type="email"
                                     value={email}
                                     onChange={(e) => {
-                                        const val = e.target.value
-                                        setEmail(val)
-                                        setEmailError(/^\S+@\S+\.\S+$/.test(val) ? "" : "Invalid email format")
+                                        const val = e.target.value;
+                                        setEmail(val);
+                                        setEmailError(/^\S+@\S+\.\S+$/.test(val) ? "" : "Invalid email format");
                                     }}
                                     placeholder="you@example.com"
                                     required
@@ -133,7 +137,9 @@ export default function ContactForm() {
 
                     {/* Message */}
                     <div>
-                        <label htmlFor="message" className="block mb-2 font-semibold">Message</label>
+                        <label htmlFor="message" className="block mb-2 font-semibold">
+                            Message
+                        </label>
                         <div className="relative">
                             <FiMessageSquare className="absolute left-3 top-4 text-yellow-400" />
                             <textarea
@@ -147,7 +153,9 @@ export default function ContactForm() {
                                 className="w-full bg-white dark:bg-black border border-yellow-500 text-black dark:text-yellow-400 placeholder-gray-500 dark:placeholder-yellow-200 rounded px-10 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-300"
                             />
                         </div>
-                        <p className="text-sm text-right text-gray-600 dark:text-yellow-200">{message.length}/500</p>
+                        <p className="text-sm text-right text-gray-600 dark:text-yellow-200">
+                            {message.length}/500
+                        </p>
                     </div>
 
                     {/* reCAPTCHA */}
@@ -160,38 +168,82 @@ export default function ContactForm() {
                     {/* Submit */}
                     <button
                         type="submit"
-                        disabled={status === 'sending' || !!emailError || (recaptchaEnabled && !captcha)}
+                        disabled={status === "sending" || !!emailError || (recaptchaEnabled && !captcha)}
                         className="w-full bg-yellow-400 text-black font-bold py-3 rounded-lg hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                     >
-                        {status === 'sending' && <FiLoader className="animate-spin" />}
-                        {status === 'idle' && <FiSend />}
-                        {status === 'sending' ? 'Sending...' : 'Send'}
+                        {status === "sending" && <FiLoader className="animate-spin" />}
+                        {status === "idle" && <FiSend />}
+                        {status === "sending" ? "Sending..." : "Send"}
                     </button>
                 </form>
 
                 {/* Contact Info Section */}
                 <div className="pt-8 border-t border-yellow-200 dark:border-yellow-800">
                     <h3 className="text-2xl font-bold mb-4">Other Contact Options</h3>
-                    <ul className="space-y-3">
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-[15px] md:text-base">
                         <li className="flex items-center gap-3">
                             <FiGithub />
-                            <a href="https://github.com/hamasaki-code" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                github.com/hamasaki-code
+                            <a
+                                href="https://github.com/hamasaki-code"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="GitHub"
+                                className="hover:underline"
+                            >
+                                GitHub
                             </a>
                         </li>
                         <li className="flex items-center gap-3">
                             <RiTwitterXLine />
-                            <a href="https://x.com/OnTAumv5KAoVGN5" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                @OnTAumv5KAoVGN5
+                            <a
+                                href="https://x.com/OnTAumv5KAoVGN5"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="X (Twitter)"
+                                className="hover:underline"
+                            >
+                                X（旧Twitter）
                             </a>
                         </li>
                         <li className="flex items-center gap-3">
-                            <FiMapPin />
-                            Kanagawa, Japan
+                            <SiLinkedin />
+                            <a
+                                href="https://www.linkedin.com/in/taishi-hamasaki-628424350"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="LinkedIn"
+                                className="hover:underline"
+                            >
+                                LinkedIn
+                            </a>
+                        </li>
+                        <li className="flex items-center gap-3">
+                            <SiWantedly />
+                            <a
+                                href="https://www.wantedly.com/id/develop_hama"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Wantedly"
+                                className="hover:underline"
+                            >
+                                Wantedly
+                            </a>
+                        </li>
+                        <li className="flex items-center gap-3">
+                            <RiAccountCircleLine />
+                            <a
+                                href="https://youtrust.jp/users/develop_hama"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="YOUTRUST"
+                                className="hover:underline"
+                            >
+                                YOUTRUST
+                            </a>
                         </li>
                     </ul>
                 </div>
             </div>
         </section>
-    )
+    );
 }
