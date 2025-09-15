@@ -9,7 +9,6 @@ import {
     FiLoader,
     FiCheck,
     FiGithub,
-    FiMapPin,
 } from "react-icons/fi";
 import { RiTwitterXLine, RiAccountCircleLine } from "react-icons/ri";
 import { SiWantedly, SiLinkedin } from "react-icons/si";
