@@ -11,8 +11,8 @@ export const projects = [
         ],
         tech: ["Next.js", "Tailwind CSS"],
         links: {
-            site: "/",
-            github: "https://github.com/hamayand/My-portfolio",
+            site: "https://taishi-hamasaki-portfolio.vercel.app",
+            github: "https://github.com/hamasaki-code/My-portfolio",
         },
     },
     {
@@ -20,13 +20,13 @@ export const projects = [
         title: "Hamayan.dev",
         image: "/hamayan-dev.png",
         description: [
-            "技術に関する記事や学習のアウトプットをまとめている個人ブログ。",
-            "Next.jsを用いた構築でカテゴリーやタグ検索が可能。",
+            "技術記事や学習アウトプットを体系的に整理して発信する個人ブログ。",
+            "Next.jsとTailwind CSSで構築し、カテゴリー・タグ検索から目的の記事へ素早くアクセスできる。",
         ],
         tech: ["Next.js", "Tailwind CSS"],
         links: {
-            site: "https://hamayan.dev",
-            github: "https://github.com/hamayand/hamayan.dev",
+            site: "https://hamayan-dev.vercel.app",
+            github: "https://github.com/hamasaki-code/Tech-blogs",
         },
     },
     {
@@ -35,8 +35,10 @@ export const projects = [
         image: "/mocap-camera-icon.svg",
         description: [
             "「モーションキャプチャーとVRを用いたスポーツトレーニング支援システムの研究」",
-            "VR空間のテニスコートでフォームを可視化しフィードバックを実施。",
-            "Unity・MotionBuilder・Viconを連携させたモーション計測システム。",
+            "VR空間内にテニスコートを構築し、被験者が実際にラケットを持って飛んでくるボールを打つことで実践的なトレーニングを再現。",
+            "フォームはモーションキャプチャーで計測し、終了後はPC画面上でVR空間内の自分の動きをリプレイ形式で可視化しフィードバック。",
+            "その後、再度VR内でトレーニングを実施し、動作改善の効果を検証。",
+            "Unity・MotionBuilder・Viconを連携させたリアルタイムモーション分析・フィードバックシステムを構築。",
         ],
         tech: ["Unity", "MotionBuilder", "Vicon"],
         links: {},
@@ -46,12 +48,13 @@ export const projects = [
         title: "Bookers",
         image: "/bookers-icon.svg",
         description: [
-            "本を投稿してユーザー間で共有できるアプリ。",
-            "いいねやコメント機能を搭載。",
-            "Deviseでサインアップ・ログインを実装。",
-            "投稿した本は編集・削除が可能。",
+            "読了した本のレビューを投稿し、タグやキーワードで検索しながらコミュニティで共有できるブックシェアサービス。",
+            "投稿に対するいいね・コメント・通知を実装し、ユーザー間のコミュニケーションを促進。",
+            "DeviseとRSpecで認証とテストを整備し、メール認証やパスワードリセットなどのセキュリティ機能をサポート。",
+            "Active StorageとAmazon S3を利用した画像アップロード、BootstrapによるレスポンシブUIで快適な閲覧体験を提供。",
+            "CRUDと権限管理に加え、N+1対策やインデックス設計でパフォーマンスと保守性を両立。"
         ],
         tech: ["Ruby on Rails", "Bootstrap"],
         links: {},
-    },
+    }
 ];
