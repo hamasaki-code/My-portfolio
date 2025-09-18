@@ -1,5 +1,3 @@
-import type { ReactNode } from "react";
-import type { IconType } from "react-icons";
 import {
   FaBriefcase,
   FaBuilding,
@@ -8,31 +6,7 @@ import {
 } from "react-icons/fa";
 import { IoIosSchool } from "react-icons/io";
 
-type CareerType = "fullTime" | "sideJob" | "education" | "partTime" | "internship";
-
-type TypeStyle = {
-  nodeClass: string;
-  iconClass: string;
-  badgeClass?: string;
-  badgeIconClass?: string;
-};
-
-type BadgeConfig = {
-  label: string;
-  icon: IconType;
-};
-
-type CareerItem = {
-  id: string;
-  type: CareerType;
-  period: ReactNode;
-  title: string;
-  role: string;
-  badge?: BadgeConfig;
-  description: ReactNode;
-};
-
-const typeStyles: Record<CareerType, TypeStyle> = {
+const typeStyles = {
   fullTime: {
     nodeClass:
       "w-12 h-12 bg-yellow-300 text-black ring-4 ring-yellow-400 dark:ring-yellow-300 shadow-[0_1px_4px_rgba(0,0,0,0.18)]",
@@ -72,7 +46,7 @@ const typeStyles: Record<CareerType, TypeStyle> = {
   },
 };
 
-const nodeIcons: Record<CareerType, IconType> = {
+const nodeIcons = {
   fullTime: FaBuilding,
   sideJob: FaLaptopCode,
   education: IoIosSchool,
@@ -80,7 +54,7 @@ const nodeIcons: Record<CareerType, IconType> = {
   internship: FaChalkboardTeacher,
 };
 
-const timelineItems: CareerItem[] = [
+const timelineItems = [
   {
     id: "full-time-2024",
     type: "fullTime",
