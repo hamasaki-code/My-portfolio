@@ -4,7 +4,7 @@ export const projects = [
     {
         slug: "portfolio",
         title: "My Portfolio",
-        image: null,
+        image: "/portfolio.png",
         description: [
             "私のスキルやプロジェクトを視覚的かつ簡潔に紹介するために構築。",
             "モダンなデザインとレスポンシブ対応を重視。",

@@ -69,9 +69,15 @@ export default function ContactForm() {
     };
 
     return (
-        <section id="contact" className="my-16 px-4">
-            <div className="max-w-3xl mx-auto bg-gray-50 dark:bg-black text-black dark:text-yellow-400 rounded-xl shadow-2xl p-10 space-y-10 transition-colors duration-500">
-                <h2 className="text-4xl font-bold text-center mb-4">Contact Me</h2>
+        <section id="contact" className="scroll-mt-28 py-20">
+            <div className="mx-auto max-w-3xl space-y-10 px-6 text-black transition-colors duration-500 dark:text-yellow-200 sm:px-10">
+                <div className="text-center">
+                    <h2 className="text-4xl font-bold text-black dark:text-yellow-100">Contact Me</h2>
+                    <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
+                        お仕事のご相談やカジュアルなご連絡もお気軽にどうぞ。<br />
+                        以下のフォームまたはSNSからメッセージをお送りください。
+                    </p>
+                </div>
 
                 {/* ステータス */}
                 {status === "error" && (
@@ -106,7 +112,7 @@ export default function ContactForm() {
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Your name"
                                     required
-                                    className="w-full bg-white dark:bg-black border border-yellow-500 text-black dark:text-yellow-400 placeholder-gray-500 dark:placeholder-yellow-200 rounded px-10 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                                    className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                                 />
                             </div>
                         </div>
@@ -127,7 +133,7 @@ export default function ContactForm() {
                                     }}
                                     placeholder="you@example.com"
                                     required
-                                    className="w-full bg-white dark:bg-black border border-yellow-500 text-black dark:text-yellow-400 placeholder-gray-500 dark:placeholder-yellow-200 rounded px-10 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                                    className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                                 />
                             </div>
                             {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
@@ -149,7 +155,7 @@ export default function ContactForm() {
                                 rows={5}
                                 maxLength={500}
                                 required
-                                className="w-full bg-white dark:bg-black border border-yellow-500 text-black dark:text-yellow-400 placeholder-gray-500 dark:placeholder-yellow-200 rounded px-10 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                                className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                             />
                         </div>
                         <p className="text-sm text-right text-gray-600 dark:text-yellow-200">
@@ -168,7 +174,7 @@ export default function ContactForm() {
                     <button
                         type="submit"
                         disabled={status === "sending" || !!emailError || (recaptchaEnabled && !captcha)}
-                        className="w-full bg-yellow-400 text-black font-bold py-3 rounded-lg hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 py-3 font-bold text-black transition-transform duration-200 hover:scale-[1.01] hover:shadow-[0_18px_45px_-28px_rgba(250,204,21,0.6)] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {status === "sending" && <FiLoader className="animate-spin" />}
                         {status === "idle" && <FiSend />}
@@ -177,10 +183,10 @@ export default function ContactForm() {
                 </form>
 
                 {/* Contact Info Section */}
-                <div className="pt-8 border-t border-yellow-200 dark:border-yellow-800">
-                    <h3 className="text-2xl font-bold mb-4">Other Contact Options</h3>
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-[15px] md:text-base">
-                        <li className="flex items-center gap-3">
+                <div className="border-t border-yellow-500/30 pt-8 dark:border-yellow-500/40">
+                    <h3 className="text-2xl font-bold mb-4 text-black dark:text-yellow-100">Other Contact Options</h3>
+                    <ul className="grid grid-cols-1 gap-x-6 gap-y-3 text-[15px] md:grid-cols-2 md:text-base">
+                        <li className="flex items-center gap-3 text-gray-700 transition-colors hover:text-black dark:text-yellow-200 dark:hover:text-yellow-50">
                             <FiGithub />
                             <a
                                 href="https://github.com/hamasaki-code"
@@ -192,7 +198,7 @@ export default function ContactForm() {
                                 GitHub
                             </a>
                         </li>
-                        <li className="flex items-center gap-3">
+                        <li className="flex items-center gap-3 text-gray-700 transition-colors hover:text-black dark:text-yellow-200 dark:hover:text-yellow-50">
                             <RiTwitterXLine />
                             <a
                                 href="https://x.com/OnTAumv5KAoVGN5"
@@ -204,7 +210,7 @@ export default function ContactForm() {
                                 X（旧Twitter）
                             </a>
                         </li>
-                        <li className="flex items-center gap-3">
+                        <li className="flex items-center gap-3 text-gray-700 transition-colors hover:text-black dark:text-yellow-200 dark:hover:text-yellow-50">
                             <SiLinkedin />
                             <a
                                 href="https://www.linkedin.com/in/taishi-hamasaki-628424350"
@@ -216,7 +222,7 @@ export default function ContactForm() {
                                 LinkedIn
                             </a>
                         </li>
-                        <li className="flex items-center gap-3">
+                        <li className="flex items-center gap-3 text-gray-700 transition-colors hover:text-black dark:text-yellow-200 dark:hover:text-yellow-50">
                             <SiWantedly />
                             <a
                                 href="https://www.wantedly.com/id/develop_hama"
@@ -228,7 +234,7 @@ export default function ContactForm() {
                                 Wantedly
                             </a>
                         </li>
-                        <li className="flex items-center gap-3">
+                        <li className="flex items-center gap-3 text-gray-700 transition-colors hover:text-black dark:text-yellow-200 dark:hover:text-yellow-50">
                             <RiAccountCircleLine />
                             <a
                                 href="https://youtrust.jp/users/develop_hama"
