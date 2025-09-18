@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+import type { IconType } from "react-icons";
 import {
   FaBriefcase,
   FaBuilding,
@@ -6,7 +8,34 @@ import {
 } from "react-icons/fa";
 import { IoIosSchool } from "react-icons/io";
 
-const typeStyles = {
+type EngagementType =
+  | "fullTime"
+  | "sideJob"
+  | "education"
+  | "partTime"
+  | "internship";
+
+type TypeStyle = {
+  nodeClass: string;
+  iconClass: string;
+  badgeClass?: string;
+  badgeIconClass?: string;
+};
+
+type TimelineItem = {
+  id: string;
+  type: EngagementType;
+  period: ReactNode;
+  title: string;
+  role: string;
+  badge?: {
+    label: string;
+    icon: IconType;
+  };
+  description: ReactNode;
+};
+
+const typeStyles: Record<EngagementType, TypeStyle> = {
   fullTime: {
     nodeClass:
       "w-12 h-12 bg-yellow-300 text-black ring-4 ring-yellow-400 dark:ring-yellow-300 shadow-[0_1px_4px_rgba(0,0,0,0.18)]",
@@ -46,7 +75,7 @@ const typeStyles = {
   },
 };
 
-const nodeIcons = {
+const nodeIcons: Record<EngagementType, IconType> = {
   fullTime: FaBuilding,
   sideJob: FaLaptopCode,
   education: IoIosSchool,
@@ -54,7 +83,7 @@ const nodeIcons = {
   internship: FaChalkboardTeacher,
 };
 
-const timelineItems = [
+const timelineItems: TimelineItem[] = [
   {
     id: "full-time-2024",
     type: "fullTime",
