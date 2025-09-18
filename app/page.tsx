@@ -4,24 +4,14 @@ import Header from './components/Header';
 import About from './components/About';
 import Projects from './components/Projects';
 import Skills from './components/Skills';
-import Experience from './components/Experience';
-import Contact from './components/Contact';
-import { useState, useEffect } from 'react';
+import Career from './components/Career';
+import ContactForm from './components/ContactForm';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (darkModePreference) {
-      document.documentElement.classList.add('dark');
-      setIsDarkMode(true);
-    } else {
-      document.documentElement.classList.remove('dark');
-      setIsDarkMode(false);
-    }
-
     const timer = setTimeout(() => {
       setLoading(false);  // ローディングを解除
     }, 1500);
@@ -29,14 +19,27 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    if (isDarkMode) {
-      document.documentElement.classList.remove('dark');
-    } else {
-      document.documentElement.classList.add('dark');
+  useEffect(() => {
+    if (loading) {
+      return;
     }
-  };
+
+    const hash = window.location.hash.replace('#', '');
+    if (!hash) {
+      return;
+    }
+
+    const scrollToHash = () => {
+      const element = document.getElementById(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+
+    const frame = window.requestAnimationFrame(scrollToHash);
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [loading]);
 
   if (loading) {
     return (
@@ -48,15 +51,16 @@ export default function Home() {
   }
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+    <div className="min-h-screen">
       <SeoHead />
-      <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
-      <main className="container mx-auto p-6 bg-white dark:bg-gray-900">
+      <div id="top" />
+      <Header />
+      <main className="container mx-auto p-6 pt-24">
         <About />
         <Projects />
         <Skills />
-        <Experience />
-        <Contact />
+        <Career />
+        <ContactForm />
       </main>
     </div>
   );
