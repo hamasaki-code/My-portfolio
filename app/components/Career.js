@@ -1,4 +1,9 @@
-import { FaBuilding, FaLaptopCode } from "react-icons/fa";
+import {
+  FaBriefcase,
+  FaBuilding,
+  FaChalkboardTeacher,
+  FaLaptopCode,
+} from "react-icons/fa";
 import { IoIosSchool } from "react-icons/io";
 
 export default function Career() {
@@ -9,11 +14,11 @@ export default function Career() {
       </h2>
 
       {/* ▼ タイムライン全体の線（一本） */}
-      <div className="relative border-l-4 border-yellow-200 dark:border-yellow-600 ml-6">
+      <div className="relative border-l-4 border-yellow-300 dark:border-yellow-600 ml-6">
         {/* 正社員（現在） */}
-        <div className="mb-12 ml-8">
-          <div className="absolute flex items-center justify-center w-10 h-10 bg-yellow-300 text-black rounded-full -left-5 ring-4 ring-yellow-400 dark:ring-yellow-300 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-            <FaBuilding className="w-5 h-5" />
+        <div className="relative mb-12 pl-12">
+          <div className="absolute left-0 top-1 -translate-x-1/2 flex items-center justify-center w-12 h-12 rounded-full bg-yellow-300 text-black ring-4 ring-yellow-400 dark:ring-yellow-300 shadow-[0_1px_4px_rgba(0,0,0,0.18)]">
+            <FaBuilding className="w-6 h-6" />
           </div>
           <time className="text-[11px] md:text-[12px] font-bold uppercase text-black bg-yellow-100 border border-yellow-400 dark:text-yellow-100 dark:bg-black dark:border-yellow-500 px-2 py-0.5 rounded-full mb-2 inline-block">
             2024年4月 - <span className="text-yellow-600 dark:text-yellow-300 font-extrabold">現在</span>
@@ -23,7 +28,8 @@ export default function Career() {
           </h3>
           <p className="text-sm md:text-base font-semibold text-gray-700 dark:text-yellow-200 mt-1">
             Webアプリケーションエンジニア
-            <span className="ml-2 inline-block text-xs font-semibold px-2 py-0.5 bg-green-600 text-white rounded-full">
+            <span className="ml-2 inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-black text-yellow-200 border border-yellow-400 shadow-[0_1px_3px_rgba(0,0,0,0.25)]">
+              <FaBuilding className="h-3 w-3" />
               正社員
             </span>
           </p>
@@ -35,8 +41,8 @@ export default function Career() {
         </div>
 
         {/* 副業 */}
-        <div className="mb-12 ml-8">
-          <div className="absolute flex items-center justify-center w-10 h-10 bg-yellow-300 text-black rounded-full -left-5 ring-4 ring-yellow-100 dark:ring-yellow-900 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+        <div className="relative mb-12 pl-12">
+          <div className="absolute left-0 top-1 -translate-x-1/2 flex items-center justify-center w-11 h-11 rounded-full bg-black text-yellow-100 ring-4 ring-yellow-300 dark:ring-yellow-800 shadow-[0_1px_4px_rgba(0,0,0,0.28)]">
             <FaLaptopCode className="w-5 h-5" />
           </div>
           <time className="text-[11px] md:text-[12px] font-semibold uppercase text-black bg-yellow-100 border border-yellow-400 dark:text-yellow-100 dark:bg-black dark:border-yellow-500 px-2 py-0.5 rounded-full mb-2 inline-block">
@@ -47,7 +53,8 @@ export default function Career() {
           </h3>
           <p className="text-sm md:text-base font-semibold text-gray-700 dark:text-yellow-200 mt-1">
             システム設計担当
-            <span className="ml-2 inline-block text-xs font-semibold px-2 py-0.5 bg-blue-600 text-white rounded-full">
+            <span className="ml-2 inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-yellow-300 text-black border border-black/60 shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
+              <FaLaptopCode className="h-3 w-3" />
               副業
             </span>
           </p>
@@ -58,8 +65,8 @@ export default function Career() {
         </div>
 
         {/* 大学 */}
-        <div className="mb-12 ml-8">
-          <div className="absolute flex items-center justify-center w-10 h-10 bg-yellow-300 text-black rounded-full -left-5 ring-4 ring-yellow-100 dark:ring-yellow-900 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+        <div className="relative mb-12 pl-12">
+          <div className="absolute left-0 top-1 -translate-x-1/2 flex items-center justify-center w-11 h-11 rounded-full bg-yellow-200 text-black ring-4 ring-yellow-400 dark:ring-yellow-800 shadow-[0_1px_3px_rgba(0,0,0,0.18)]">
             <IoIosSchool className="w-5 h-5" />
           </div>
           <time className="text-[11px] md:text-[12px] font-semibold uppercase text-black bg-yellow-100 border border-yellow-400 dark:text-yellow-100 dark:bg-black dark:border-yellow-500 px-2 py-0.5 rounded-full mb-2 inline-block">
@@ -78,8 +85,10 @@ export default function Career() {
         </div>
 
         {/* アルバイト */}
-        <div className="mb-12 ml-8">
-          <div className="absolute w-3 h-3 bg-yellow-300 rounded-full -left-1.5 ring-4 ring-yellow-100 dark:ring-yellow-900 shadow-[0_1px_2px_rgba(0,0,0,0.05)]" />
+        <div className="relative mb-12 pl-12">
+          <div className="absolute left-0 top-1 -translate-x-1/2 flex items-center justify-center w-9 h-9 rounded-full bg-yellow-100 text-black ring-4 ring-yellow-300 dark:ring-yellow-700 shadow-[0_1px_3px_rgba(0,0,0,0.16)]">
+            <FaBriefcase className="w-4 h-4" />
+          </div>
           <time className="text-[11px] md:text-[12px] font-medium uppercase text-black bg-yellow-100 border border-yellow-400 dark:text-yellow-100 dark:bg-black dark:border-yellow-500 px-2 py-0.5 rounded-full mb-2 inline-block">
             2023年6月 - 2024年3月
           </time>
@@ -88,7 +97,8 @@ export default function Career() {
           </h3>
           <p className="text-sm font-semibold text-gray-700 dark:text-yellow-200 mt-1">
             LITALICOワンダー・セールス
-            <span className="ml-2 inline-block text-xs font-semibold px-2 py-0.5 bg-yellow-500 text-white rounded-full">
+            <span className="ml-2 inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-yellow-200 text-black border border-black/40 shadow-[0_1px_3px_rgba(0,0,0,0.16)]">
+              <FaBriefcase className="h-3 w-3" />
               アルバイト
             </span>
           </p>
@@ -100,8 +110,10 @@ export default function Career() {
         </div>
 
         {/* インターン */}
-        <div className="mb-12 ml-8">
-          <div className="absolute w-3 h-3 bg-yellow-300 rounded-full -left-1.5 ring-4 ring-yellow-100 dark:ring-yellow-900 shadow-[0_1px_2px_rgba(0,0,0,0.05)]" />
+        <div className="relative mb-12 pl-12">
+          <div className="absolute left-0 top-1 -translate-x-1/2 flex items-center justify-center w-9 h-9 rounded-full bg-black text-yellow-200 ring-4 ring-yellow-300 dark:ring-yellow-700 shadow-[0_1px_3px_rgba(0,0,0,0.24)]">
+            <FaChalkboardTeacher className="w-4 h-4" />
+          </div>
           <time className="text-[11px] md:text-[12px] font-medium uppercase text-black bg-yellow-100 border border-yellow-400 dark:text-yellow-100 dark:bg-black dark:border-yellow-500 px-2 py-0.5 rounded-full mb-2 inline-block">
             2021年4月 - 2023年11月
           </time>
@@ -110,7 +122,8 @@ export default function Career() {
           </h3>
           <p className="text-sm font-semibold text-gray-700 dark:text-yellow-200 mt-1">
             DMM WEBCAMP・メンター
-            <span className="ml-2 inline-block text-xs font-semibold px-2 py-0.5 bg-purple-600 text-white rounded-full">
+            <span className="ml-2 inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-black text-yellow-200 border border-yellow-400 shadow-[0_1px_3px_rgba(0,0,0,0.25)]">
+              <FaChalkboardTeacher className="h-3 w-3" />
               インターン
             </span>
           </p>
