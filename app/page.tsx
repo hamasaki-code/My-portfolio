@@ -55,7 +55,7 @@ export default function Home() {
       <SeoHead />
       <div id="top" />
       <Header />
-      <main className="container mx-auto p-6 pt-24 bg-white dark:bg-gray-900">
+      <main className="container mx-auto p-6 pt-24">
         <About />
         <Projects />
         <Skills />

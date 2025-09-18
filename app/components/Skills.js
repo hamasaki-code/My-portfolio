@@ -172,46 +172,56 @@ export default function Skills({ lang = 'en' }) {
   const categoryNames = ['All', ...allCategories.map((c) => c.name)];
 
   return (
-    <section id="skills" className="my-16 px-4 scroll-mt-24">
-      <h2 className="text-4xl font-bold mb-6 text-black dark:text-white text-left">
-        Skills & Technologies
-      </h2>
+    <section id="skills" className="scroll-mt-28 py-20">
+      <div className="mx-auto max-w-6xl px-6 sm:px-10">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-yellow-600 dark:text-yellow-300">Skills</p>
+            <h2 className="mt-2 text-4xl font-semibold text-black dark:text-yellow-100">
+              Skills & Technologies
+            </h2>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-300 sm:max-w-md">
+            実務と個人開発で磨いた技術スタックをカテゴリーごとに整理。知りたい分野を絞ってご覧ください。
+          </p>
+        </div>
 
-      {/* Filter Buttons */}
-      <div className="flex flex-wrap gap-3 justify-start mb-10">
-        {categoryNames.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold border transition-colors
+        {/* Filter Buttons */}
+        <div className="mt-8 flex flex-wrap justify-start gap-3">
+          {categoryNames.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`rounded-full border px-5 py-2 text-sm font-semibold transition-all duration-200
         ${activeCategory === cat
-                ? 'bg-yellow-400 text-black border-yellow-400'
-                : 'bg-gray-200 text-black border-yellow-400 dark:bg-black dark:text-yellow-400'
-              }`}
-          >
-            {translations[lang]?.categories[cat] || cat}
-          </button>
+                  ? 'border-yellow-500 bg-yellow-400/80 text-black shadow-sm dark:bg-yellow-400 dark:text-black'
+                  : 'border-yellow-500/30 bg-transparent text-black hover:-translate-y-0.5 hover:border-yellow-500 hover:bg-white/60 dark:border-yellow-500/30 dark:bg-transparent dark:text-yellow-100 dark:hover:bg-yellow-500/10'
+                }`}
+            >
+              {translations[lang]?.categories[cat] || cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Skills Grid */}
+        {filteredCategories.map((category) => (
+          <div key={category.name} id={category.id} className="mt-12">
+            <h3 className="text-2xl font-semibold text-black dark:text-yellow-50">
+              {translations[lang]?.categories[category.name] || category.name}
+            </h3>
+            <div className="mt-6 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {category.items.map((skill) => (
+                <SkillCard
+                  key={skill.name}
+                  {...skill}
+                  lang={lang}
+                  translations={translations}
+                />
+              ))}
+            </div>
+          </div>
         ))}
       </div>
-
-      {/* Skills Grid */}
-      {filteredCategories.map((category) => (
-        <div key={category.name} id={category.id} className="mb-12">
-          <h3 className="text-2xl font-semibold mb-6 text-black dark:text-white text-left">
-            {translations[lang]?.categories[category.name] || category.name}
-          </h3>
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {category.items.map((skill) => (
-              <SkillCard
-                key={skill.name}
-                {...skill}
-                lang={lang}
-                translations={translations}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
     </section>
   );
 }

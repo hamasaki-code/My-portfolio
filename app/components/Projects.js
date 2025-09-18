@@ -28,51 +28,69 @@ export default function Projects() {
   }, []);
 
   return (
-    <section id="projects" className="my-16 scroll-mt-24">
-      <h2 className="text-4xl font-bold mb-6 text-black dark:text-white">Works</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {projects.map((project, index) => (
-          <div
-            key={project.slug}
-            ref={(el) => (cardRefs.current[index] = el)}
-            className="opacity-0 translate-y-4 transition-all duration-500 h-full w-full"
-          >
-            <Link
-              href={`/projects/${project.slug}`}
-              className="group relative flex flex-col h-full rounded-xl border border-black/10 dark:border-yellow-600 bg-white dark:bg-black p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-yellow-400 dark:hover:border-yellow-400"
-            >
-              <span className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-yellow-300 dark:bg-yellow-500" />
-              {project.image ? (
-                <div className="relative flex items-center justify-center w-full h-48 mb-4 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
-                  <Image
-                    src={project.image}
-                    alt={`${project.title} のスクリーンショット`}
-                    width={project.image.endsWith('.svg') ? 120 : 600}
-                    height={project.image.endsWith('.svg') ? 120 : 350}
-                    className="object-contain h-full w-auto transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-              ) : (
-                <div className="flex items-center justify-center w-full h-48 mb-4 rounded-lg bg-gray-100 dark:bg-gray-800">
-                  <PhotoIcon className="w-16 h-16 text-yellow-500" />
-                </div>
-              )}
-              <h3 className="text-2xl font-bold mb-4 text-black dark:text-yellow-100">
-                {project.title}
-              </h3>
-              <div className="mt-auto flex flex-wrap gap-2">
-                {project.tech.map((t) => (
-                  <span
-                    key={t}
-                    className="bg-yellow-300 text-black dark:bg-gray-700 dark:text-yellow-100 text-xs px-2 py-1 rounded"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </Link>
+    <section id="projects" className="scroll-mt-28 py-20">
+      <div className="mx-auto max-w-6xl px-6 sm:px-10">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-yellow-600 dark:text-yellow-300">Works</p>
+            <h2 className="mt-2 text-4xl font-semibold text-black dark:text-yellow-100">Selected Projects</h2>
           </div>
-        ))}
+          <p className="text-sm text-gray-600 dark:text-gray-300 sm:max-w-sm">
+            個人・チームで取り組んだ制作物の中から、スキルの幅やデザインアプローチが伝わるものをピックアップしています。
+          </p>
+        </div>
+
+        <div className="mt-12 space-y-12">
+          {projects.map((project, index) => (
+            <Link
+              key={project.slug}
+              href={`/projects/${project.slug}`}
+              ref={(el) => (cardRefs.current[index] = el)}
+              className="group block translate-y-4 border-l-[6px] border-yellow-400/50 pl-6 opacity-0 transition-all duration-500 hover:border-yellow-500 dark:border-yellow-400/40"
+            >
+              <article className="flex flex-col gap-8 md:flex-row md:items-center">
+                <div className="md:w-64 md:flex-shrink-0">
+                  {project.image ? (
+                    <div className="relative flex h-44 w-full items-center justify-center overflow-hidden rounded-2xl bg-white/70 p-6 shadow-[0_12px_28px_-28px_rgba(0,0,0,0.45)] ring-1 ring-yellow-500/20 transition-transform duration-300 group-hover:scale-[1.01] dark:bg-white/10 dark:ring-yellow-500/30">
+                      <Image
+                        src={project.image}
+                        alt={`${project.title} のスクリーンショット`}
+                        width={project.image.endsWith('.svg') ? 160 : 640}
+                        height={project.image.endsWith('.svg') ? 160 : 360}
+                        className="h-full w-auto object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-44 w-full items-center justify-center rounded-2xl bg-white/60 ring-1 ring-yellow-500/20 dark:bg-white/10 dark:ring-yellow-500/30">
+                      <PhotoIcon className="h-16 w-16 text-yellow-500" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 space-y-4">
+                  <h3 className="text-2xl font-semibold text-black transition-colors duration-200 group-hover:text-yellow-700 dark:text-yellow-100 dark:group-hover:text-yellow-200">
+                    {project.title}
+                  </h3>
+                  {project.description?.[0] && (
+                    <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+                      {project.description[0]}
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {project.tech.map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-full border border-yellow-500/40 px-3 py-1 text-xs font-semibold text-black transition-colors duration-200 group-hover:border-yellow-500 group-hover:text-yellow-700 dark:border-yellow-500/40 dark:text-yellow-100 dark:group-hover:border-yellow-300"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );

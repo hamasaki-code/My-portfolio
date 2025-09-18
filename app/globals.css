@@ -13,21 +13,23 @@ body {
 }
 
 :root {
-  --background: #ffffff;
+  --background: linear-gradient(180deg,
+      #fff7cc 0%,
+      #fff9e6 35%,
+      #ffffff 100%);
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: 'Space Grotesk', sans-serif;
+  background-attachment: fixed;
 }
 
 a:focus-visible,
