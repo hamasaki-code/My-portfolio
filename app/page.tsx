@@ -31,8 +31,15 @@ export default function Home() {
 
     const scrollToHash = () => {
       const element = document.getElementById(hash);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!element) {
+        return;
+      }
+
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      if (window.history.replaceState) {
+        const { pathname, search } = window.location;
+        window.history.replaceState(null, '', `${pathname}${search}`);
       }
     };
 
