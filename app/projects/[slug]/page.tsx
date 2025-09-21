@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
+import { MdSportsTennis } from "react-icons/md";
+import { GiTennisCourt, GiCctvCamera } from "react-icons/gi";
+import { BsBadgeVr } from "react-icons/bs";
 import Header from "../../components/Header";
 import { projects } from "../../data/projects";
 
@@ -45,7 +47,48 @@ export default function ProjectPage({ params }: ProjectPageProps) {
   const imageClassName = isSvgImage
     ? "relative z-10 h-64 w-auto"
     : "relative z-10 w-full rounded-2xl object-cover shadow-2xl shadow-black/50";
+  const renderProjectVisual = () => {
+    if (project.slug === "vr-sports-training") {
+      return (
+        <div className="relative overflow-hidden rounded-[2.5rem] border border-yellow-500/30 bg-white p-10 shadow-[0_45px_90px_-45px_rgba(253,224,71,0.45)] transition-colors dark:bg-white">
+          <div className="relative mx-auto flex h-full max-h-[420px] w-full items-center justify-center">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-yellow-700">
+              <span className="grid h-20 w-20 place-items-center rounded-full border border-yellow-400/40 bg-white shadow-sm">
+                <MdSportsTennis className="h-11 w-11" aria-hidden />
+              </span>
+              <span className="grid h-24 w-24 place-items-center rounded-full border border-yellow-400/40 bg-white shadow-sm">
+                <GiTennisCourt className="h-12 w-12" aria-hidden />
+              </span>
+              <span className="grid h-20 w-20 place-items-center rounded-full border border-yellow-400/40 bg-white shadow-sm">
+                <GiCctvCamera className="h-11 w-11" aria-hidden />
+              </span>
+              <span className="grid h-20 w-20 place-items-center rounded-full border border-yellow-400/40 bg-white shadow-sm">
+                <BsBadgeVr className="h-11 w-11" aria-hidden />
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+    }
 
+    if (!project.image) {
+      return null;
+    }
+
+    return (
+      <div className="relative overflow-hidden rounded-[2.5rem] border border-yellow-500/30 bg-white p-6 shadow-[0_45px_90px_-45px_rgba(253,224,71,0.45)] transition-colors dark:bg-white">
+        <div className="relative mx-auto flex h-full max-h-[480px] items-center justify-center">
+          <Image
+            src={project.image}
+            alt={`${project.title} のスクリーンショット`}
+            width={imageWidth}
+            height={imageHeight}
+            className={imageClassName}
+          />
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#fef9c3] via-white to-[#fefce8] text-gray-900 transition-colors duration-500 dark:from-black dark:via-[#0f0f0f] dark:to-[#050505] dark:text-white">
       <Header />
@@ -115,20 +158,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
             </div>
           </div>
 
-          {project.image && (
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-yellow-500/30 bg-white/75 p-6 shadow-[0_45px_90px_-45px_rgba(253,224,71,0.45)] backdrop-blur-xl transition-colors dark:border-yellow-500/20 dark:bg-black/60 dark:shadow-[0_45px_90px_-45px_rgba(253,224,71,0.65)]">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(250,204,21,0.25),_transparent_60%)] opacity-80 dark:opacity-100" />
-              <div className="relative mx-auto flex h-full max-h-[480px] items-center justify-center">
-                <Image
-                  src={project.image}
-                  alt={`${project.title} のスクリーンショット`}
-                  width={imageWidth}
-                  height={imageHeight}
-                  className={imageClassName}
-                />
-              </div>
-            </div>
-          )}
+          {renderProjectVisual()}
         </section>
 
         <section className="grid gap-8 rounded-[2.5rem] border border-yellow-500/30 bg-white/70 p-10 shadow-[0_45px_90px_-55px_rgba(253,224,71,0.4)] backdrop-blur-2xl transition-colors dark:border-yellow-500/20 dark:bg-black/50 dark:shadow-[0_45px_90px_-55px_rgba(253,224,71,0.5)] lg:grid-cols-2">

@@ -32,7 +32,7 @@ export const projects = [
     {
         slug: "vr-sports-training",
         title: "卒業研究",
-        image: "/mocap-camera-icon.svg",
+        image: null,
         description: [
             "「モーションキャプチャーとVRを用いたスポーツトレーニング支援システムの研究」",
             "VR空間内にテニスコートを構築し、被験者が実際にラケットを持って飛んでくるボールを打つことで実践的なトレーニングを再現。",
