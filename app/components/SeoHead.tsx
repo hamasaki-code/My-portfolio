@@ -1,5 +1,7 @@
 import Head from "next/head";
 
+type StructuredData = Record<string, unknown>;
+
 export type SeoHeadProps = {
   title?: string;
   description?: string;
@@ -13,7 +15,7 @@ export type SeoHeadProps = {
   twitterSite?: string;
   twitterImage?: string;
   twitterCardType?: string;
-  structuredData?: Array<Record<string, unknown>>;
+  structuredData?: StructuredData | StructuredData[];
 };
 
 const SITE_URL = "https://taishi-hamasaki-portfolio.vercel.app";
@@ -87,6 +89,25 @@ const createDefaultStructuredData = (
   ];
 };
 
+const JSON_LD_ESCAPE_REGEX = /[<>&\u2028\u2029]/g;
+const JSON_LD_ESCAPE_MAP: Record<string, string> = {
+  "<": "\\u003c",
+  ">": "\\u003e",
+  "&": "\\u0026",
+  "\u2028": "\\u2028",
+  "\u2029": "\\u2029",
+};
+
+const serializeJsonLd = (payload: StructuredData) =>
+  JSON.stringify(payload).replace(JSON_LD_ESCAPE_REGEX, (character) =>
+    JSON_LD_ESCAPE_MAP[character as keyof typeof JSON_LD_ESCAPE_MAP],
+  );
+
+const normalizeKeywords = (keywords?: string[]) =>
+  (keywords ?? DEFAULT_KEYWORDS)
+    .map((keyword) => keyword?.trim())
+    .filter((keyword): keyword is string => Boolean(keyword));
+
 export default function SeoHead({
   title,
   description,
@@ -104,25 +125,26 @@ export default function SeoHead({
 }: SeoHeadProps): JSX.Element {
   const resolvedTitle = title ?? DEFAULT_TITLE;
   const resolvedDescription = description ?? DEFAULT_DESCRIPTION;
-  const resolvedCanonical = canonicalUrl
-    ? toAbsoluteUrl(canonicalUrl)
-    : SITE_URL;
+  const resolvedCanonical = canonicalUrl ? toAbsoluteUrl(canonicalUrl) : SITE_URL;
   const resolvedOgImage = ogImage ?? DEFAULT_IMAGE;
   const absoluteOgImage = toAbsoluteUrl(resolvedOgImage);
   const resolvedOgUrl = ogUrl ? toAbsoluteUrl(ogUrl) : resolvedCanonical;
   const resolvedOgType = ogType ?? "website";
   const resolvedThemeColor = themeColor ?? DEFAULT_THEME_COLOR;
-  const resolvedKeywords = (keywords ?? DEFAULT_KEYWORDS).filter(Boolean);
+  const resolvedKeywords = normalizeKeywords(keywords);
   const resolvedTwitterImage = twitterImage ?? resolvedOgImage;
   const absoluteTwitterImage = toAbsoluteUrl(resolvedTwitterImage);
   const resolvedTwitterCard = twitterCardType ?? "summary_large_image";
-  const jsonLdPayload = structuredData ??
-    createDefaultStructuredData({
-      title: resolvedTitle,
-      description: resolvedDescription,
-      canonicalUrl: resolvedCanonical,
-      ogImage: absoluteOgImage,
-    });
+  const jsonLdPayload = Array.isArray(structuredData)
+    ? structuredData
+    : structuredData
+      ? [structuredData]
+      : createDefaultStructuredData({
+        title: resolvedTitle,
+        description: resolvedDescription,
+        canonicalUrl: resolvedCanonical,
+        ogImage: absoluteOgImage,
+      });
 
   return (
     <Head>
@@ -161,7 +183,7 @@ export default function SeoHead({
       {jsonLdPayload.map((schema, index) => (
         <script
           // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
           key={`jsonld-${index}`}
           type="application/ld+json"
         />
