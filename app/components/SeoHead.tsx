@@ -163,7 +163,7 @@ export default function SeoHead({
   const resolvedTwitterImage = twitterImage ?? resolvedOgImage;
   const absoluteTwitterImage = toAbsoluteUrl(resolvedTwitterImage);
   const resolvedTwitterCard = twitterCardType ?? "summary_large_image";
-  const jsonLdPayload = Array.isArray(structuredData)
+  const rawStructuredData = Array.isArray(structuredData)
     ? structuredData
     : structuredData
       ? [structuredData]
@@ -173,6 +173,11 @@ export default function SeoHead({
         canonicalUrl: resolvedCanonical,
         ogImage: absoluteOgImage,
       });
+
+  const jsonLdPayload = rawStructuredData.filter(
+    (schema): schema is StructuredData =>
+      Boolean(schema) && typeof schema === "object" && !Array.isArray(schema),
+  );
 
   return (
     <Head>
