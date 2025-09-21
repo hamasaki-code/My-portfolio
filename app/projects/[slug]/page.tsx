@@ -1,8 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
+import { MdSportsTennis } from "react-icons/md";
+import { GiTennisCourt, GiCctvCamera } from "react-icons/gi";
+import { BsBadgeVr } from "react-icons/bs";
 import Header from "../../components/Header";
+import SeoHead from "../../components/SeoHead";
 import { projects } from "../../data/projects";
 
 type ProjectLinks = {
@@ -38,6 +41,23 @@ export default function ProjectPage({ params }: ProjectPageProps) {
     notFound();
   }
 
+  const canonicalPath = `/projects/${project.slug}`;
+  const pageTitle = `${project.title} | Taishi Hamasaki`;
+  const pageDescription =
+    project.description[0] ?? "プロジェクトの詳細情報をご覧いただけます。";
+  const ogImage = project.image ?? "/profile.jpg";
+  const keywords = Array.from(
+    new Set(
+      [
+        project.title,
+        "Taishi Hamasaki",
+        "Taishi Hamasaki | Portfolio",
+        "portfolio",
+        ...project.tech,
+      ].filter(Boolean),
+    ),
+  );
+
   const links = project.links;
   const isSvgImage = project.image?.endsWith(".svg") ?? false;
   const imageWidth = isSvgImage ? 320 : 960;
@@ -45,9 +65,61 @@ export default function ProjectPage({ params }: ProjectPageProps) {
   const imageClassName = isSvgImage
     ? "relative z-10 h-64 w-auto"
     : "relative z-10 w-full rounded-2xl object-cover shadow-2xl shadow-black/50";
+  const renderProjectVisual = () => {
+    if (project.slug === "vr-sports-training") {
+      return (
+        <div className="relative overflow-hidden rounded-[2.5rem] border border-yellow-500/30 bg-white p-10 shadow-[0_45px_90px_-45px_rgba(253,224,71,0.45)] transition-colors dark:bg-white">
+          <div className="relative mx-auto flex h-full max-h-[420px] w-full items-center justify-center">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-yellow-700">
+              <span className="grid h-20 w-20 place-items-center rounded-full border border-yellow-400/40 bg-white shadow-sm">
+                <MdSportsTennis className="h-11 w-11" aria-hidden />
+              </span>
+              <span className="grid h-24 w-24 place-items-center rounded-full border border-yellow-400/40 bg-white shadow-sm">
+                <GiTennisCourt className="h-12 w-12" aria-hidden />
+              </span>
+              <span className="grid h-20 w-20 place-items-center rounded-full border border-yellow-400/40 bg-white shadow-sm">
+                <GiCctvCamera className="h-11 w-11" aria-hidden />
+              </span>
+              <span className="grid h-20 w-20 place-items-center rounded-full border border-yellow-400/40 bg-white shadow-sm">
+                <BsBadgeVr className="h-11 w-11" aria-hidden />
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+    }
 
+    if (!project.image) {
+      return null;
+    }
+
+    return (
+      <div className="relative overflow-hidden rounded-[2.5rem] border border-yellow-500/30 bg-white p-6 shadow-[0_45px_90px_-45px_rgba(253,224,71,0.45)] transition-colors dark:bg-white">
+        <div className="relative mx-auto flex h-full max-h-[480px] items-center justify-center">
+          <Image
+            src={project.image}
+            alt={`${project.title} のスクリーンショット`}
+            width={imageWidth}
+            height={imageHeight}
+            className={imageClassName}
+          />
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#fef9c3] via-white to-[#fefce8] text-gray-900 transition-colors duration-500 dark:from-black dark:via-[#0f0f0f] dark:to-[#050505] dark:text-white">
+      <SeoHead
+        title={pageTitle}
+        description={pageDescription}
+        canonicalUrl={canonicalPath}
+        keywords={keywords}
+        ogImage={ogImage}
+        ogUrl={canonicalPath}
+        ogType="article"
+        twitterHandle="@OnTAumv5KAoVGN5"
+        twitterImage={ogImage}
+      />
       <Header />
       <div id="top" className="absolute left-0 top-0 h-0 w-0 overflow-hidden" aria-hidden />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(250,204,21,0.2),_transparent_55%)] opacity-80 dark:bg-[radial-gradient(circle_at_top,_rgba(253,224,71,0.18),_transparent_55%)]" />
@@ -115,20 +187,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
             </div>
           </div>
 
-          {project.image && (
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-yellow-500/30 bg-white/75 p-6 shadow-[0_45px_90px_-45px_rgba(253,224,71,0.45)] backdrop-blur-xl transition-colors dark:border-yellow-500/20 dark:bg-black/60 dark:shadow-[0_45px_90px_-45px_rgba(253,224,71,0.65)]">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(250,204,21,0.25),_transparent_60%)] opacity-80 dark:opacity-100" />
-              <div className="relative mx-auto flex h-full max-h-[480px] items-center justify-center">
-                <Image
-                  src={project.image}
-                  alt={`${project.title} のスクリーンショット`}
-                  width={imageWidth}
-                  height={imageHeight}
-                  className={imageClassName}
-                />
-              </div>
-            </div>
-          )}
+          {renderProjectVisual()}
         </section>
 
         <section className="grid gap-8 rounded-[2.5rem] border border-yellow-500/30 bg-white/70 p-10 shadow-[0_45px_90px_-55px_rgba(253,224,71,0.4)] backdrop-blur-2xl transition-colors dark:border-yellow-500/20 dark:bg-black/50 dark:shadow-[0_45px_90px_-55px_rgba(253,224,71,0.5)] lg:grid-cols-2">

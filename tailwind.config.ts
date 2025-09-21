@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: 'class', // ダークモードをクラスで制御
+  darkMode: 'class',
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,12 +9,17 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      brand: {
+        light: "#fefce8",
+        DEFAULT: "#facc15",
+        dark: "#ca8a04",
+      },
       colors: {
-        background: "var(--background)", // カスタムCSS変数の使用
-        foreground: "var(--foreground)", // カスタムCSS変数の使用
+        background: "var(--background)",
+        foreground: "var(--foreground)",
       },
       fontFamily: {
-        sans: ['Space Grotesk', 'sans-serif'],
+        sans: ['Space Grotesk', 'Inter', 'sans-serif'],
       },
       keyframes: {
         'fade-in-down': {

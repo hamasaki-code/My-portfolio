@@ -20,7 +20,8 @@ export default function Career() {
 
           <div className="space-y-12">
             <article className="relative pl-16">
-              <div className="absolute left-0 top-0 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-400 text-black shadow-md ring-4 ring-white/50 dark:bg-yellow-400 dark:text-black dark:ring-yellow-500/20">
+              <div className="absolute left-0 top-0 flex h-12 w-12 items-center justify-center rounded-full 
+  bg-yellow-400 text-black shadow-md ring-4 ring-green-400/60 dark:bg-yellow-400 dark:text-black dark:ring-green-400/40">
                 <FaBuilding className="h-5 w-5" />
               </div>
               <time className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow-700 dark:text-yellow-300">
@@ -70,7 +71,7 @@ export default function Career() {
             </article>
 
             <article className="relative pl-16">
-              <div className="absolute left-1.5 top-1.5 h-3 w-3 -translate-x-1/2 rounded-full bg-yellow-400 ring-[6px] ring-white/70 shadow-sm dark:ring-yellow-500/30" />
+              <div className="absolute left-5 top-1.5 h-3 w-3 -translate-x-1/2 rounded-full bg-yellow-400 ring-[6px] ring-white/70 shadow-sm dark:ring-yellow-500/30" />
               <time className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow-700 dark:text-yellow-300">
                 2023年6月 - 2024年3月
               </time>
@@ -85,7 +86,7 @@ export default function Career() {
             </article>
 
             <article className="relative pl-16">
-              <div className="absolute left-1.5 top-1.5 h-3 w-3 -translate-x-1/2 rounded-full bg-yellow-400 ring-[6px] ring-white/70 shadow-sm dark:ring-yellow-500/30" />
+              <div className="absolute left-5 top-1.5 h-3 w-3 -translate-x-1/2 rounded-full bg-yellow-400 ring-[6px] ring-white/70 shadow-sm dark:ring-yellow-500/30" />
               <time className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow-700 dark:text-yellow-300">
                 2021年4月 - 2023年11月
               </time>

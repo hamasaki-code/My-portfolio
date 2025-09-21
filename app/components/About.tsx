@@ -20,12 +20,12 @@ export default function About(): JSX.Element {
           </h2>
           <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-gray-700 dark:text-gray-300">
             大阪府出身のエンジニアです。大学で情報系を専攻し、現在はモバイルアプリの保守開発を担当しながら日々学び続けています。
-            Flutter を中心に、Next.js や Ruby on Rails などの Web 技術にも強い関心を持ち、UI/UX を意識したモダンな開発を得意としています。
+            Flutter を中心に、Next.js や Ruby on Rails などの Web 技術にも強い関心を持ち、個人開発などで学習に励んでいます。
           </p>
         </header>
 
         <div className="mt-14 grid gap-12 md:grid-cols-[minmax(0,220px)_1fr] md:items-start">
-          <div className="flex flex-col items-center gap-6">
+          <div className="flex flex-col items-center gap-6 text-center">
             <div className="relative">
               <div className="absolute inset-0 rounded-full bg-yellow-400/30 blur-2xl" aria-hidden />
               <Image
@@ -37,18 +37,19 @@ export default function About(): JSX.Element {
                 priority
               />
             </div>
-            <div className="text-center text-sm font-medium text-gray-600 dark:text-yellow-300">
-              <div className="flex items-center justify-center gap-2">
-                <FiMapPin className="text-lg" />
-                <span>Kanagawa, Japan</span>
-              </div>
+            <div className="space-y-1">
+              <h3 className="text-2xl font-semibold text-black/90 dark:text-yellow-100">Taishi Hamasaki</h3>
+              <p className="text-sm uppercase tracking-[0.2em] text-yellow-600 dark:text-yellow-300">Web Application Engineer</p>
             </div>
           </div>
 
           <div className="space-y-6 text-left">
-            <div>
-              <h3 className="text-2xl font-semibold text-black/90 dark:text-yellow-100">Taishi Hamasaki</h3>
-              <p className="mt-1 text-sm uppercase tracking-[0.2em] text-yellow-600 dark:text-yellow-300">Web Engineer</p>
+            <div className="flex flex-wrap items-center gap-3 text-sm font-medium text-gray-600 dark:text-yellow-300">
+              <span className="text-xs uppercase tracking-[0.3em] text-yellow-700/90 dark:text-yellow-400">Based in</span>
+              <span className="flex items-center gap-2 rounded-full bg-yellow-500/10 px-3 py-1 text-gray-700 dark:bg-yellow-500/20 dark:text-yellow-200">
+                <FiMapPin className="text-base" />
+                <span>Kanagawa, Japan</span>
+              </span>
             </div>
             <p className="text-base leading-relaxed text-gray-700 dark:text-gray-200">
               Webアプリケーションの開発経験を軸に、Flutter を用いたモバイルアプリ開発、UI 改善、Crashlytics 対応など幅広く担当しています。
