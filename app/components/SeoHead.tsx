@@ -113,13 +113,17 @@ const escapeJsonForHtml = (value: string) =>
   });
 
 const serializeJsonLd = (payload: StructuredData) => {
-  const serialized = JSON.stringify(payload);
+  try {
+    const serialized = JSON.stringify(payload);
 
-  if (typeof serialized !== "string") {
+    if (typeof serialized !== "string") {
+      return "{}";
+    }
+
+    return escapeJsonForHtml(serialized);
+  } catch {
     return "{}";
   }
-
-  return escapeJsonForHtml(serialized);
 };
 
 const normalizeKeywords = (keywords?: string[]) =>
