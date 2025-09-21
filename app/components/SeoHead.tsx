@@ -99,12 +99,28 @@ const JSON_LD_ESCAPE_MAP: Record<string, string> = {
   "\u2029": "\\u2029",
 };
 
-const serializeJsonLd = (payload: StructuredData) =>
-  JSON.stringify(payload).replace(
-    JSON_LD_ESCAPE_REGEX,
-    (character) =>
-      JSON_LD_ESCAPE_MAP[character as keyof typeof JSON_LD_ESCAPE_MAP] ?? character,
-  );
+const escapeJsonForHtml = (value: string) =>
+  value.replace(JSON_LD_ESCAPE_REGEX, (character) => {
+    const mapped = JSON_LD_ESCAPE_MAP[character as keyof typeof JSON_LD_ESCAPE_MAP];
+
+    if (mapped) {
+      return mapped;
+    }
+
+    const codePoint = character.charCodeAt(0).toString(16).padStart(4, "0");
+
+    return `\\u${codePoint}`;
+  });
+
+const serializeJsonLd = (payload: StructuredData) => {
+  const serialized = JSON.stringify(payload);
+
+  if (typeof serialized !== "string") {
+    return "{}";
+  }
+
+  return escapeJsonForHtml(serialized);
+};
 
 const normalizeKeywords = (keywords?: string[]) =>
   (keywords ?? DEFAULT_KEYWORDS)
