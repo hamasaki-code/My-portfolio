@@ -27,6 +27,7 @@ const DEFAULT_THEME_COLOR = "#facc15";
 const DEFAULT_KEYWORDS = [
   "Taishi Hamasaki",
   "portfolio",
+  "mobile developer",
   "web developer",
   "React",
   "Node.js",

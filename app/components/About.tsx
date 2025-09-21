@@ -39,7 +39,7 @@ export default function About(): JSX.Element {
             </div>
             <div className="space-y-1">
               <h3 className="text-2xl font-semibold text-black/90 dark:text-yellow-100">Taishi Hamasaki</h3>
-              <p className="text-sm uppercase tracking-[0.2em] text-yellow-600 dark:text-yellow-300">Web Engineer</p>
+              <p className="text-sm uppercase tracking-[0.2em] text-yellow-600 dark:text-yellow-300">Web Application Engineer</p>
             </div>
           </div>
 

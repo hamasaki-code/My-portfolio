@@ -69,6 +69,7 @@ export default function Home() {
         keywords={[
           "Taishi Hamasaki",
           "web developer",
+          "mobile developer",
           "portfolio",
           "frontend engineer",
           "React",
