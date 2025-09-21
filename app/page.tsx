@@ -1,19 +1,22 @@
 "use client";
-import SeoHead from './components/SeoHead';
-import Header from './components/Header';
-import About from './components/About';
-import Projects from './components/Projects';
-import Skills from './components/Skills';
-import Career from './components/Career';
-import ContactForm from './components/ContactForm';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+
+import SeoHead from "./components/SeoHead";
+import Header from "./components/Header";
+import About from "./components/About";
+import Projects from "./components/Projects";
+import Skills from "./components/Skills";
+import Career from "./components/Career";
+import ContactForm from "./components/ContactForm";
+
+const SITE_URL = "https://taishi-hamasaki-portfolio.vercel.app";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(false);  // ローディングを解除
+      setLoading(false);
     }, 1500);
 
     return () => clearTimeout(timer);
@@ -24,7 +27,7 @@ export default function Home() {
       return;
     }
 
-    const hash = window.location.hash.replace('#', '');
+    const hash = window.location.hash.replace("#", "");
     if (!hash) {
       return;
     }
@@ -35,11 +38,11 @@ export default function Home() {
         return;
       }
 
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
 
       if (window.history.replaceState) {
         const { pathname, search } = window.location;
-        window.history.replaceState(null, '', `${pathname}${search}`);
+        window.history.replaceState(null, "", `${pathname}${search}`);
       }
     };
 
@@ -59,7 +62,25 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <SeoHead />
+      <SeoHead
+        title="Taishi Hamasaki | Web Developer Portfolio"
+        description="Discover Taishi Hamasaki's web development projects, technical skills, and professional experience."
+        canonicalUrl={SITE_URL}
+        keywords={[
+          "Taishi Hamasaki",
+          "web developer",
+          "portfolio",
+          "frontend engineer",
+          "React",
+          "Next.js",
+          "TypeScript",
+          "Tailwind CSS",
+        ]}
+        ogImage="/profile.jpg"
+        ogUrl={SITE_URL}
+        themeColor="#facc15"
+        twitterHandle="@OnTAumv5KAoVGN5"
+      />
       <div id="top" />
       <Header />
       <main className="container mx-auto p-6 pt-24">
