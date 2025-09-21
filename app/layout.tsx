@@ -20,7 +20,7 @@ const SITE_URL = "https://taishi-hamasaki-portfolio.vercel.app";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Taishi Hamasaki | Web Developer",
+    default: "Taishi Hamasaki | Portfolio",
     template: "%s | Taishi Hamasaki",
   },
   description:
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     locale: "ja_JP",
     siteName: "Taishi Hamasaki Portfolio",
-    title: "Taishi Hamasaki | Web Developer",
+    title: "Taishi Hamasaki | Portfolio",
     description:
       "Discover Taishi Hamasaki's web development projects, technical stack, and career history.",
     images: [

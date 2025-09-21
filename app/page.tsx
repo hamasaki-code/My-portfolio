@@ -63,7 +63,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <SeoHead
-        title="Taishi Hamasaki | Web Developer Portfolio"
+        title="Taishi Hamasaki | Portfolio"
         description="Discover Taishi Hamasaki's web development projects, technical skills, and professional experience."
         canonicalUrl={SITE_URL}
         keywords={[
