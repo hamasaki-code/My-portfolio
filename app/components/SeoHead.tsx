@@ -89,14 +89,15 @@ const createDefaultStructuredData = (
   ];
 };
 
-const JSON_LD_ESCAPE_REGEX = /[<>&/\u2028\u2029]/g;
+const JSON_LD_ESCAPE_REGEX = /[<>&'\/\u2028\u2029]/g;
 const JSON_LD_ESCAPE_MAP: Record<string, string> = {
   "<": "\\u003c",
   ">": "\\u003e",
   "&": "\\u0026",
+  "'": "\\u0027",
   "/": "\\/",
-  "\u2028": "\\u2028",
-  "\u2029": "\\u2029",
+  [String.fromCharCode(0x2028)]: "\\u2028",
+  [String.fromCharCode(0x2029)]: "\\u2029",
 };
 
 const escapeJsonForHtml = (value: string) =>
@@ -113,10 +114,14 @@ const escapeJsonForHtml = (value: string) =>
   });
 
 const serializeJsonLd = (payload: StructuredData) => {
+  if (!payload || typeof payload !== "object") {
+    return "{}";
+  }
+
   try {
     const serialized = JSON.stringify(payload);
 
-    if (typeof serialized !== "string") {
+    if (typeof serialized !== "string" || serialized.length === 0) {
       return "{}";
     }
 
