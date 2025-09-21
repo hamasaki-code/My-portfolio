@@ -54,13 +54,13 @@ const allCategories: Category[] = [
           </div>
         ),
         description: 'Markup & Styling',
-        level: 3,
+        level: 2,
       },
       {
         name: 'JavaScript',
         icon: <FaJsSquare className="h-8 w-8 text-yellow-500" />,
         description: 'ES6+',
-        level: 3,
+        level: 2,
       },
       {
         name: 'TypeScript',
@@ -72,13 +72,13 @@ const allCategories: Category[] = [
         name: 'Dart',
         icon: <SiDart className="h-8 w-8 text-blue-400" />,
         description: 'Flutter Language',
-        level: 4,
+        level: 3,
       },
       {
         name: 'Ruby',
         icon: <SiRuby className="h-8 w-8 text-red-500" />,
         description: 'Web Development',
-        level: 4,
+        level: 3,
       },
       {
         name: 'C#',
@@ -96,7 +96,7 @@ const allCategories: Category[] = [
         name: 'Ruby on Rails',
         icon: <SiRubyonrails className="h-8 w-8 text-red-600" />,
         description: 'MVC',
-        level: 4,
+        level: 3,
       },
       {
         name: 'Flutter',
@@ -126,13 +126,13 @@ const allCategories: Category[] = [
         name: 'Unity',
         icon: <SiUnity className="h-8 w-8 text-gray-800" />,
         description: 'Game Engine',
-        level: 3,
+        level: 2,
       },
       {
         name: 'MotionBuilder',
         icon: <SiAutodesk className="h-8 w-8 text-green-600" />,
         description: 'Mocap Animation',
-        level: 2,
+        level: 1,
       },
     ],
   },
@@ -222,8 +222,8 @@ export default function Skills({ lang = 'en' }: SkillsProps): JSX.Element {
                 key={categoryName}
                 onClick={() => setActiveCategory(categoryName)}
                 className={`rounded-full border px-5 py-2 text-sm font-semibold transition-all duration-200 ${isActive
-                    ? 'border-yellow-500 bg-yellow-400/80 text-black shadow-sm dark:bg-yellow-400 dark:text-black'
-                    : 'border-yellow-500/30 bg-transparent text-black hover:-translate-y-0.5 hover:border-yellow-500 hover:bg-white/60 dark:border-yellow-500/30 dark:bg-transparent dark:text-yellow-100 dark:hover:bg-yellow-500/10'
+                  ? 'border-yellow-500 bg-yellow-400/80 text-black shadow-sm dark:bg-yellow-400 dark:text-black'
+                  : 'border-yellow-500/30 bg-transparent text-black hover:-translate-y-0.5 hover:border-yellow-500 hover:bg-white/60 dark:border-yellow-500/30 dark:bg-transparent dark:text-yellow-100 dark:hover:bg-yellow-500/10'
                   }`}
                 type="button"
               >

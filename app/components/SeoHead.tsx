@@ -19,7 +19,7 @@ export type SeoHeadProps = {
 };
 
 const SITE_URL = "https://taishi-hamasaki-portfolio.vercel.app";
-const DEFAULT_TITLE = "My Portfolio";
+const DEFAULT_TITLE = "Taishi Hamasaki | Portfolio";
 const DEFAULT_DESCRIPTION =
   "Taishi Hamasaki's portfolio showcasing web development skills in React, Node.js, Flutter, and more. Explore projects and connect with me for collaboration.";
 const DEFAULT_IMAGE = "/profile.jpg";

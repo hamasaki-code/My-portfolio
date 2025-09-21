@@ -5,6 +5,7 @@ import { MdSportsTennis } from "react-icons/md";
 import { GiTennisCourt, GiCctvCamera } from "react-icons/gi";
 import { BsBadgeVr } from "react-icons/bs";
 import Header from "../../components/Header";
+import SeoHead from "../../components/SeoHead";
 import { projects } from "../../data/projects";
 
 type ProjectLinks = {
@@ -39,6 +40,23 @@ export default function ProjectPage({ params }: ProjectPageProps) {
   if (!project) {
     notFound();
   }
+
+  const canonicalPath = `/projects/${project.slug}`;
+  const pageTitle = `${project.title} | Taishi Hamasaki`;
+  const pageDescription =
+    project.description[0] ?? "プロジェクトの詳細情報をご覧いただけます。";
+  const ogImage = project.image ?? "/profile.jpg";
+  const keywords = Array.from(
+    new Set(
+      [
+        project.title,
+        "Taishi Hamasaki",
+        "Taishi Hamasaki | Portfolio",
+        "portfolio",
+        ...project.tech,
+      ].filter(Boolean),
+    ),
+  );
 
   const links = project.links;
   const isSvgImage = project.image?.endsWith(".svg") ?? false;
@@ -91,6 +109,17 @@ export default function ProjectPage({ params }: ProjectPageProps) {
   };
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#fef9c3] via-white to-[#fefce8] text-gray-900 transition-colors duration-500 dark:from-black dark:via-[#0f0f0f] dark:to-[#050505] dark:text-white">
+      <SeoHead
+        title={pageTitle}
+        description={pageDescription}
+        canonicalUrl={canonicalPath}
+        keywords={keywords}
+        ogImage={ogImage}
+        ogUrl={canonicalPath}
+        ogType="article"
+        twitterHandle="@OnTAumv5KAoVGN5"
+        twitterImage={ogImage}
+      />
       <Header />
       <div id="top" className="absolute left-0 top-0 h-0 w-0 overflow-hidden" aria-hidden />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(250,204,21,0.2),_transparent_55%)] opacity-80 dark:bg-[radial-gradient(circle_at_top,_rgba(253,224,71,0.18),_transparent_55%)]" />
