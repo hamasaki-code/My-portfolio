@@ -94,7 +94,7 @@ const JSON_LD_ESCAPE_MAP: Record<string, string> = {
   "<": "\\u003c",
   ">": "\\u003e",
   "&": "\\u0026",
-  "/": "\\u002f",
+  "/": "\\/",
   "\u2028": "\\u2028",
   "\u2029": "\\u2029",
 };
@@ -103,8 +103,7 @@ const serializeJsonLd = (payload: StructuredData) =>
   JSON.stringify(payload).replace(
     JSON_LD_ESCAPE_REGEX,
     (character) =>
-      JSON_LD_ESCAPE_MAP[character as keyof typeof JSON_LD_ESCAPE_MAP] ??
-      `\\u${character.charCodeAt(0).toString(16).padStart(4, "0")}`,
+      JSON_LD_ESCAPE_MAP[character as keyof typeof JSON_LD_ESCAPE_MAP] ?? character,
   );
 
 const normalizeKeywords = (keywords?: string[]) =>
