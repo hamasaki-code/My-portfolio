@@ -117,27 +117,30 @@ export default function Header() {
         style={{ width: `${scrollProgress}%` }}
       />
 
-      {/* オーバーレイ背景 */}
+      {/* モバイルオーバーレイ */}
       <div
-        className={`fixed inset-0 bg-black/40 md:hidden transition-opacity duration-300 ${isMenuOpen ? "opacity-100 z-40" : "opacity-0 -z-10 pointer-events-none"}`}
+        className={`fixed inset-0 bg-black/40 md:hidden transition-opacity duration-300 ${isMenuOpen ? "opacity-100 z-40" : "opacity-0 -z-10 pointer-events-none"
+          }`}
         onClick={() => setIsMenuOpen(false)}
       />
 
-      {/* ヘッダー本体 */}
+      {/* ヘッダー */}
       <header
-        className={`fixed top-0 w-full z-50 text-black dark:text-yellow-400 p-6 border-b border-black/10 dark:border-yellow-400/10 transition-transform duration-500 ease-in-out ${isScrolled ? "bg-yellow-400 dark:bg-black shadow-lg scale-100" : "bg-yellow-400/70 dark:bg-black/70 backdrop-blur-md scale-95"
+        className={`fixed top-0 w-full z-50 text-black dark:text-yellow-400 p-6 border-b border-black/10 dark:border-yellow-400/10 transition-transform duration-500 ease-in-out ${isScrolled
+            ? "bg-yellow-400 dark:bg-black shadow-lg scale-100"
+            : "bg-yellow-400/70 dark:bg-black/70 backdrop-blur-md scale-95"
           } ${scrollDirection === "down" && !isMenuOpen ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"}`}
       >
-        <nav className="container mx-auto flex justify-between items-center" aria-label="Main navigation">
+        <nav className="container mx-auto flex justify-between items-center">
           <h1 className="text-3xl font-extrabold tracking-tight font-mono">
-            <a href="#top" className="text-black dark:text-yellow-400 hover:scale-105 transition-transform" title="Back to top">
+            <a href="#top" className="text-black dark:text-yellow-400 hover:scale-105 transition-transform">
               My <span className="text-yellow-600 dark:text-yellow-300">Portfolio</span>
             </a>
           </h1>
 
-          {/* モバイルメニューアイコン */}
+          {/* ハンバーガーメニュー */}
           <button
-            className="block md:hidden w-12 h-12 flex items-center justify-center text-black dark:text-yellow-400"
+            className="block md:hidden w-12 h-12 flex items-center justify-center text-yellow-400 bg-black/80 rounded-md border border-yellow-400 shadow-md"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -155,8 +158,11 @@ export default function Header() {
           {/* ナビゲーションリスト */}
           <ul
             ref={menuRef}
-            className={`fixed inset-0 flex flex-col items-center justify-center bg-yellow-400/95 dark:bg-black/95 space-y-8 text-3xl font-bold transition-transform duration-500 ease-in-out ${isMenuOpen ? "translate-x-0 opacity-100 scale-100" : "translate-x-full opacity-0 scale-105 pointer-events-none"
-              } md:static md:flex md:flex-row md:items-center md:space-x-6 md:space-y-0 md:bg-transparent md:text-base md:font-normal md:translate-x-0 md:opacity-100 md:scale-100 md:pointer-events-auto`}
+            className={`fixed inset-0 z-50 flex flex-col items-center justify-center 
+              bg-yellow-400 dark:bg-black
+              space-y-6 text-xl font-bold transition-transform duration-500 ease-in-out
+              ${isMenuOpen ? "translate-x-0 opacity-100 scale-100" : "translate-x-full opacity-0 scale-105 pointer-events-none"}
+              md:static md:flex md:flex-row md:items-center md:space-x-6 md:space-y-0 md:bg-transparent md:text-base md:font-normal md:translate-x-0 md:opacity-100 md:scale-100 md:pointer-events-auto`}
             id="menu"
             role="menubar"
           >
@@ -167,8 +173,8 @@ export default function Header() {
                   role="menuitem"
                   aria-label={title}
                   aria-current={activeSection === id ? "page" : undefined}
-                  className={`relative p-2 font-semibold group transition-transform hover:scale-105 ${isMenuOpen ? `animate-slide-up-fade [animation-delay:${delay}]` : ""
-                    } text-black dark:text-yellow-400`}
+                  className={`relative p-2 font-semibold group transition-transform hover:scale-105 text-black dark:text-yellow-400 ${isMenuOpen ? `animate-slide-up-fade [animation-delay:${delay}]` : ""
+                    }`}
                   onClick={(e) => handleSectionClick(e, id)}
                 >
                   <span
@@ -186,12 +192,11 @@ export default function Header() {
                 </Link>
               </li>
             ))}
-
-            {/* ダークモード切り替え */}
+            {/* ダークモードボタン */}
             <li role="none">
               <button
                 onClick={handleToggleDark}
-                className={`w-12 h-12 flex items-center justify-center rounded-full bg-black text-yellow-400 dark:bg-yellow-400 dark:text-black transition-transform hover:scale-110 ${flash ? "animate-flash-bg" : ""
+                className={`w-10 h-10 flex items-center justify-center rounded-full bg-black text-yellow-400 dark:bg-yellow-400 dark:text-black transition-transform hover:scale-110 ${flash ? "animate-flash-bg" : ""
                   }`}
                 aria-label="Toggle dark mode"
                 aria-pressed={isDarkMode}
