@@ -115,19 +115,19 @@ const escapeJsonForHtml = (value: string) =>
 
 const serializeJsonLd = (payload: StructuredData) => {
   if (!payload || typeof payload !== "object") {
-    return "{}";
+    return null;
   }
 
   try {
     const serialized = JSON.stringify(payload);
 
     if (typeof serialized !== "string" || serialized.length === 0) {
-      return "{}";
+      return null;
     }
 
     return escapeJsonForHtml(serialized);
   } catch {
-    return "{}";
+    return null;
   }
 };
 
@@ -208,14 +208,22 @@ export default function SeoHead({
 
       <meta name="robots" content="index, follow" />
 
-      {jsonLdPayload.map((schema, index) => (
-        <script
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
-          key={`jsonld-${index}`}
-          type="application/ld+json"
-        />
-      ))}
+      {jsonLdPayload.map((schema, index) => {
+        const serialized = serializeJsonLd(schema);
+
+        if (!serialized) {
+          return null;
+        }
+
+        return (
+          <script
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: serialized }}
+            key={`jsonld-${index}`}
+            type="application/ld+json"
+          />
+        );
+      })}
     </Head>
   );
 }
