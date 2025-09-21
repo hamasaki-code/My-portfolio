@@ -8,6 +8,7 @@ import Projects from "./components/Projects";
 import Skills from "./components/Skills";
 import Career from "./components/Career";
 import ContactForm from "./components/ContactForm";
+import LoadingScreen from "./components/LoadingScreen";
 
 const SITE_URL = "https://taishi-hamasaki-portfolio.vercel.app";
 
@@ -52,12 +53,7 @@ export default function Home() {
   }, [loading]);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-yellow-400 dark:bg-gray-900">
-        {/* ローディングアニメーション */}
-        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-black dark:border-white"></div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
