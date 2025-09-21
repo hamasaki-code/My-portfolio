@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { MouseEvent, useEffect, useRef, useState } from "react";
+import { MouseEvent, useEffect, useRef, useState, useMemo } from "react";
 import useScrollDirection from "../hooks/useScrollDirection";
 import { FiArrowUp, FiMoon, FiSun } from "react-icons/fi";
 import { useTheme } from "./ThemeProvider";
@@ -22,19 +22,24 @@ export default function Header() {
   const router = useRouter();
   const isHome = pathname === "/";
 
-  const navItems: { id: SectionId; label: string; title: string; delay: string }[] = [
-    { id: "about", label: "About Me", title: "About section", delay: "0.2s" },
-    { id: "projects", label: "Projects", title: "Projects section", delay: "0.3s" },
-    { id: "skills", label: "Skills", title: "Skills section", delay: "0.4s" },
-    { id: "career", label: "Career", title: "Career section", delay: "0.5s" },
-    { id: "contact", label: "Contact", title: "Contact section", delay: "0.6s" },
-  ];
+  const navItems = useMemo(
+    () =>
+      [
+        { id: "about", label: "About Me", title: "About section", delay: "0.2s" },
+        { id: "projects", label: "Projects", title: "Projects section", delay: "0.3s" },
+        { id: "skills", label: "Skills", title: "Skills section", delay: "0.4s" },
+        { id: "career", label: "Career", title: "Career section", delay: "0.5s" },
+        { id: "contact", label: "Contact", title: "Contact section", delay: "0.6s" },
+      ] as const,
+    []
+  );
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
       setShowTop(window.scrollY > 300);
-      const progress = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      const progress =
+        (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
       setScrollProgress(progress);
     };
     handleScroll();
@@ -46,7 +51,9 @@ export default function Header() {
     if (!isMenuOpen) return;
     const menuEl = menuRef.current;
     if (!menuEl) return;
-    const focusable = menuEl.querySelectorAll<HTMLElement>("a[href], button:not([disabled])");
+    const focusable = menuEl.querySelectorAll<HTMLElement>(
+      "a[href], button:not([disabled])"
+    );
     const firstEl = focusable[0];
     const lastEl = focusable[focusable.length - 1] ?? firstEl;
 
@@ -86,7 +93,7 @@ export default function Header() {
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
-  }, []);
+  }, [navItems]);
 
   const handleToggleDark = () => {
     toggleDarkMode();
@@ -127,13 +134,19 @@ export default function Header() {
       {/* ヘッダー */}
       <header
         className={`fixed top-0 w-full z-50 text-black dark:text-yellow-400 p-6 border-b border-black/10 dark:border-yellow-400/10 transition-transform duration-500 ease-in-out ${isScrolled
-            ? "bg-yellow-400 dark:bg-black shadow-lg scale-100"
-            : "bg-yellow-400/70 dark:bg-black/70 backdrop-blur-md scale-95"
-          } ${scrollDirection === "down" && !isMenuOpen ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"}`}
+          ? "bg-yellow-400 dark:bg-black shadow-lg scale-100"
+          : "bg-yellow-400/70 dark:bg-black/70 backdrop-blur-md scale-95"
+          } ${scrollDirection === "down" && !isMenuOpen
+            ? "-translate-y-full opacity-0"
+            : "translate-y-0 opacity-100"
+          }`}
       >
         <nav className="container mx-auto flex justify-between items-center">
           <h1 className="text-3xl font-extrabold tracking-tight font-mono">
-            <a href="#top" className="text-black dark:text-yellow-400 hover:scale-105 transition-transform">
+            <a
+              href="#top"
+              className="text-black dark:text-yellow-400 hover:scale-105 transition-transform"
+            >
               My <span className="text-yellow-600 dark:text-yellow-300">Portfolio</span>
             </a>
           </h1>
@@ -158,10 +171,13 @@ export default function Header() {
           {/* ナビゲーションリスト */}
           <ul
             ref={menuRef}
-            className={`fixed inset-0 z-50 flex flex-col items-center justify-center 
+            className={`fixed inset-0 z-50 flex flex-col items-center justify-center
               bg-yellow-400 dark:bg-black
               space-y-6 text-xl font-bold transition-transform duration-500 ease-in-out
-              ${isMenuOpen ? "translate-x-0 opacity-100 scale-100" : "translate-x-full opacity-0 scale-105 pointer-events-none"}
+              ${isMenuOpen
+                ? "translate-x-0 opacity-100 scale-100"
+                : "translate-x-full opacity-0 scale-105 pointer-events-none"
+              }
               md:static md:flex md:flex-row md:items-center md:space-x-6 md:space-y-0 md:bg-transparent md:text-base md:font-normal md:translate-x-0 md:opacity-100 md:scale-100 md:pointer-events-auto`}
             id="menu"
             role="menubar"
@@ -179,8 +195,8 @@ export default function Header() {
                 >
                   <span
                     className={`relative z-10 px-2 py-1 rounded-md transition-all duration-300 ${activeSection === id
-                        ? "bg-black text-yellow-400 dark:bg-yellow-400 dark:text-black font-bold"
-                        : "hover:bg-black/10 dark:hover:bg-yellow-100/10"
+                      ? "bg-black text-yellow-400 dark:bg-yellow-400 dark:text-black font-bold"
+                      : "hover:bg-black/10 dark:hover:bg-yellow-100/10"
                       }`}
                   >
                     {label}
@@ -201,8 +217,14 @@ export default function Header() {
                 aria-label="Toggle dark mode"
                 aria-pressed={isDarkMode}
               >
-                <FiSun className={`absolute w-6 h-6 transition-opacity duration-500 ${isDarkMode ? "opacity-100" : "opacity-0"}`} />
-                <FiMoon className={`absolute w-6 h-6 transition-opacity duration-500 ${isDarkMode ? "opacity-0" : "opacity-100"}`} />
+                <FiSun
+                  className={`absolute w-6 h-6 transition-opacity duration-500 ${isDarkMode ? "opacity-100" : "opacity-0"
+                    }`}
+                />
+                <FiMoon
+                  className={`absolute w-6 h-6 transition-opacity duration-500 ${isDarkMode ? "opacity-0" : "opacity-100"
+                    }`}
+                />
               </button>
             </li>
           </ul>
@@ -211,7 +233,9 @@ export default function Header() {
 
       {/* トップに戻るボタン */}
       <button
-        className={`fixed bottom-6 right-6 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-black text-yellow-400 dark:bg-yellow-400 dark:text-black border border-yellow-300 dark:border-yellow-500 shadow-lg hover:scale-110 transition-all ${showTop && !isMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none"
+        className={`fixed bottom-6 right-6 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-black text-yellow-400 dark:bg-yellow-400 dark:text-black border border-yellow-300 dark:border-yellow-500 shadow-lg hover:scale-110 transition-all ${showTop && !isMenuOpen
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-6 pointer-events-none"
           }`}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         aria-label="Scroll to top"
