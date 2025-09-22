@@ -98,7 +98,11 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
             }
 
             const api = getApi()
-            api?.reset?.(widgetIdRef.current)
+            const widgetId = widgetIdRef.current
+
+            api?.reset?.(widgetId)
+            // Preserve the widget ID so invisible widgets can execute again without re-rendering.
+            widgetIdRef.current = widgetId
             lastTokenRef.current = null
         }, [getApi])
 
