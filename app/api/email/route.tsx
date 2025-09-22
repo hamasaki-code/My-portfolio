@@ -6,7 +6,9 @@ const rateLimitMap = new Map<string, number>()
 export async function POST(req: Request) {
     try {
         const { name, email, message, captcha } = await req.json()
-        const requireCaptcha = !!process.env.RECAPTCHA_SECRET_KEY
+        const captchaSecret = process.env.RECAPTCHA_SECRET_KEY
+        const captchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+        const requireCaptcha = Boolean(captchaSecret && captchaSiteKey)
 
         if (!name || !email || !message || (requireCaptcha && !captcha)) {
             return NextResponse.json(
@@ -32,7 +34,7 @@ export async function POST(req: Request) {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
-                body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captcha}`,
+                body: `secret=${captchaSecret}&response=${captcha}`,
             })
             const captchaData = await captchaRes.json()
             if (!captchaData.success) {

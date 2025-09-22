@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import Script from "next/script"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 interface RecaptchaRenderOptions {
     sitekey: string
@@ -22,176 +23,130 @@ declare global {
     }
 }
 
-const RECAPTCHA_SCRIPT_ID = "google-recaptcha-script"
+const RECAPTCHA_SCRIPT_ID = "google-recaptcha"
 const RECAPTCHA_SCRIPT_SRC = "https://www.google.com/recaptcha/api.js?render=explicit"
 
-let scriptPromise: Promise<void> | null = null
-
-function loadRecaptchaScript() {
-    if (scriptPromise) {
-        return scriptPromise
-    }
-
-    if (typeof window === "undefined") {
-        return Promise.reject(new Error("reCAPTCHA can only be loaded in the browser."))
-    }
-
-    if (window.grecaptcha?.render || window.grecaptcha?.enterprise?.render) {
-        return Promise.resolve()
-    }
-
-    scriptPromise = new Promise<void>((resolve, reject) => {
-        const existing = document.getElementById(RECAPTCHA_SCRIPT_ID) as HTMLScriptElement | null
-
-        if (existing) {
-            if (existing.dataset.loaded === "true" || existing.readyState === "complete") {
-                existing.dataset.loaded = "true"
-                resolve()
-                return
-            }
-
-            const handleLoad = () => {
-                existing.dataset.loaded = "true"
-                resolve()
-            }
-
-            const handleError = () => {
-                scriptPromise = null
-                reject(new Error("Failed to load the reCAPTCHA script."))
-            }
-
-            existing.addEventListener("load", handleLoad, { once: true })
-            existing.addEventListener("error", handleError, { once: true })
-            return
-        }
-
-        const script = document.createElement("script")
-        script.id = RECAPTCHA_SCRIPT_ID
-        script.src = RECAPTCHA_SCRIPT_SRC
-        script.async = true
-        script.defer = true
-        script.dataset.loaded = "false"
-
-        script.addEventListener("load", () => {
-            script.dataset.loaded = "true"
-            resolve()
-        })
-
-        script.addEventListener("error", () => {
-            scriptPromise = null
-            script.remove()
-            reject(new Error("Failed to load the reCAPTCHA script."))
-        })
-
-        const parent = document.head || document.body
-
-        if (!parent) {
-            scriptPromise = null
-            reject(new Error("Failed to find a place to attach the reCAPTCHA script."))
-            return
-        }
-
-        parent.appendChild(script)
-    })
-
-    return scriptPromise
-}
+type WidgetState = "idle" | "loading" | "ready" | "error"
 
 export default function Recaptcha({ onChange }: { onChange: (token: string | null) => void }) {
-    const ref = useRef<HTMLDivElement>(null)
-    const widgetId = useRef<number | null>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
+    const widgetIdRef = useRef<number | null>(null)
+    const [state, setState] = useState<WidgetState>("idle")
     const [error, setError] = useState<string | null>(null)
     const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
 
-    useEffect(() => {
-        let cancelled = false
-
-        const mount = async () => {
-            if (!ref.current) {
-                return
-            }
-
-            if (!siteKey) {
-                setError("reCAPTCHA site key is not configured.")
-                onChange(null)
-                return
-            }
-
-            setError(null)
-
-            try {
-                await loadRecaptchaScript()
-            } catch (err) {
-                if (cancelled) return
-                setError("Failed to load reCAPTCHA. Please reload the page.")
-                onChange(null)
-                return
-            }
-
-            if (cancelled || !ref.current) {
-                return
-            }
-
-            if (widgetId.current !== null) {
-                return
-            }
-
-            const g = window.grecaptcha
-            const api = g?.render ? g : g?.enterprise
-            const ready = api?.ready || g?.ready
-            const renderFn = api?.render
-
-            if (typeof renderFn !== "function") {
-                setError("Failed to initialise reCAPTCHA widget.")
-                onChange(null)
-                return
-            }
-
-            const exec = () => {
-                if (!ref.current || cancelled) {
-                    return
-                }
-
-                widgetId.current = renderFn(ref.current, {
-                    sitekey: siteKey,
-                    callback: (token: string) => {
-                        setError(null)
-                        onChange(token)
-                    },
-                    "expired-callback": () => {
-                        setError("reCAPTCHA expired. Please try again.")
-                        onChange(null)
-                    },
-                    "error-callback": () => {
-                        setError("reCAPTCHA failed. Please retry.")
-                        onChange(null)
-                    },
-                })
-            }
-
-            ready ? ready(exec) : exec()
+    const scriptLoaded = useMemo(() => {
+        if (typeof window === "undefined") {
+            return false
         }
 
-        mount()
+        const api = window.grecaptcha
+        return Boolean(api?.render || api?.enterprise?.render)
+    }, [])
 
-        return () => {
-            cancelled = true
+    const resetWidget = useCallback(() => {
+        if (widgetIdRef.current === null) {
+            return
+        }
 
-            if (widgetId.current !== null) {
-                const api = window.grecaptcha?.reset ? window.grecaptcha : window.grecaptcha?.enterprise
-                api?.reset?.(widgetId.current)
-                widgetId.current = null
-            }
+        const api = window.grecaptcha?.reset ? window.grecaptcha : window.grecaptcha?.enterprise
+        api?.reset?.(widgetIdRef.current)
+        widgetIdRef.current = null
+    }, [])
 
+    const renderWidget = useCallback(() => {
+        if (!containerRef.current || !siteKey) {
+            return
+        }
+
+        const g = window.grecaptcha
+        const api = g?.render ? g : g?.enterprise
+        const ready = api?.ready || g?.ready
+        const renderFn = api?.render
+
+        if (typeof renderFn !== "function") {
+            setError("Failed to initialise reCAPTCHA widget.")
+            setState("error")
             onChange(null)
+            return
         }
+
+        const exec = () => {
+            if (!containerRef.current || widgetIdRef.current !== null) {
+                return
+            }
+
+            widgetIdRef.current = renderFn(containerRef.current, {
+                sitekey: siteKey,
+                callback: (token: string) => {
+                    setError(null)
+                    setState("ready")
+                    onChange(token)
+                },
+                "expired-callback": () => {
+                    setError("reCAPTCHA expired. Please try again.")
+                    setState("error")
+                    onChange(null)
+                },
+                "error-callback": () => {
+                    setError("reCAPTCHA failed. Please retry.")
+                    setState("error")
+                    onChange(null)
+                },
+            })
+        }
+
+        setState("loading")
+        ready ? ready(exec) : exec()
     }, [onChange, siteKey])
+
+    useEffect(() => {
+        if (!siteKey) {
+            setError("reCAPTCHA site key is not configured.")
+            setState("error")
+            onChange(null)
+            return
+        }
+
+        if (scriptLoaded) {
+            renderWidget()
+        }
+    }, [onChange, renderWidget, scriptLoaded, siteKey])
+
+    useEffect(
+        () => () => {
+            resetWidget()
+            onChange(null)
+        },
+        [onChange, resetWidget]
+    )
+
+    const handleScriptLoad = useCallback(() => {
+        if (!siteKey) {
+            return
+        }
+
+        renderWidget()
+    }, [renderWidget, siteKey])
+
+    const handleScriptError = useCallback(() => {
+        setError("Failed to load reCAPTCHA. Please reload the page.")
+        setState("error")
+        onChange(null)
+    }, [onChange])
 
     return (
         <>
-            <div ref={ref} />
+            <Script
+                id={RECAPTCHA_SCRIPT_ID}
+                src={RECAPTCHA_SCRIPT_SRC}
+                strategy="lazyOnload"
+                onLoad={handleScriptLoad}
+                onError={handleScriptError}
+            />
+            <div ref={containerRef} aria-busy={state === "loading"} />
             {error && (
-                <p className="mt-3 text-sm text-center text-red-600 dark:text-red-400">{error}</p>
+                <p className="mt-3 text-center text-sm text-red-600 dark:text-red-400">{error}</p>
             )}
         </>
     )
