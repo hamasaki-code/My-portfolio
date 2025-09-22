@@ -99,7 +99,6 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
 
             const api = getApi()
             api?.reset?.(widgetIdRef.current)
-            widgetIdRef.current = null
             lastTokenRef.current = null
         }, [getApi])
 
