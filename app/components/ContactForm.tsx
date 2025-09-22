@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 import { RiTwitterXLine, RiAccountCircleLine } from "react-icons/ri";
 import { SiWantedly, SiLinkedin } from "react-icons/si";
-import Recaptcha from "./Recaptcha";
+import Recaptcha, { RecaptchaHandle } from "./Recaptcha";
 
 export default function ContactForm() {
     const [name, setName] = useState("");
@@ -23,7 +23,9 @@ export default function ContactForm() {
     const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
     const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
     const recaptchaEnabled = !!recaptchaSiteKey;
+    const isRecaptchaInvisible = process.env.NEXT_PUBLIC_RECAPTCHA_SIZE === "invisible";
     const modalRef = useRef<HTMLDivElement>(null);
+    const recaptchaRef = useRef<RecaptchaHandle | null>(null);
 
     useEffect(() => {
         if (status === "success" || status === "error") {
@@ -40,10 +42,31 @@ export default function ContactForm() {
         setStatus("sending");
 
         try {
+            let token = captcha;
+
+            if (recaptchaEnabled) {
+                if (isRecaptchaInvisible) {
+                    try {
+                        token = await recaptchaRef.current?.execute();
+                        setCaptcha(token ?? null);
+                        if (!token) {
+                            setStatus("error");
+                            return;
+                        }
+                    } catch {
+                        setStatus("error");
+                        return;
+                    }
+                } else if (!token) {
+                    setStatus("error");
+                    return;
+                }
+            }
+
             const res = await fetch("/api/email", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, message, captcha }),
+                body: JSON.stringify({ name, email, message, captcha: token }),
             });
 
             await res.json();
@@ -55,6 +78,10 @@ export default function ContactForm() {
                 setMessage("");
                 setCaptcha(null);
 
+                if (recaptchaEnabled) {
+                    recaptchaRef.current?.reset();
+                }
+
                 if (typeof window !== "undefined") {
                     const g = window.grecaptcha;
                     const api = g?.reset ? g : g?.enterprise;
@@ -62,9 +89,15 @@ export default function ContactForm() {
                 }
             } else {
                 setStatus("error");
+                if (recaptchaEnabled) {
+                    recaptchaRef.current?.reset();
+                }
             }
         } catch (err) {
             setStatus("error");
+            if (recaptchaEnabled) {
+                recaptchaRef.current?.reset();
+            }
         }
     };
 
@@ -166,14 +199,18 @@ export default function ContactForm() {
                     {/* reCAPTCHA */}
                     {recaptchaEnabled && (
                         <div className="flex justify-center">
-                            <Recaptcha onChange={setCaptcha} />
+                            <Recaptcha ref={recaptchaRef} onChange={setCaptcha} />
                         </div>
                     )}
 
                     {/* Submit */}
                     <button
                         type="submit"
-                        disabled={status === "sending" || !!emailError || (recaptchaEnabled && !captcha)}
+                        disabled={
+                            status === "sending" ||
+                            !!emailError ||
+                            (recaptchaEnabled && !isRecaptchaInvisible && !captcha)
+                        }
                         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 py-3 font-bold text-black transition-transform duration-200 hover:scale-[1.01] hover:shadow-[0_18px_45px_-28px_rgba(250,204,21,0.6)] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {status === "sending" && <FiLoader className="animate-spin" />}
