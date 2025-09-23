@@ -139,10 +139,16 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
                     }
 
                     clearRenderTimeout()
-                    setError("Failed to initialise reCAPTCHA widget.")
+                    const hostname = typeof window !== "undefined" ? window.location.hostname : "this domain"
+                    setError(
+                        `Failed to initialise reCAPTCHA widget. Confirm that "${hostname}" is added to the allowed domains for this site key.`
+                    )
                     setState("error")
                     onChange(null)
-                    resolvePending(null, "Failed to initialise reCAPTCHA widget.")
+                    resolvePending(
+                        null,
+                        `Failed to initialise reCAPTCHA widget. Confirm that "${hostname}" is added to the allowed domains for this site key.`
+                    )
                     return
                 }
 
@@ -166,11 +172,17 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
                         resolvePending(null, "reCAPTCHA expired. Please try again.")
                     },
                     "error-callback": () => {
-                        setError("reCAPTCHA failed. Please retry.")
+                        const hostname = typeof window !== "undefined" ? window.location.hostname : "this domain"
+                        setError(
+                            `reCAPTCHA failed. Verify that "${hostname}" is registered for this site key and then reload the page.`
+                        )
                         setState("error")
                         lastTokenRef.current = null
                         onChange(null)
-                        resolvePending(null, "reCAPTCHA failed. Please retry.")
+                        resolvePending(
+                            null,
+                            `reCAPTCHA failed. Verify that "${hostname}" is registered for this site key and then reload the page.`
+                        )
                     },
                 }
 

@@ -88,7 +88,7 @@ npm run dev
 | `RECAPTCHA_SECRET_KEY` | Google reCAPTCHA v2/v3 のシークレットキー。未設定の場合はフォーム送信が失敗します |
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | reCAPTCHA をフロントエンドで表示するためのサイトキー。未設定の場合はフォーム送信が失敗します |
 
-> reCAPTCHA を正しく動作させるにはシークレットキーとサイトキーの両方を必ず設定してください。本番環境だけでなく `.env.local` にも同じ値を設定すると、ローカル開発時と本番環境で挙動の差異が出なくなります。メール送信には Gmail 等の SMTP を利用でき、`EMAIL_PASS` にはアプリパスワードを推奨します。【F:app/components/ContactForm.tsx†L17-L247】【F:app/api/email/route.tsx†L6-L77】
+> reCAPTCHA を正しく動作させるにはシークレットキーとサイトキーの両方を必ず設定してください。本番環境だけでなく `.env.local` にも同じ値を設定すると、ローカル開発時と本番環境で挙動の差異が出なくなります。Google reCAPTCHA の管理画面では **`your-domain.com` や `your-project.vercel.app` のようにプロトコルを含まない正しいドメイン名をサイトキーの「ドメイン」一覧に追加** してください。登録されていないホスト名からアクセスすると `サイトキーのドメインが無効です` というエラーになります。メール送信には Gmail 等の SMTP を利用でき、`EMAIL_PASS` にはアプリパスワードを推奨します。【F:app/components/ContactForm.tsx†L17-L247】【F:app/api/email/route.tsx†L6-L99】
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
 

@@ -53,8 +53,26 @@ export async function POST(req: Request) {
             })
             const captchaData = await captchaRes.json()
             if (!captchaData.success) {
+                const errorCodes: unknown = captchaData["error-codes"]
+                const reportedHostname = typeof captchaData.hostname === "string" ? captchaData.hostname : null
+                const requestHostHeader = req.headers.get("host")
+                const expectedHostname = requestHostHeader ? requestHostHeader.split(":")[0] : null
+                let message = "Captcha verification failed."
+
+                if (reportedHostname && expectedHostname && reportedHostname !== expectedHostname) {
+                    message = `Captcha verification failed because the token was issued for "${reportedHostname}" but the current domain is "${expectedHostname}". Update the reCAPTCHA allowed domains or use the correct site key.`
+                } else if (Array.isArray(errorCodes) && errorCodes.length > 0) {
+                    message = `Captcha verification failed (${errorCodes.join(", ")}).`
+                }
+
+                console.error("reCAPTCHA verification failed", {
+                    errorCodes,
+                    reportedHostname,
+                    expectedHostname,
+                })
+
                 return NextResponse.json(
-                    { success: false, message: "Captcha verification failed." },
+                    { success: false, message },
                     { status: 400 }
                 )
             }
