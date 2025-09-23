@@ -10,52 +10,21 @@ import {
     FiLoader,
     FiCheck,
     FiGithub,
+    FiTag,
 } from "react-icons/fi";
 import { RiTwitterXLine, RiAccountCircleLine } from "react-icons/ri";
 import { SiWantedly, SiLinkedin } from "react-icons/si";
 
-import { sendContactEmail } from "@/app/server/contact";
-
 const DEFAULT_FORM = {
     name: "",
     email: "",
+    subject: "",
     message: "",
 };
-
-const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
-
-const FIELD_LABELS = {
-    name: "Name",
-    email: "Email",
-    message: "Message",
-} as const;
-
 type ContactFormValues = typeof DEFAULT_FORM;
-type ContactFormErrors = Partial<Record<keyof ContactFormValues, string>>;
-
-function validateForm(values: ContactFormValues): ContactFormErrors {
-    const errors: ContactFormErrors = {};
-
-    if (!values.name.trim()) {
-        errors.name = `${FIELD_LABELS.name} is required.`;
-    }
-
-    if (!values.email.trim()) {
-        errors.email = `${FIELD_LABELS.email} is required.`;
-    } else if (!EMAIL_PATTERN.test(values.email)) {
-        errors.email = "Invalid email format.";
-    }
-
-    if (!values.message.trim()) {
-        errors.message = `${FIELD_LABELS.message} is required.`;
-    }
-
-    return errors;
-}
 
 export default function ContactForm() {
     const [form, setForm] = useState(DEFAULT_FORM);
-    const [errors, setErrors] = useState<ContactFormErrors>({});
     const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
@@ -73,32 +42,11 @@ export default function ContactForm() {
     const handleFieldChange = (field: keyof ContactFormValues) =>
         (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             const value = event.target.value;
-            const nextForm = {
-                ...form,
+
+            setForm((prev) => ({
+                ...prev,
                 [field]: value,
-            } as ContactFormValues;
-
-            setForm(nextForm);
-
-            setErrors((prev) => {
-                const nextErrors = { ...prev } as ContactFormErrors;
-
-                if (field === "email") {
-                    if (!value.trim()) {
-                        delete nextErrors.email;
-                    } else if (!EMAIL_PATTERN.test(value)) {
-                        nextErrors.email = "Invalid email format.";
-                    } else {
-                        delete nextErrors.email;
-                    }
-                } else if (prev[field]) {
-                    if (value.trim()) {
-                        delete nextErrors[field];
-                    }
-                }
-
-                return nextErrors;
-            });
+            }));
 
             if (status === "error") {
                 setStatus("idle");
@@ -109,44 +57,50 @@ export default function ContactForm() {
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const validationErrors = validateForm(form);
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-            setStatus("error");
-            setErrorMessage("Please correct the highlighted fields and try again.");
-            return;
-        }
-
         setStatus("sending");
         setErrorMessage(null);
 
         try {
-            await sendContactEmail({
-                from: form.email,
-                subject: `Contact from ${form.name || "Visitor"}`,
-                message: `${form.message}\n\nName: ${form.name}\nEmail: ${form.email}`,
+            const res = await fetch("/api/sendmail", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: form.name,
+                    email: form.email,
+                    subject: form.subject,
+                    content: form.message,
+                }),
             });
 
+            if (!res.ok) {
+                const data = await res.json().catch(() => null);
+                const message =
+                    data && typeof data === "object" && "error" in data && typeof data.error === "string"
+                        ? data.error
+                        : "メールの送信中にエラーが発生しました。";
+                throw new Error(message);
+            }
+
             setStatus("success");
-            setForm(DEFAULT_FORM);
-            setErrors({});
+            setForm({ ...DEFAULT_FORM });
         } catch (error) {
             console.error(error);
             setStatus("error");
             setErrorMessage(
                 error instanceof Error && error.message
                     ? error.message
-                    : "Something went wrong. Please try again."
+                    : "メールの送信中にエラーが発生しました。"
             );
         }
     };
 
-    const hasErrors = Object.keys(errors).length > 0;
     const isSubmitDisabled =
         status === "sending" ||
-        hasErrors ||
         !form.name.trim() ||
         !form.email.trim() ||
+        !form.subject.trim() ||
         !form.message.trim();
 
     return (
@@ -194,7 +148,6 @@ export default function ContactForm() {
                                     className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                                 />
                             </div>
-                            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                         </div>
                         <div>
                             <label htmlFor="email" className="block mb-2 font-semibold">
@@ -212,7 +165,23 @@ export default function ContactForm() {
                                     className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                                 />
                             </div>
-                            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                        </div>
+                        <div>
+                            <label htmlFor="subject" className="block mb-2 font-semibold">
+                                Subject
+                            </label>
+                            <div className="relative">
+                                <FiTag className="absolute left-3 top-3 text-yellow-400" />
+                                <input
+                                    id="subject"
+                                    type="text"
+                                    value={form.subject}
+                                    onChange={handleFieldChange("subject")}
+                                    placeholder="How can I help you?"
+                                    required
+                                    className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -236,7 +205,6 @@ export default function ContactForm() {
                         <p className="text-sm text-right text-gray-600 dark:text-yellow-200">
                             {form.message.length}/500
                         </p>
-                        {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
                     </div>
 
                     <button
