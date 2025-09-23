@@ -38,11 +38,19 @@ export async function POST(request: Request) {
     try {
         const { name, email, subject, content }: ContactRequestBody = await request.json();
 
-        const smtpUser = process.env.MAIL_ACCOUNT ?? process.env.AUTH_USER;
-        const smtpPass = process.env.MAIL_PASSWORD ?? process.env.AUTH_PASS;
+        const smtpUser =
+            process.env.MAIL_ACCOUNT ??
+            process.env.AUTH_USER ??
+            process.env.EMAIL_USER;
+        const smtpPass =
+            process.env.MAIL_PASSWORD ??
+            process.env.AUTH_PASS ??
+            process.env.EMAIL_PASS;
 
         if (!smtpUser || !smtpPass) {
-            console.error("Missing SMTP credentials. Please configure MAIL_ACCOUNT/MAIL_PASSWORD or AUTH_USER/AUTH_PASS.");
+            console.error(
+                "Missing SMTP credentials. Please configure MAIL_ACCOUNT/MAIL_PASSWORD, AUTH_USER/AUTH_PASS, or EMAIL_USER/EMAIL_PASS."
+            );
 
             return NextResponse.json(
                 { error: "メール設定が行われていないため送信に失敗しました。管理者にお問い合わせください。" },
@@ -53,9 +61,12 @@ export async function POST(request: Request) {
         const fromAddress = process.env.MAIL_FROM ?? smtpUser;
         const ownerAddress = process.env.MAIL_TO ?? process.env.CONTACT_TO ?? smtpUser;
 
-        const host = process.env.SMTP_HOST ?? "smtp.gmail.com";
-        const port = parseNumber(process.env.SMTP_PORT, 465);
-        const secure = parseBoolean(process.env.SMTP_SECURE, port === 465);
+        const host = process.env.SMTP_HOST ?? process.env.MAIL_HOST ?? "smtp.gmail.com";
+        const port = parseNumber(process.env.SMTP_PORT ?? process.env.MAIL_PORT, 465);
+        const secure = parseBoolean(
+            process.env.SMTP_SECURE ?? process.env.MAIL_SECURE,
+            port === 465
+        );
 
         const transporter = nodemailer.createTransport({
             host,
