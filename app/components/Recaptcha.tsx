@@ -62,6 +62,8 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
             reject: (error: Error) => void
         } | null>(null)
         const lastTokenRef = useRef<string | null>(null)
+        const renderRetryCountRef = useRef(0)
+        const renderTimeoutRef = useRef<number | null>(null)
         const [state, setState] = useState<WidgetState>("idle")
         const [error, setError] = useState<string | null>(null)
         const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
@@ -102,6 +104,13 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
             lastTokenRef.current = null
         }, [getApi])
 
+        const clearRenderTimeout = useCallback(() => {
+            if (renderTimeoutRef.current !== null) {
+                window.clearTimeout(renderTimeoutRef.current)
+                renderTimeoutRef.current = null
+            }
+        }, [])
+
         const renderWidget = useCallback(() => {
             if (!containerRef.current || !siteKey) {
                 return
@@ -110,21 +119,35 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
             const g = window.grecaptcha
             const api = g?.render ? g : g?.enterprise
             const ready = api?.ready || g?.ready
-            const renderFn = api?.render
-
-            if (typeof renderFn !== "function") {
-                setError("Failed to initialise reCAPTCHA widget.")
-                setState("error")
-                onChange(null)
-                resolvePending(null, "Failed to initialise reCAPTCHA widget.")
-                return
-            }
+            renderRetryCountRef.current = 0
 
             const exec = () => {
                 if (!containerRef.current || widgetIdRef.current !== null) {
                     return
                 }
 
+                const nextG = window.grecaptcha
+                const nextApi = nextG?.render ? nextG : nextG?.enterprise
+                const renderFn = nextApi?.render
+
+                if (typeof renderFn !== "function") {
+                    if (renderRetryCountRef.current < 5) {
+                        renderRetryCountRef.current += 1
+                        clearRenderTimeout()
+                        renderTimeoutRef.current = window.setTimeout(exec, 200)
+                        return
+                    }
+
+                    clearRenderTimeout()
+                    setError("Failed to initialise reCAPTCHA widget.")
+                    setState("error")
+                    onChange(null)
+                    resolvePending(null, "Failed to initialise reCAPTCHA widget.")
+                    return
+                }
+
+                clearRenderTimeout()
+                renderRetryCountRef.current = 0
                 const options: RecaptchaRenderOptions = {
                     sitekey: siteKey,
                     size: RECAPTCHA_SIZE,
@@ -160,7 +183,7 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
 
             setState("loading")
             ready ? ready(exec) : exec()
-        }, [onChange, resolvePending, siteKey])
+        }, [clearRenderTimeout, onChange, resolvePending, siteKey])
 
         useEffect(() => {
             if (!siteKey) {
@@ -174,15 +197,16 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
             if (scriptLoaded) {
                 renderWidget()
             }
-        }, [onChange, renderWidget, resolvePending, scriptLoaded, siteKey])
+        }, [clearRenderTimeout, onChange, renderWidget, resolvePending, scriptLoaded, siteKey])
 
         useEffect(
             () => () => {
+                clearRenderTimeout()
                 resolvePending(null)
                 resetWidget()
                 onChange(null)
             },
-            [onChange, resetWidget, resolvePending]
+            [clearRenderTimeout, onChange, resetWidget, resolvePending]
         )
 
         const handleScriptLoad = useCallback(() => {
