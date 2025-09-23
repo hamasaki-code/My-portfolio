@@ -11,8 +11,12 @@ import {
     useState,
 } from "react"
 
-type RecaptchaSize = "compact" | "normal" | "invisible"
-type RecaptchaBadge = "bottomright" | "bottomleft" | "inline"
+import {
+    parseRecaptchaBadge,
+    parseRecaptchaSize,
+    type RecaptchaBadge,
+    type RecaptchaSize,
+} from "@/lib/recaptcha"
 
 interface RecaptchaRenderOptions {
     sitekey: string
@@ -47,14 +51,15 @@ const RECAPTCHA_SCRIPT_SRC = "https://www.google.com/recaptcha/api.js?render=exp
 
 type WidgetState = "idle" | "loading" | "ready" | "error"
 
-const rawSize = process.env.NEXT_PUBLIC_RECAPTCHA_SIZE
-const RECAPTCHA_SIZE: RecaptchaSize = rawSize === "compact" || rawSize === "invisible" ? rawSize : "normal"
-const rawBadge = process.env.NEXT_PUBLIC_RECAPTCHA_BADGE
-const RECAPTCHA_BADGE: RecaptchaBadge | undefined =
-    rawBadge === "bottomleft" || rawBadge === "inline" ? rawBadge : rawBadge === "bottomright" ? "bottomright" : undefined
+interface RecaptchaProps {
+    onChange: (token: string | null) => void
+    siteKey?: string | null
+    size?: RecaptchaSize | null
+    badge?: RecaptchaBadge | null
+}
 
-const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null) => void }>(
-    ({ onChange }, ref) => {
+const Recaptcha = forwardRef<RecaptchaHandle, RecaptchaProps>(
+    ({ onChange, siteKey: siteKeyProp, size: sizeProp, badge: badgeProp }, ref) => {
         const containerRef = useRef<HTMLDivElement>(null)
         const widgetIdRef = useRef<number | null>(null)
         const pendingExecuteRef = useRef<{
@@ -66,7 +71,25 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
         const renderTimeoutRef = useRef<number | null>(null)
         const [state, setState] = useState<WidgetState>("idle")
         const [error, setError] = useState<string | null>(null)
-        const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+        const siteKey = siteKeyProp ?? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+        const recaptchaSize = useMemo(() => {
+            if (sizeProp) {
+                return parseRecaptchaSize(sizeProp)
+            }
+
+            return parseRecaptchaSize(process.env.NEXT_PUBLIC_RECAPTCHA_SIZE)
+        }, [sizeProp])
+        const recaptchaBadge = useMemo(() => {
+            if (badgeProp === null) {
+                return undefined
+            }
+
+            if (badgeProp) {
+                return parseRecaptchaBadge(badgeProp)
+            }
+
+            return parseRecaptchaBadge(process.env.NEXT_PUBLIC_RECAPTCHA_BADGE)
+        }, [badgeProp])
 
         const scriptLoaded = useMemo(() => {
             if (typeof window === "undefined") {
@@ -156,7 +179,7 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
                 renderRetryCountRef.current = 0
                 const options: RecaptchaRenderOptions = {
                     sitekey: siteKey,
-                    size: RECAPTCHA_SIZE,
+                    size: recaptchaSize,
                     callback: (token: string) => {
                         setError(null)
                         setState("ready")
@@ -186,8 +209,8 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
                     },
                 }
 
-                if (RECAPTCHA_SIZE === "invisible" && RECAPTCHA_BADGE) {
-                    options.badge = RECAPTCHA_BADGE
+                if (recaptchaSize === "invisible" && recaptchaBadge) {
+                    options.badge = recaptchaBadge
                 }
 
                 widgetIdRef.current = renderFn(containerRef.current, options)
@@ -195,7 +218,7 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
 
             setState("loading")
             ready ? ready(exec) : exec()
-        }, [clearRenderTimeout, onChange, resolvePending, siteKey])
+        }, [clearRenderTimeout, onChange, recaptchaBadge, recaptchaSize, resolvePending, siteKey])
 
         useEffect(() => {
             if (!siteKey) {
@@ -245,7 +268,7 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
 
                 const api = getApi()
 
-                if (RECAPTCHA_SIZE === "invisible") {
+                if (recaptchaSize === "invisible") {
                     if (typeof api?.execute !== "function" || widgetIdRef.current === null) {
                         reject(new Error("reCAPTCHA is not ready yet."))
                         return
@@ -271,7 +294,7 @@ const Recaptcha = forwardRef<RecaptchaHandle, { onChange: (token: string | null)
 
                 reject(new Error("Please complete the reCAPTCHA challenge."))
             })
-        }, [getApi, onChange, siteKey])
+        }, [getApi, onChange, recaptchaSize, siteKey])
 
         const reset = useCallback(() => {
             resolvePending(null)
