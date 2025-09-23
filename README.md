@@ -38,7 +38,7 @@ Taishi Hamasaki のポートフォリオサイトです。Next.js と Tailwind C
 * **ダークモード対応のヘッダー**、スクロール位置検知、セクションハイライト、アクセシビリティ考慮のキーボードフォーカス制御などを備え、モダンな UI/UX を提供。【F\:app/components/Header.tsx†L11-L245】【F\:app/components/ThemeProvider.tsx†L14-L103】
 * ページロード時には **Framer Motion を用いたイントロアニメーション / LoadingScreen** を表示し、没入感のある閲覧体験を演出。【F\:app/components/LoadingScreen.tsx†L1-L101】
 * **Intersection Observer** と Framer Motion を活用し、スクロールに応じたアニメーション付きのカードやセクション表示を実現。【F\:app/components/Projects.tsx†L21-L142】【F\:app/components/Skills.tsx†L43-L251】【F\:app/components/Career.tsx†L6-L105】【F\:app/data/projects.js†L3-L59】
-* **Nodemailer + Google reCAPTCHA**（任意利用）を組み合わせた問い合わせフォームを実装。スパム抑制のためレートリミット付き API で安全にメッセージを受け取れる設計。【F\:app/components/ContactForm.tsx†L17-L252】【F\:app/components/Recaptcha.tsx†L21-L58】【F\:app/api/email/route.tsx†L6-L79】
+* **Nodemailer + Yup バリデーション** を活用した問い合わせフォームを実装。App Router の API Route 経由で安全にメールを送信し、クライアント側でもバリデーション結果をフィードバック。【F\:app/components/ContactForm.tsx†L1-L214】【F\:app/server/contact.ts†L1-L24】【F\:app/api/contact/route.ts†L1-L28】【F\:app/server/email.ts†L1-L53】
 * **SEO メタデータと構造化データ**を共通の `SeoHead` コンポーネントで集中管理。Open Graph / Twitter カード / JSON-LD を適切に生成して検索エンジンと SNS での露出を最適化。【F\:app/page.tsx†L60-L89】【F\:app/components/SeoHead.tsx†L5-L234】【F\:app/layout.tsx†L1-L82】
 * プロジェクト詳細は **動的ルーティング**で生成し、スラッグに基づいたタイトル・ディスクリプション・OGP を出力して SEO を強化。【F\:app/projects/\[slug]/page.tsx†L1-L141】
 
@@ -82,13 +82,13 @@ npm run dev
 
 | 変数名 | 説明 |
 | ------ | ---- |
-| `EMAIL_USER` | 送信元メールアドレス (SMTP ユーザー) |
-| `EMAIL_PASS` | SMTP のアプリパスワードまたはアクセストークン |
-| `RECIPIENT_EMAIL` | 問い合わせ内容を受信するメールアドレス |
-| `RECAPTCHA_SECRET_KEY` | Google reCAPTCHA v2/v3 のシークレットキー。未設定の場合はフォーム送信が失敗します |
-| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | reCAPTCHA をフロントエンドで表示するためのサイトキー。未設定の場合はフォーム送信が失敗します |
+| `AUTH_USER` | 送信元兼受信先のメールアドレス (SMTP ユーザー) |
+| `AUTH_PASS` | SMTP のアプリパスワードまたはアクセストークン |
+| `SMTP_HOST` (任意) | SMTP サーバーのホスト名。未設定時は `smtp.gmail.com` を使用 |
+| `SMTP_PORT` (任意) | SMTP ポート番号。未設定時は `465` を使用 |
+| `SMTP_SECURE` (任意) | セキュア接続を有効にするかどうか。未設定時は `true` |
 
-> reCAPTCHA を正しく動作させるにはシークレットキーとサイトキーの両方を必ず設定してください。本番環境だけでなく `.env.local` にも同じ値を設定すると、ローカル開発時と本番環境で挙動の差異が出なくなります。Google reCAPTCHA の管理画面では **`your-domain.com` や `your-project.vercel.app` のようにプロトコルを含まない正しいドメイン名をサイトキーの「ドメイン」一覧に追加** してください。登録されていないホスト名からアクセスすると `サイトキーのドメインが無効です` というエラーになります。メール送信には Gmail 等の SMTP を利用でき、`EMAIL_PASS` にはアプリパスワードを推奨します。【F:app/components/ContactForm.tsx†L17-L247】【F:app/api/email/route.tsx†L6-L99】
+> Gmail を利用する場合は 2 段階認証を有効にしたうえでアプリパスワードを `AUTH_PASS` に設定してください。その他の SMTP を利用する場合は `SMTP_HOST` や `SMTP_PORT` を上書きすれば動作します。環境変数が不足している場合、API は 500 エラーを返しメールは送信されません。【F\:app/api/contact/route.ts†L1-L28】【F\:app/server/email.ts†L1-L53】
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
 
@@ -99,7 +99,9 @@ npm run dev
 ```
 .
 ├── app/
-│   ├── api/email/route.tsx        # Nodemailer + reCAPTCHA を用いた問い合わせ API
+│   ├── api/contact/route.ts       # Yup でリクエストを検証しメール送信する問い合わせ API
+│   ├── server/contact.ts          # クライアントから API を呼び出すユーティリティ
+│   ├── server/email.ts            # Nodemailer の設定と送信ロジック
 │   ├── components/                # UI コンポーネント (Header, About, Projects など)
 │   ├── data/projects.js           # Works セクションのプロジェクトデータ
 │   ├── hooks/useScrollDirection.js# ヘッダー表示を制御するカスタムフック

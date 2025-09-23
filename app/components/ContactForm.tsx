@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import {
     FiUser,
     FiMail,
@@ -12,27 +13,52 @@ import {
 } from "react-icons/fi";
 import { RiTwitterXLine, RiAccountCircleLine } from "react-icons/ri";
 import { SiWantedly, SiLinkedin } from "react-icons/si";
-import Recaptcha, { RecaptchaHandle } from "./Recaptcha";
-import { createRecaptchaConfig, type RecaptchaConfig } from "@/lib/recaptcha";
+
+import { sendContactEmail } from "@/app/server/contact";
+
+const DEFAULT_FORM = {
+    name: "",
+    email: "",
+    message: "",
+};
+
+const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
+
+const FIELD_LABELS = {
+    name: "Name",
+    email: "Email",
+    message: "Message",
+} as const;
+
+type ContactFormValues = typeof DEFAULT_FORM;
+type ContactFormErrors = Partial<Record<keyof ContactFormValues, string>>;
+
+function validateForm(values: ContactFormValues): ContactFormErrors {
+    const errors: ContactFormErrors = {};
+
+    if (!values.name.trim()) {
+        errors.name = `${FIELD_LABELS.name} is required.`;
+    }
+
+    if (!values.email.trim()) {
+        errors.email = `${FIELD_LABELS.email} is required.`;
+    } else if (!EMAIL_PATTERN.test(values.email)) {
+        errors.email = "Invalid email format.";
+    }
+
+    if (!values.message.trim()) {
+        errors.message = `${FIELD_LABELS.message} is required.`;
+    }
+
+    return errors;
+}
 
 export default function ContactForm() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [emailError, setEmailError] = useState("");
-    const [message, setMessage] = useState("");
-    const [captcha, setCaptcha] = useState<string | null>(null);
+    const [form, setForm] = useState(DEFAULT_FORM);
+    const [errors, setErrors] = useState<ContactFormErrors>({});
     const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const recaptchaMisconfiguredMessage =
-        "reCAPTCHA is not configured correctly. Please contact the site administrator.";
     const modalRef = useRef<HTMLDivElement>(null);
-    const recaptchaRef = useRef<RecaptchaHandle | null>(null);
-    const [recaptchaConfig, setRecaptchaConfig] = useState<RecaptchaConfig>(() => createRecaptchaConfig());
-    const [recaptchaConfigLoaded, setRecaptchaConfigLoaded] = useState(false);
-    const [recaptchaConfigError, setRecaptchaConfigError] = useState<string | null>(null);
-    const recaptchaSiteKey = recaptchaConfig.siteKey;
-    const recaptchaEnabled = recaptchaConfigLoaded && !!recaptchaSiteKey;
-    const isRecaptchaInvisible = recaptchaConfig.size === "invisible";
 
     useEffect(() => {
         if (status === "success" || status === "error") {
@@ -44,74 +70,50 @@ export default function ContactForm() {
         }
     }, [status]);
 
-    useEffect(() => {
-        let cancelled = false;
-        const controller = new AbortController();
+    const handleFieldChange = (field: keyof ContactFormValues) =>
+        (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            const value = event.target.value;
+            const nextForm = {
+                ...form,
+                [field]: value,
+            } as ContactFormValues;
 
-        const loadRecaptchaConfig = async () => {
-            try {
-                const response = await fetch("/api/recaptcha-config", {
-                    method: "GET",
-                    cache: "no-store",
-                    signal: controller.signal,
-                });
+            setForm(nextForm);
 
-                if (!response.ok) {
-                    throw new Error(`Failed to load reCAPTCHA configuration (status ${response.status}).`);
+            setErrors((prev) => {
+                const nextErrors = { ...prev } as ContactFormErrors;
+
+                if (field === "email") {
+                    if (!value.trim()) {
+                        delete nextErrors.email;
+                    } else if (!EMAIL_PATTERN.test(value)) {
+                        nextErrors.email = "Invalid email format.";
+                    } else {
+                        delete nextErrors.email;
+                    }
+                } else if (prev[field]) {
+                    if (value.trim()) {
+                        delete nextErrors[field];
+                    }
                 }
 
-                const data = await response.json();
+                return nextErrors;
+            });
 
-                if (cancelled) {
-                    return;
-                }
-
-                const nextConfig = createRecaptchaConfig(data);
-                setRecaptchaConfig(nextConfig);
-                setRecaptchaConfigError(nextConfig.siteKey ? null : recaptchaMisconfiguredMessage);
-            } catch (err) {
-                if (cancelled) {
-                    return;
-                }
-
-                console.error("Failed to load reCAPTCHA configuration", err);
-                setRecaptchaConfig(createRecaptchaConfig());
-                setRecaptchaConfigError(
-                    "Failed to load reCAPTCHA configuration. Please reload the page or contact the site administrator."
-                );
-            } finally {
-                if (!cancelled) {
-                    setRecaptchaConfigLoaded(true);
-                }
+            if (status === "error") {
+                setStatus("idle");
+                setErrorMessage(null);
             }
         };
 
-        loadRecaptchaConfig();
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-        return () => {
-            cancelled = true;
-            controller.abort();
-        };
-    }, [recaptchaMisconfiguredMessage]);
-
-    useEffect(() => {
-        if (!recaptchaEnabled) {
-            setCaptcha(null);
-            recaptchaRef.current?.reset();
-        }
-    }, [recaptchaEnabled]);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!recaptchaConfigLoaded) {
+        const validationErrors = validateForm(form);
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
             setStatus("error");
-            setErrorMessage("reCAPTCHA is still loading. Please try again in a moment.");
-            return;
-        }
-
-        if (!recaptchaEnabled) {
-            setStatus("error");
-            setErrorMessage(recaptchaConfigError ?? recaptchaMisconfiguredMessage);
+            setErrorMessage("Please correct the highlighted fields and try again.");
             return;
         }
 
@@ -119,91 +121,33 @@ export default function ContactForm() {
         setErrorMessage(null);
 
         try {
-            let token: string | null = captcha;
-
-            if (recaptchaEnabled) {
-                if (isRecaptchaInvisible) {
-                    try {
-                        const instance = recaptchaRef.current;
-                        if (!instance) {
-                            setStatus("error");
-                            setErrorMessage(
-                                "reCAPTCHA is not ready yet. Please reload the page and try again."
-                            );
-                            return;
-                        }
-
-                        const nextToken = await instance.execute();
-                        setCaptcha(nextToken);
-                        token = nextToken;
-
-                        if (!nextToken) {
-                            setStatus("error");
-                            setErrorMessage(
-                                "reCAPTCHA challenge was not completed. Please try again."
-                            );
-                            return;
-                        }
-                    } catch {
-                        setStatus("error");
-                        setErrorMessage(
-                            "Failed to execute reCAPTCHA. Please reload the page and try again."
-                        );
-                        return;
-                    }
-                } else if (!token) {
-                    setStatus("error");
-                    setErrorMessage(
-                        "Please complete the reCAPTCHA challenge before submitting the form."
-                    );
-                    return;
-                }
-            }
-
-            const res = await fetch("/api/email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, message, captcha: token }),
+            await sendContactEmail({
+                from: form.email,
+                subject: `Contact from ${form.name || "Visitor"}`,
+                message: `${form.message}\n\nName: ${form.name}\nEmail: ${form.email}`,
             });
 
-            const data = await res.json();
-
-            if (res.ok) {
-                setStatus("success");
-                setErrorMessage(null);
-                setName("");
-                setEmail("");
-                setMessage("");
-                setCaptcha(null);
-
-                if (recaptchaEnabled) {
-                    recaptchaRef.current?.reset();
-                }
-
-                if (typeof window !== "undefined") {
-                    const g = window.grecaptcha;
-                    const api = g?.reset ? g : g?.enterprise;
-                    api?.reset?.();
-                }
-            } else {
-                setStatus("error");
-                setErrorMessage(
-                    typeof data?.message === "string"
-                        ? data.message
-                        : "Something went wrong. Please try again."
-                );
-                if (recaptchaEnabled) {
-                    recaptchaRef.current?.reset();
-                }
-            }
-        } catch (err) {
+            setStatus("success");
+            setForm(DEFAULT_FORM);
+            setErrors({});
+        } catch (error) {
+            console.error(error);
             setStatus("error");
-            setErrorMessage("Something went wrong. Please try again.");
-            if (recaptchaEnabled) {
-                recaptchaRef.current?.reset();
-            }
+            setErrorMessage(
+                error instanceof Error && error.message
+                    ? error.message
+                    : "Something went wrong. Please try again."
+            );
         }
     };
+
+    const hasErrors = Object.keys(errors).length > 0;
+    const isSubmitDisabled =
+        status === "sending" ||
+        hasErrors ||
+        !form.name.trim() ||
+        !form.email.trim() ||
+        !form.message.trim();
 
     return (
         <section id="contact" className="scroll-mt-28 py-20">
@@ -216,7 +160,6 @@ export default function ContactForm() {
                     </p>
                 </div>
 
-                {/* ステータス */}
                 {status === "error" && (
                     <div className="bg-red-600 text-white text-center py-3 px-4 rounded-md">
                         {errorMessage ?? "Something went wrong. Please try again."}
@@ -233,14 +176,7 @@ export default function ContactForm() {
                     </div>
                 )}
 
-                {recaptchaConfigLoaded && !recaptchaEnabled && (
-                    <div className="rounded-md border border-yellow-400 bg-yellow-50 px-4 py-3 text-center text-sm text-yellow-800 dark:border-yellow-500/60 dark:bg-yellow-500/10 dark:text-yellow-200">
-                        {recaptchaConfigError ?? recaptchaMisconfiguredMessage}
-                    </div>
-                )}
-
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Name & Email */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label htmlFor="name" className="block mb-2 font-semibold">
@@ -251,13 +187,14 @@ export default function ContactForm() {
                                 <input
                                     id="name"
                                     type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    value={form.name}
+                                    onChange={handleFieldChange("name")}
                                     placeholder="Your name"
                                     required
                                     className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                                 />
                             </div>
+                            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                         </div>
                         <div>
                             <label htmlFor="email" className="block mb-2 font-semibold">
@@ -268,22 +205,17 @@ export default function ContactForm() {
                                 <input
                                     id="email"
                                     type="email"
-                                    value={email}
-                                    onChange={(e) => {
-                                        const val = e.target.value;
-                                        setEmail(val);
-                                        setEmailError(/^\S+@\S+\.\S+$/.test(val) ? "" : "Invalid email format");
-                                    }}
+                                    value={form.email}
+                                    onChange={handleFieldChange("email")}
                                     placeholder="you@example.com"
                                     required
                                     className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                                 />
                             </div>
-                            {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
+                            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                         </div>
                     </div>
 
-                    {/* Message */}
                     <div>
                         <label htmlFor="message" className="block mb-2 font-semibold">
                             Message
@@ -292,8 +224,8 @@ export default function ContactForm() {
                             <FiMessageSquare className="absolute left-3 top-4 text-yellow-400" />
                             <textarea
                                 id="message"
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
+                                value={form.message}
+                                onChange={handleFieldChange("message")}
                                 placeholder="Your message"
                                 rows={5}
                                 maxLength={500}
@@ -302,33 +234,14 @@ export default function ContactForm() {
                             />
                         </div>
                         <p className="text-sm text-right text-gray-600 dark:text-yellow-200">
-                            {message.length}/500
+                            {form.message.length}/500
                         </p>
+                        {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
                     </div>
 
-                    {/* reCAPTCHA */}
-                    {recaptchaEnabled && (
-                        <div className="flex justify-center">
-                            <Recaptcha
-                                ref={recaptchaRef}
-                                onChange={setCaptcha}
-                                siteKey={recaptchaSiteKey}
-                                size={recaptchaConfig.size}
-                                badge={recaptchaConfig.badge ?? undefined}
-                            />
-                        </div>
-                    )}
-
-                    {/* Submit */}
                     <button
                         type="submit"
-                        disabled={
-                            status === "sending" ||
-                            !!emailError ||
-                            !recaptchaConfigLoaded ||
-                            !recaptchaEnabled ||
-                            (recaptchaEnabled && !isRecaptchaInvisible && !captcha)
-                        }
+                        disabled={isSubmitDisabled}
                         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 py-3 font-bold text-black transition-transform duration-200 hover:scale-[1.01] hover:shadow-[0_18px_45px_-28px_rgba(250,204,21,0.6)] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {status === "sending" && <FiLoader className="animate-spin" />}
@@ -337,7 +250,6 @@ export default function ContactForm() {
                     </button>
                 </form>
 
-                {/* Contact Info Section */}
                 <div className="border-t border-yellow-500/30 pt-8 dark:border-yellow-500/40">
                     <h3 className="text-2xl font-bold mb-4 text-black dark:text-yellow-100">Other Contact Options</h3>
                     <ul className="grid grid-cols-1 gap-x-6 gap-y-3 text-[15px] md:grid-cols-2 md:text-base">
