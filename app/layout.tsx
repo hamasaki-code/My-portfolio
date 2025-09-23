@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "./components/ThemeProvider";
 
 const geistSans = localFont({
@@ -76,6 +77,7 @@ export default function RootLayout({
       >
         <script dangerouslySetInnerHTML={{ __html: themeInitializer }} />
         <ThemeProvider>{children}</ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
