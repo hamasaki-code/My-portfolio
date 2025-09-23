@@ -8,7 +8,22 @@ export async function POST(req: Request) {
         const { name, email, message, captcha } = await req.json()
         const captchaSecret = process.env.RECAPTCHA_SECRET_KEY
         const captchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-        const requireCaptcha = Boolean(captchaSecret && captchaSiteKey)
+
+        if (!captchaSecret || !captchaSiteKey) {
+            console.error(
+                "reCAPTCHA environment variables are not fully configured. Ensure both NEXT_PUBLIC_RECAPTCHA_SITE_KEY and RECAPTCHA_SECRET_KEY are set."
+            )
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "reCAPTCHA is not configured correctly. Please contact the site administrator.",
+                },
+                { status: 500 }
+            )
+        }
+
+        const requireCaptcha = true
 
         if (!name || !email || !message || (requireCaptcha && !captcha)) {
             return NextResponse.json(

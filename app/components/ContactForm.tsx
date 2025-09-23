@@ -21,9 +21,12 @@ export default function ContactForm() {
     const [message, setMessage] = useState("");
     const [captcha, setCaptcha] = useState<string | null>(null);
     const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
     const recaptchaEnabled = !!recaptchaSiteKey;
     const isRecaptchaInvisible = process.env.NEXT_PUBLIC_RECAPTCHA_SIZE === "invisible";
+    const recaptchaMisconfiguredMessage =
+        "reCAPTCHA is not configured correctly. Please contact the site administrator.";
     const modalRef = useRef<HTMLDivElement>(null);
     const recaptchaRef = useRef<RecaptchaHandle | null>(null);
 
@@ -39,7 +42,12 @@ export default function ContactForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!recaptchaEnabled) {
+            return;
+        }
+
         setStatus("sending");
+        setErrorMessage(null);
 
         try {
             let token: string | null = captcha;
@@ -50,6 +58,9 @@ export default function ContactForm() {
                         const instance = recaptchaRef.current;
                         if (!instance) {
                             setStatus("error");
+                            setErrorMessage(
+                                "reCAPTCHA is not ready yet. Please reload the page and try again."
+                            );
                             return;
                         }
 
@@ -59,14 +70,23 @@ export default function ContactForm() {
 
                         if (!nextToken) {
                             setStatus("error");
+                            setErrorMessage(
+                                "reCAPTCHA challenge was not completed. Please try again."
+                            );
                             return;
                         }
                     } catch {
                         setStatus("error");
+                        setErrorMessage(
+                            "Failed to execute reCAPTCHA. Please reload the page and try again."
+                        );
                         return;
                     }
                 } else if (!token) {
                     setStatus("error");
+                    setErrorMessage(
+                        "Please complete the reCAPTCHA challenge before submitting the form."
+                    );
                     return;
                 }
             }
@@ -77,10 +97,11 @@ export default function ContactForm() {
                 body: JSON.stringify({ name, email, message, captcha: token }),
             });
 
-            await res.json();
+            const data = await res.json();
 
             if (res.ok) {
                 setStatus("success");
+                setErrorMessage(null);
                 setName("");
                 setEmail("");
                 setMessage("");
@@ -97,12 +118,18 @@ export default function ContactForm() {
                 }
             } else {
                 setStatus("error");
+                setErrorMessage(
+                    typeof data?.message === "string"
+                        ? data.message
+                        : "Something went wrong. Please try again."
+                );
                 if (recaptchaEnabled) {
                     recaptchaRef.current?.reset();
                 }
             }
         } catch (err) {
             setStatus("error");
+            setErrorMessage("Something went wrong. Please try again.");
             if (recaptchaEnabled) {
                 recaptchaRef.current?.reset();
             }
@@ -123,7 +150,7 @@ export default function ContactForm() {
                 {/* ステータス */}
                 {status === "error" && (
                     <div className="bg-red-600 text-white text-center py-3 px-4 rounded-md">
-                        Something went wrong. Please try again.
+                        {errorMessage ?? "Something went wrong. Please try again."}
                     </div>
                 )}
                 {status === "success" && (
@@ -134,6 +161,12 @@ export default function ContactForm() {
                     >
                         <FiCheck className="mx-auto mb-2 text-2xl" />
                         <p>Thanks! I&apos;ll reply to you soon.</p>
+                    </div>
+                )}
+
+                {!recaptchaEnabled && (
+                    <div className="rounded-md border border-yellow-400 bg-yellow-50 px-4 py-3 text-center text-sm text-yellow-800 dark:border-yellow-500/60 dark:bg-yellow-500/10 dark:text-yellow-200">
+                        {recaptchaMisconfiguredMessage}
                     </div>
                 )}
 
@@ -217,6 +250,7 @@ export default function ContactForm() {
                         disabled={
                             status === "sending" ||
                             !!emailError ||
+                            !recaptchaEnabled ||
                             (recaptchaEnabled && !isRecaptchaInvisible && !captcha)
                         }
                         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 py-3 font-bold text-black transition-transform duration-200 hover:scale-[1.01] hover:shadow-[0_18px_45px_-28px_rgba(250,204,21,0.6)] disabled:cursor-not-allowed disabled:opacity-60"
