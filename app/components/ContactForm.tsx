@@ -13,6 +13,7 @@ import {
 import { RiTwitterXLine, RiAccountCircleLine } from "react-icons/ri";
 import { SiWantedly, SiLinkedin } from "react-icons/si";
 import Recaptcha, { RecaptchaHandle } from "./Recaptcha";
+import { createRecaptchaConfig, type RecaptchaConfig } from "@/lib/recaptcha";
 
 export default function ContactForm() {
     const [name, setName] = useState("");
@@ -22,13 +23,16 @@ export default function ContactForm() {
     const [captcha, setCaptcha] = useState<string | null>(null);
     const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-    const recaptchaEnabled = !!recaptchaSiteKey;
-    const isRecaptchaInvisible = process.env.NEXT_PUBLIC_RECAPTCHA_SIZE === "invisible";
     const recaptchaMisconfiguredMessage =
         "reCAPTCHA is not configured correctly. Please contact the site administrator.";
     const modalRef = useRef<HTMLDivElement>(null);
     const recaptchaRef = useRef<RecaptchaHandle | null>(null);
+    const [recaptchaConfig, setRecaptchaConfig] = useState<RecaptchaConfig>(() => createRecaptchaConfig());
+    const [recaptchaConfigLoaded, setRecaptchaConfigLoaded] = useState(false);
+    const [recaptchaConfigError, setRecaptchaConfigError] = useState<string | null>(null);
+    const recaptchaSiteKey = recaptchaConfig.siteKey;
+    const recaptchaEnabled = recaptchaConfigLoaded && !!recaptchaSiteKey;
+    const isRecaptchaInvisible = recaptchaConfig.size === "invisible";
 
     useEffect(() => {
         if (status === "success" || status === "error") {
@@ -40,9 +44,74 @@ export default function ContactForm() {
         }
     }, [status]);
 
+    useEffect(() => {
+        let cancelled = false;
+        const controller = new AbortController();
+
+        const loadRecaptchaConfig = async () => {
+            try {
+                const response = await fetch("/api/recaptcha-config", {
+                    method: "GET",
+                    cache: "no-store",
+                    signal: controller.signal,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to load reCAPTCHA configuration (status ${response.status}).`);
+                }
+
+                const data = await response.json();
+
+                if (cancelled) {
+                    return;
+                }
+
+                const nextConfig = createRecaptchaConfig(data);
+                setRecaptchaConfig(nextConfig);
+                setRecaptchaConfigError(nextConfig.siteKey ? null : recaptchaMisconfiguredMessage);
+            } catch (err) {
+                if (cancelled) {
+                    return;
+                }
+
+                console.error("Failed to load reCAPTCHA configuration", err);
+                setRecaptchaConfig(createRecaptchaConfig());
+                setRecaptchaConfigError(
+                    "Failed to load reCAPTCHA configuration. Please reload the page or contact the site administrator."
+                );
+            } finally {
+                if (!cancelled) {
+                    setRecaptchaConfigLoaded(true);
+                }
+            }
+        };
+
+        loadRecaptchaConfig();
+
+        return () => {
+            cancelled = true;
+            controller.abort();
+        };
+    }, [recaptchaMisconfiguredMessage]);
+
+    useEffect(() => {
+        if (!recaptchaEnabled) {
+            setCaptcha(null);
+            recaptchaRef.current?.reset();
+        }
+    }, [recaptchaEnabled]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!recaptchaConfigLoaded) {
+            setStatus("error");
+            setErrorMessage("reCAPTCHA is still loading. Please try again in a moment.");
+            return;
+        }
+
         if (!recaptchaEnabled) {
+            setStatus("error");
+            setErrorMessage(recaptchaConfigError ?? recaptchaMisconfiguredMessage);
             return;
         }
 
@@ -164,9 +233,9 @@ export default function ContactForm() {
                     </div>
                 )}
 
-                {!recaptchaEnabled && (
+                {recaptchaConfigLoaded && !recaptchaEnabled && (
                     <div className="rounded-md border border-yellow-400 bg-yellow-50 px-4 py-3 text-center text-sm text-yellow-800 dark:border-yellow-500/60 dark:bg-yellow-500/10 dark:text-yellow-200">
-                        {recaptchaMisconfiguredMessage}
+                        {recaptchaConfigError ?? recaptchaMisconfiguredMessage}
                     </div>
                 )}
 
@@ -240,7 +309,13 @@ export default function ContactForm() {
                     {/* reCAPTCHA */}
                     {recaptchaEnabled && (
                         <div className="flex justify-center">
-                            <Recaptcha ref={recaptchaRef} onChange={setCaptcha} />
+                            <Recaptcha
+                                ref={recaptchaRef}
+                                onChange={setCaptcha}
+                                siteKey={recaptchaSiteKey}
+                                size={recaptchaConfig.size}
+                                badge={recaptchaConfig.badge ?? undefined}
+                            />
                         </div>
                     )}
 
@@ -250,6 +325,7 @@ export default function ContactForm() {
                         disabled={
                             status === "sending" ||
                             !!emailError ||
+                            !recaptchaConfigLoaded ||
                             !recaptchaEnabled ||
                             (recaptchaEnabled && !isRecaptchaInvisible && !captcha)
                         }
