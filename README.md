@@ -85,10 +85,10 @@ npm run dev
 | `EMAIL_USER` | 送信元メールアドレス (SMTP ユーザー) |
 | `EMAIL_PASS` | SMTP のアプリパスワードまたはアクセストークン |
 | `RECIPIENT_EMAIL` | 問い合わせ内容を受信するメールアドレス |
-| `RECAPTCHA_SECRET_KEY` | Google reCAPTCHA v2/v3 のシークレットキー。未設定の場合は検証をスキップします |
-| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | reCAPTCHA をフロントエンドで表示するためのサイトキー。reCAPTCHA を使わない場合は未設定で構いません |
+| `RECAPTCHA_SECRET_KEY` | Google reCAPTCHA v2/v3 のシークレットキー。未設定の場合はフォーム送信が失敗します |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | reCAPTCHA をフロントエンドで表示するためのサイトキー。未設定の場合はフォーム送信が失敗します |
 
-> reCAPTCHA を有効にする場合はシークレットキーとサイトキーの両方を設定してください。メール送信には Gmail 等の SMTP を利用でき、`EMAIL_PASS` にはアプリパスワードを推奨します。【F:app/components/ContactForm.tsx†L19-L155】【F:app/api/email/route.tsx†L1-L79】
+> reCAPTCHA を正しく動作させるにはシークレットキーとサイトキーの両方を必ず設定してください。本番環境だけでなく `.env.local` にも同じ値を設定すると、ローカル開発時と本番環境で挙動の差異が出なくなります。Google reCAPTCHA の管理画面では **`your-domain.com` や `your-project.vercel.app` のようにプロトコルを含まない正しいドメイン名をサイトキーの「ドメイン」一覧に追加** してください。登録されていないホスト名からアクセスすると `サイトキーのドメインが無効です` というエラーになります。メール送信には Gmail 等の SMTP を利用でき、`EMAIL_PASS` にはアプリパスワードを推奨します。【F:app/components/ContactForm.tsx†L17-L247】【F:app/api/email/route.tsx†L6-L99】
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
 
