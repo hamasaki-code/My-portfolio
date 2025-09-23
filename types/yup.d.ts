@@ -19,8 +19,17 @@ declare module "yup" {
         email(message?: string): this;
     }
 
-    export interface ObjectSchema<T extends Record<string, any>> extends AnySchema<T> {}
+    export type InferType<TSchema> = TSchema extends AnySchema<infer TValue> ? TValue : never;
 
-    export function object<T extends Record<string, any>>(shape: T): ObjectSchema<T>;
+    export type InferObjectShape<TShape extends Record<string, AnySchema<any>>> = {
+        [Key in keyof TShape]: InferType<TShape[Key]>;
+    };
+
+    export interface ObjectSchema<TShape extends Record<string, AnySchema<any>>>
+        extends AnySchema<InferObjectShape<TShape>> {}
+
+    export function object<TShape extends Record<string, AnySchema<any>>>(
+        shape: TShape
+    ): ObjectSchema<TShape>;
     export function string(): StringSchema;
 }
