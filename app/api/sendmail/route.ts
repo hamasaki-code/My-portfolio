@@ -67,6 +67,23 @@ export async function POST(request: Request) {
             port === 465
         );
 
+        const allowSelfSigned = parseBoolean(
+            process.env.SMTP_ALLOW_SELF_SIGNED ?? process.env.MAIL_ALLOW_SELF_SIGNED,
+            false
+        );
+        const rejectUnauthorized = allowSelfSigned
+            ? false
+            : parseBoolean(
+                  process.env.SMTP_REJECT_UNAUTHORIZED ?? process.env.MAIL_REJECT_UNAUTHORIZED,
+                  true
+              );
+
+        if (!rejectUnauthorized) {
+            console.warn(
+                "SMTP TLS certificate verification is disabled. Do not use this in production environments."
+            );
+        }
+
         const transporter = nodemailer.createTransport({
             host,
             port,
@@ -74,6 +91,9 @@ export async function POST(request: Request) {
             auth: {
                 user: smtpUser,
                 pass: smtpPass,
+            },
+            tls: {
+                rejectUnauthorized,
             },
         });
 
