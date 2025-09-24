@@ -45,7 +45,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
   const pageTitle = `${project.title} | Taishi Hamasaki`;
   const pageDescription =
     project.description[0] ?? "プロジェクトの詳細情報をご覧いただけます。";
-  const ogImage = project.image ?? "/profile.jpg";
+  const ogImage = project.image ?? "/portfolio.png";
   const keywords = Array.from(
     new Set(
       [

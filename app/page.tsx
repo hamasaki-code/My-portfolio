@@ -73,7 +73,7 @@ export default function Home() {
           "TypeScript",
           "Tailwind CSS",
         ]}
-        ogImage="/profile.jpg"
+        ogImage="/portfolio.png"
         ogUrl={SITE_URL}
         themeColor="#facc15"
         twitterHandle="@OnTAumv5KAoVGN5"
