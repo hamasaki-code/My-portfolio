@@ -33,6 +33,19 @@ const parseNumber = (value: string | undefined, fallback: number) => {
     return Number.isFinite(parsed) ? parsed : fallback;
 };
 
+const isSelfSignedCertificateError = (error: unknown) => {
+    if (!(error instanceof Error)) {
+        return false;
+    }
+
+    const message = error.message.toLowerCase();
+
+    return (
+        message.includes("self-signed certificate") ||
+        message.includes("unable to verify the first certificate")
+    );
+};
+
 export async function POST(request: Request) {
     try {
         const { name, email, content }: ContactRequestBody = await request.json();
@@ -84,18 +97,20 @@ export async function POST(request: Request) {
             );
         }
 
-        const transporter = nodemailer.createTransport({
-            host,
-            port,
-            secure,
-            auth: {
-                user: smtpUser,
-                pass: smtpPass,
-            },
-            tls: {
-                rejectUnauthorized,
-            },
-        });
+        const createTransporter = (overrideRejectUnauthorized?: boolean) =>
+            nodemailer.createTransport({
+                host,
+                port,
+                secure,
+                auth: {
+                    user: smtpUser,
+                    pass: smtpPass,
+                },
+                tls: {
+                    rejectUnauthorized:
+                        overrideRejectUnauthorized ?? rejectUnauthorized,
+                },
+            });
 
         const senderName = name?.trim() || "匿名";
         const senderEmail = email?.trim();
@@ -118,7 +133,27 @@ export async function POST(request: Request) {
                 .join("\n"),
         } satisfies nodemailer.SendMailOptions;
 
-        await transporter.sendMail(ownerMail);
+        let transporter = createTransporter();
+
+        try {
+            await transporter.sendMail(ownerMail);
+        } catch (error) {
+            const allowSelfSignedFallback =
+                process.env.NODE_ENV !== "production" &&
+                !allowSelfSigned &&
+                rejectUnauthorized;
+
+            if (allowSelfSignedFallback && isSelfSignedCertificateError(error)) {
+                console.warn(
+                    "Detected a self-signed TLS certificate. Retrying mail delivery with relaxed certificate validation because the app is running in development mode. Set SMTP_ALLOW_SELF_SIGNED=true or provide a trusted certificate to avoid this fallback."
+                );
+
+                transporter = createTransporter(false);
+                await transporter.sendMail(ownerMail);
+            } else {
+                throw error;
+            }
+        }
 
         return NextResponse.json({ message: "メールが送信されました。" });
     } catch (error) {
