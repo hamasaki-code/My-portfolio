@@ -37,14 +37,6 @@ export const metadata: Metadata = {
     title: "Taishi Hamasaki | Portfolio",
     description:
       "Discover Taishi Hamasaki's web development projects, technical stack, and career history.",
-    images: [
-      {
-        url: "/profile.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Taishi Hamasaki",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
