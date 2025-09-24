@@ -115,13 +115,13 @@ export async function POST(request: Request) {
         const senderName = name?.trim() || "匿名";
         const senderEmail = email?.trim();
         const message = content?.trim() || "(本文なし)";
-        const mailSubject = "お問い合わせフォームからのメッセージ";
+        const mailSubject = "【Portfolio】お問い合わせフォームに新着メッセージ";
 
         const ownerMail = {
             from: fromAddress,
             to: ownerAddress,
             replyTo: senderEmail,
-            subject: `【お問い合わせ】${mailSubject}`,
+            subject: mailSubject,
             text: [
                 `お名前: ${senderName}`,
                 senderEmail ? `メールアドレス: ${senderEmail}` : null,
