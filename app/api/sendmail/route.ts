@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 type ContactRequestBody = {
     name?: string;
     email?: string;
-    subject?: string;
     content?: string;
 };
 
@@ -36,7 +35,7 @@ const parseNumber = (value: string | undefined, fallback: number) => {
 
 export async function POST(request: Request) {
     try {
-        const { name, email, subject, content }: ContactRequestBody = await request.json();
+        const { name, email, content }: ContactRequestBody = await request.json();
 
         const smtpUser =
             process.env.MAIL_ACCOUNT ??
@@ -80,8 +79,8 @@ export async function POST(request: Request) {
 
         const senderName = name?.trim() || "匿名";
         const senderEmail = email?.trim();
-        const mailSubject = subject?.trim() || "お問い合わせ";
         const message = content?.trim() || "(本文なし)";
+        const mailSubject = "お問い合わせフォームからのメッセージ";
 
         const ownerMail = {
             from: fromAddress,
@@ -99,26 +98,7 @@ export async function POST(request: Request) {
                 .join("\n"),
         } satisfies nodemailer.SendMailOptions;
 
-        const acknowledgementMail = senderEmail
-            ? ({
-                  from: fromAddress,
-                  to: senderEmail,
-                  subject: "お問い合わせありがとうございます",
-                  text: [
-                      `${senderName} 様`,
-                      "",
-                      "お問い合わせありがとうございます。以下の内容で受け付けました。",
-                      "",
-                      `件名: ${mailSubject}`,
-                      "",
-                      message,
-                      "",
-                      "担当者より折り返しご連絡いたしますので、今しばらくお待ちください。",
-                  ].join("\n"),
-              } satisfies nodemailer.SendMailOptions)
-            : null;
-
-        await Promise.all([transporter.sendMail(ownerMail), acknowledgementMail ? transporter.sendMail(acknowledgementMail) : Promise.resolve()]);
+        await transporter.sendMail(ownerMail);
 
         return NextResponse.json({ message: "メールが送信されました。" });
     } catch (error) {
