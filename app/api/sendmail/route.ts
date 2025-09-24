@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 type ContactRequestBody = {
     name?: string;
     email?: string;
-    subject?: string;
     content?: string;
 };
 
@@ -34,9 +33,22 @@ const parseNumber = (value: string | undefined, fallback: number) => {
     return Number.isFinite(parsed) ? parsed : fallback;
 };
 
+const isSelfSignedCertificateError = (error: unknown) => {
+    if (!(error instanceof Error)) {
+        return false;
+    }
+
+    const message = error.message.toLowerCase();
+
+    return (
+        message.includes("self-signed certificate") ||
+        message.includes("unable to verify the first certificate")
+    );
+};
+
 export async function POST(request: Request) {
     try {
-        const { name, email, subject, content }: ContactRequestBody = await request.json();
+        const { name, email, content }: ContactRequestBody = await request.json();
 
         const smtpUser =
             process.env.MAIL_ACCOUNT ??
@@ -68,26 +80,48 @@ export async function POST(request: Request) {
             port === 465
         );
 
-        const transporter = nodemailer.createTransport({
-            host,
-            port,
-            secure,
-            auth: {
-                user: smtpUser,
-                pass: smtpPass,
-            },
-        });
+        const allowSelfSigned = parseBoolean(
+            process.env.SMTP_ALLOW_SELF_SIGNED ?? process.env.MAIL_ALLOW_SELF_SIGNED,
+            false
+        );
+        const rejectUnauthorized = allowSelfSigned
+            ? false
+            : parseBoolean(
+                  process.env.SMTP_REJECT_UNAUTHORIZED ?? process.env.MAIL_REJECT_UNAUTHORIZED,
+                  true
+              );
+
+        if (!rejectUnauthorized) {
+            console.warn(
+                "SMTP TLS certificate verification is disabled. Do not use this in production environments."
+            );
+        }
+
+        const createTransporter = (overrideRejectUnauthorized?: boolean) =>
+            nodemailer.createTransport({
+                host,
+                port,
+                secure,
+                auth: {
+                    user: smtpUser,
+                    pass: smtpPass,
+                },
+                tls: {
+                    rejectUnauthorized:
+                        overrideRejectUnauthorized ?? rejectUnauthorized,
+                },
+            });
 
         const senderName = name?.trim() || "匿名";
         const senderEmail = email?.trim();
-        const mailSubject = subject?.trim() || "お問い合わせ";
         const message = content?.trim() || "(本文なし)";
+        const mailSubject = "【Portfolio】お問い合わせフォームに新着メッセージ";
 
         const ownerMail = {
             from: fromAddress,
             to: ownerAddress,
             replyTo: senderEmail,
-            subject: `【お問い合わせ】${mailSubject}`,
+            subject: mailSubject,
             text: [
                 `お名前: ${senderName}`,
                 senderEmail ? `メールアドレス: ${senderEmail}` : null,
@@ -99,26 +133,27 @@ export async function POST(request: Request) {
                 .join("\n"),
         } satisfies nodemailer.SendMailOptions;
 
-        const acknowledgementMail = senderEmail
-            ? ({
-                  from: fromAddress,
-                  to: senderEmail,
-                  subject: "お問い合わせありがとうございます",
-                  text: [
-                      `${senderName} 様`,
-                      "",
-                      "お問い合わせありがとうございます。以下の内容で受け付けました。",
-                      "",
-                      `件名: ${mailSubject}`,
-                      "",
-                      message,
-                      "",
-                      "担当者より折り返しご連絡いたしますので、今しばらくお待ちください。",
-                  ].join("\n"),
-              } satisfies nodemailer.SendMailOptions)
-            : null;
+        let transporter = createTransporter();
 
-        await Promise.all([transporter.sendMail(ownerMail), acknowledgementMail ? transporter.sendMail(acknowledgementMail) : Promise.resolve()]);
+        try {
+            await transporter.sendMail(ownerMail);
+        } catch (error) {
+            const allowSelfSignedFallback =
+                process.env.NODE_ENV !== "production" &&
+                !allowSelfSigned &&
+                rejectUnauthorized;
+
+            if (allowSelfSignedFallback && isSelfSignedCertificateError(error)) {
+                console.warn(
+                    "Detected a self-signed TLS certificate. Retrying mail delivery with relaxed certificate validation because the app is running in development mode. Set SMTP_ALLOW_SELF_SIGNED=true or provide a trusted certificate to avoid this fallback."
+                );
+
+                transporter = createTransporter(false);
+                await transporter.sendMail(ownerMail);
+            } else {
+                throw error;
+            }
+        }
 
         return NextResponse.json({ message: "メールが送信されました。" });
     } catch (error) {

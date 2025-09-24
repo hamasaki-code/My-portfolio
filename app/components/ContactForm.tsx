@@ -2,23 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import {
-    FiUser,
-    FiMail,
-    FiMessageSquare,
-    FiSend,
-    FiLoader,
-    FiCheck,
-    FiGithub,
-    FiTag,
-} from "react-icons/fi";
+import { FiUser, FiMail, FiMessageSquare, FiSend, FiLoader, FiCheck, FiGithub } from "react-icons/fi";
 import { RiTwitterXLine, RiAccountCircleLine } from "react-icons/ri";
 import { SiWantedly, SiLinkedin } from "react-icons/si";
 
 const DEFAULT_FORM = {
     name: "",
     email: "",
-    subject: "",
     message: "",
 };
 type ContactFormValues = typeof DEFAULT_FORM;
@@ -69,7 +59,6 @@ export default function ContactForm() {
                 body: JSON.stringify({
                     name: form.name,
                     email: form.email,
-                    subject: form.subject,
                     content: form.message,
                 }),
             });
@@ -100,7 +89,6 @@ export default function ContactForm() {
         status === "sending" ||
         !form.name.trim() ||
         !form.email.trim() ||
-        !form.subject.trim() ||
         !form.message.trim();
 
     return (
@@ -161,23 +149,6 @@ export default function ContactForm() {
                                     value={form.email}
                                     onChange={handleFieldChange("email")}
                                     placeholder="you@example.com"
-                                    required
-                                    className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <label htmlFor="subject" className="block mb-2 font-semibold">
-                                Subject
-                            </label>
-                            <div className="relative">
-                                <FiTag className="absolute left-3 top-3 text-yellow-400" />
-                                <input
-                                    id="subject"
-                                    type="text"
-                                    value={form.subject}
-                                    onChange={handleFieldChange("subject")}
-                                    placeholder="How can I help you?"
                                     required
                                     className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                                 />
