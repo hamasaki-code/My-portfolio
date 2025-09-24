@@ -22,7 +22,7 @@ const SITE_URL = "https://taishi-hamasaki-portfolio.vercel.app";
 const DEFAULT_TITLE = "Taishi Hamasaki | Portfolio";
 const DEFAULT_DESCRIPTION =
   "Taishi Hamasaki's portfolio showcasing web development skills in React, Node.js, Flutter, and more. Explore projects and connect with me for collaboration.";
-const DEFAULT_IMAGE = "/profile.jpg";
+const DEFAULT_IMAGE = "/portfolio.png";
 const DEFAULT_THEME_COLOR = "#facc15";
 const DEFAULT_KEYWORDS = [
   "Taishi Hamasaki",
