@@ -1,28 +1,22 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import {
-    FiUser,
-    FiMail,
-    FiMessageSquare,
-    FiSend,
-    FiLoader,
-    FiCheck,
-    FiGithub,
-} from "react-icons/fi";
+import { useEffect, useRef, useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import { FiUser, FiMail, FiMessageSquare, FiSend, FiLoader, FiCheck, FiGithub } from "react-icons/fi";
 import { RiTwitterXLine, RiAccountCircleLine } from "react-icons/ri";
 import { SiWantedly, SiLinkedin } from "react-icons/si";
-import Recaptcha from "./Recaptcha";
+
+const DEFAULT_FORM = {
+    name: "",
+    email: "",
+    message: "",
+};
+type ContactFormValues = typeof DEFAULT_FORM;
 
 export default function ContactForm() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [emailError, setEmailError] = useState("");
-    const [message, setMessage] = useState("");
-    const [captcha, setCaptcha] = useState<string | null>(null);
+    const [form, setForm] = useState(DEFAULT_FORM);
     const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
-    const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-    const recaptchaEnabled = !!recaptchaSiteKey;
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -35,38 +29,67 @@ export default function ContactForm() {
         }
     }, [status]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleFieldChange = (field: keyof ContactFormValues) =>
+        (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            const value = event.target.value;
+
+            setForm((prev) => ({
+                ...prev,
+                [field]: value,
+            }));
+
+            if (status === "error") {
+                setStatus("idle");
+                setErrorMessage(null);
+            }
+        };
+
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
         setStatus("sending");
+        setErrorMessage(null);
 
         try {
-            const res = await fetch("/api/email", {
+            const res = await fetch("/api/sendmail", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, message, captcha }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: form.name,
+                    email: form.email,
+                    content: form.message,
+                }),
             });
 
-            await res.json();
-
-            if (res.ok) {
-                setStatus("success");
-                setName("");
-                setEmail("");
-                setMessage("");
-                setCaptcha(null);
-
-                if (typeof window !== "undefined") {
-                    const g = window.grecaptcha;
-                    const api = g?.reset ? g : g?.enterprise;
-                    api?.reset?.();
-                }
-            } else {
-                setStatus("error");
+            if (!res.ok) {
+                const data = await res.json().catch(() => null);
+                const message =
+                    data && typeof data === "object" && "error" in data && typeof data.error === "string"
+                        ? data.error
+                        : "メールの送信中にエラーが発生しました。";
+                throw new Error(message);
             }
-        } catch (err) {
+
+            setStatus("success");
+            setForm({ ...DEFAULT_FORM });
+        } catch (error) {
+            console.error(error);
             setStatus("error");
+            setErrorMessage(
+                error instanceof Error && error.message
+                    ? error.message
+                    : "メールの送信中にエラーが発生しました。"
+            );
         }
     };
+
+    const isSubmitDisabled =
+        status === "sending" ||
+        !form.name.trim() ||
+        !form.email.trim() ||
+        !form.message.trim();
 
     return (
         <section id="contact" className="scroll-mt-28 py-20">
@@ -79,10 +102,9 @@ export default function ContactForm() {
                     </p>
                 </div>
 
-                {/* ステータス */}
                 {status === "error" && (
                     <div className="bg-red-600 text-white text-center py-3 px-4 rounded-md">
-                        Something went wrong. Please try again.
+                        {errorMessage ?? "Something went wrong. Please try again."}
                     </div>
                 )}
                 {status === "success" && (
@@ -97,7 +119,6 @@ export default function ContactForm() {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Name & Email */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label htmlFor="name" className="block mb-2 font-semibold">
@@ -108,8 +129,8 @@ export default function ContactForm() {
                                 <input
                                     id="name"
                                     type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    value={form.name}
+                                    onChange={handleFieldChange("name")}
                                     placeholder="Your name"
                                     required
                                     className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
@@ -125,22 +146,16 @@ export default function ContactForm() {
                                 <input
                                     id="email"
                                     type="email"
-                                    value={email}
-                                    onChange={(e) => {
-                                        const val = e.target.value;
-                                        setEmail(val);
-                                        setEmailError(/^\S+@\S+\.\S+$/.test(val) ? "" : "Invalid email format");
-                                    }}
+                                    value={form.email}
+                                    onChange={handleFieldChange("email")}
                                     placeholder="you@example.com"
                                     required
                                     className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                                 />
                             </div>
-                            {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
                         </div>
                     </div>
 
-                    {/* Message */}
                     <div>
                         <label htmlFor="message" className="block mb-2 font-semibold">
                             Message
@@ -149,8 +164,8 @@ export default function ContactForm() {
                             <FiMessageSquare className="absolute left-3 top-4 text-yellow-400" />
                             <textarea
                                 id="message"
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
+                                value={form.message}
+                                onChange={handleFieldChange("message")}
                                 placeholder="Your message"
                                 rows={5}
                                 maxLength={500}
@@ -159,21 +174,13 @@ export default function ContactForm() {
                             />
                         </div>
                         <p className="text-sm text-right text-gray-600 dark:text-yellow-200">
-                            {message.length}/500
+                            {form.message.length}/500
                         </p>
                     </div>
 
-                    {/* reCAPTCHA */}
-                    {recaptchaEnabled && (
-                        <div className="flex justify-center">
-                            <Recaptcha onChange={setCaptcha} />
-                        </div>
-                    )}
-
-                    {/* Submit */}
                     <button
                         type="submit"
-                        disabled={status === "sending" || !!emailError || (recaptchaEnabled && !captcha)}
+                        disabled={isSubmitDisabled}
                         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 py-3 font-bold text-black transition-transform duration-200 hover:scale-[1.01] hover:shadow-[0_18px_45px_-28px_rgba(250,204,21,0.6)] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {status === "sending" && <FiLoader className="animate-spin" />}
@@ -182,7 +189,6 @@ export default function ContactForm() {
                     </button>
                 </form>
 
-                {/* Contact Info Section */}
                 <div className="border-t border-yellow-500/30 pt-8 dark:border-yellow-500/40">
                     <h3 className="text-2xl font-bold mb-4 text-black dark:text-yellow-100">Other Contact Options</h3>
                     <ul className="grid grid-cols-1 gap-x-6 gap-y-3 text-[15px] md:grid-cols-2 md:text-base">
