@@ -19,8 +19,8 @@ export default function About(): JSX.Element {
             About Me
           </h2>
           <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-gray-700 dark:text-gray-300">
-            大阪府出身のエンジニアです。大学で情報系を専攻し、現在はモバイルアプリの保守開発を担当しながら日々学び続けています。
-            Flutter を中心に、Next.js や Ruby on Rails などの Web 技術にも強い関心を持ち、個人開発などで学習に励んでいます。
+            大阪府出身のエンジニアです。大学で情報系を専攻し、企業ではFlutterを用いたモバイルアプリの保守開発を経験しました。
+            現在はRuby on Railsを用いたバックエンド開発にも携わりながら、個人開発ではNext.jsやRuby on Railsなどを用いて開発に取り組んでいます。
           </p>
         </header>
 
@@ -34,6 +34,7 @@ export default function About(): JSX.Element {
                 width={200}
                 height={200}
                 className="relative rounded-full border-4 border-yellow-200 object-cover shadow-[0_18px_45px_-28px_rgba(0,0,0,0.4)] dark:border-yellow-400"
+                sizes="200px"
                 priority
               />
             </div>
@@ -52,11 +53,11 @@ export default function About(): JSX.Element {
               </span>
             </div>
             <p className="text-base leading-relaxed text-gray-700 dark:text-gray-200">
-              Webアプリケーションの開発経験を軸に、Flutter を用いたモバイルアプリ開発、UI 改善、Crashlytics 対応など幅広く担当しています。
-              チームでの勉強会運営や輪読会での発表も行い、知見の共有と継続的な学習を大切にしています。
+              実務ではFlutterを用いた求人検索アプリの保守開発を担当し、機能検討・実装、UI改善、Crashlytics対応、バグ修正、リリース作業などを経験しました。
+              現在はバックエンドエンジニアとして、Ruby on Railsを用いたサービス開発に取り組んでいます。
             </p>
             <p className="text-base leading-relaxed text-gray-700 dark:text-gray-200">
-              新しい技術に積極的に取り組みながら、ユーザー体験を高める設計と開発に注力。Next.js や Ruby on Rails を活かしたサービスづくりに挑戦しています。
+              ユーザー体験を高める設計と実装を継続的に学び、実践することを大切にしています。
             </p>
 
             <div>

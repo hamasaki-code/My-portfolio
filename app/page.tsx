@@ -9,19 +9,64 @@ import Skills from "./components/Skills";
 import Career from "./components/Career";
 import ContactForm from "./components/ContactForm";
 import LoadingScreen from "./components/LoadingScreen";
+import { HISTORY_RESTORE_SESSION_KEY } from "./components/HistoryNavigationTracker";
+import { SITE_URL } from "../lib/site";
 
-const SITE_URL = "https://taishi-hamasaki-portfolio.vercel.app";
+const LOADING_SCREEN_SESSION_KEY = "portfolio-loading-screen-shown";
+
+const shouldShowLoadingScreen = () => {
+  if (typeof window === "undefined") {
+    return true;
+  }
+
+  const navigationEntry = performance.getEntriesByType("navigation")[0] as
+    | PerformanceNavigationTiming
+    | undefined;
+
+  if (navigationEntry?.type === "back_forward") {
+    return false;
+  }
+
+  try {
+    if (sessionStorage.getItem(HISTORY_RESTORE_SESSION_KEY) === "true") {
+      sessionStorage.removeItem(HISTORY_RESTORE_SESSION_KEY);
+      return false;
+    }
+  } catch {
+    return true;
+  }
+
+  if (navigationEntry?.type === "reload") {
+    return true;
+  }
+
+  try {
+    return sessionStorage.getItem(LOADING_SCREEN_SESSION_KEY) !== "true";
+  } catch {
+    return true;
+  }
+};
 
 export default function Home() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(shouldShowLoadingScreen);
 
   useEffect(() => {
+    if (!loading) {
+      return;
+    }
+
+    try {
+      sessionStorage.setItem(LOADING_SCREEN_SESSION_KEY, "true");
+    } catch {
+      // Ignore storage failures and keep the loading screen behavior best-effort.
+    }
+
     const timer = setTimeout(() => {
       setLoading(false);
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
     if (loading) {
