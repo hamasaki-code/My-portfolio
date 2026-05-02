@@ -1,5 +1,6 @@
 import { FaBuilding, FaLaptopCode } from "react-icons/fa";
 import { IoIosSchool } from "react-icons/io";
+import { IoGameController } from "react-icons/io5";
 
 export default function Career() {
   return (
@@ -33,7 +34,26 @@ export default function Career() {
                 <span className="ml-3 inline-flex items-center rounded-full bg-green-600/90 px-2.5 py-0.5 text-xs font-semibold text-white">正社員</span>
               </p>
               <p className="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-gray-300 md:text-base">
-                Flutter を用いた求人検索アプリの保守開発を担当。Crashlytics 対応や UI 改善、バグ修正、リリース作業まで一貫して携わっています。社内勉強会の運営や輪読会での発表を通じてナレッジ共有にも取り組んでいます。
+                Flutterを用いた求人検索アプリの保守開発を担当し、一機能のシステム検討及び実装、Crashlytics対応、UI改善、バグ修正、リリース作業などを経験しました。
+                現在はバックエンドエンジニアとして、Ruby on Railsを用いたペット関連サービスのプロジェクトに携わっています。
+              </p>
+            </article>
+
+            <article className="relative pl-16">
+              <div className="absolute left-0 top-0 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-400 text-black shadow-md ring-4 ring-green-400/60 dark:bg-yellow-400 dark:text-black dark:ring-green-400/40">
+                <IoGameController className="h-5 w-5" />
+              </div>
+              <time className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow-700 dark:text-yellow-300">
+                2025年12月 - <span className="font-bold">現在</span>
+              </time>
+              <h3 className="mt-3 text-2xl font-semibold text-neutral-900 dark:text-yellow-100">ゲーム開発会社</h3>
+              <p className="mt-1 text-sm font-semibold text-neutral-700 dark:text-yellow-200">
+                ゲームエンジニア / Verseエンジニア
+                <span className="ml-3 inline-flex items-center rounded-full bg-blue-600/90 px-2.5 py-0.5 text-xs font-semibold text-white">副業</span>
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-gray-300 md:text-base">
+                UEFN（Unreal Editor for Fortnite）と Verse を用いたゲーム内システム・ロジック開発を担当。
+                ゲーム進行、イベント制御、状態管理など、Fortnite 上で動作するゲーム機能の実装に取り組んでいます。
               </p>
             </article>
 
@@ -66,7 +86,8 @@ export default function Career() {
                 情報理工学部 情報理工学科
               </p>
               <p className="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-gray-300 md:text-base">
-                プログラミングとシステム開発を学びながら複数のインターンに参加。卒業研究ではモーションキャプチャーと VR を組み合わせたスポーツトレーニング支援システムを構築し、Unity・MotionBuilder・Vicon を連携させたリアルタイム解析を実現しました。
+                プログラミングとシステム開発を学びながらインターンに参加。
+                卒業研究ではモーションキャプチャーと VR を組み合わせたスポーツトレーニング支援システムを構築し、Unity・MotionBuilder・Vicon を連携させたリアルタイム解析を実現しました。
               </p>
             </article>
 
@@ -81,7 +102,8 @@ export default function Career() {
                 <span className="ml-3 inline-flex items-center rounded-full bg-yellow-500/90 px-2.5 py-0.5 text-xs font-semibold text-white">アルバイト</span>
               </p>
               <p className="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-gray-300 md:text-base">
-                Scratch や Minecraft、Unity を使った体験授業と入塾案内を担当。ヒアリングから授業、アフターフォローまでを一貫して行い、計172件の体験授業で44件の成約を獲得しました。
+                子ども向けオンラインIT×ものづくり教室にて、Scratch・Minecraft・Unityを用いた体験授業と入塾案内を担当しました。
+                ヒアリング、体験授業の進行、教室案内、受講開始までのフォローを一貫して対応し、ご家庭ごとのニーズに合わせた受講体験づくりに取り組みました。
               </p>
             </article>
 
@@ -96,7 +118,8 @@ export default function Career() {
                 <span className="ml-3 inline-flex items-center rounded-full bg-purple-600/90 px-2.5 py-0.5 text-xs font-semibold text-white">インターン</span>
               </p>
               <p className="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-gray-300 md:text-base">
-                受講生のオンライン質問対応を担当し、HTML/CSS や JavaScript、Ruby on Rails、Git などの技術サポートを実施。学習のつまずきに寄り添いながら自走力の育成を支援しました。
+                受講生のオンライン質問対応を担当し、HTML/CSS や JavaScript、Ruby on Rails、Git などの技術サポートを実施。
+                学習のつまずきに寄り添いながら自走力の育成を支援しました。
               </p>
             </article>
           </div>
