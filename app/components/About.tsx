@@ -34,6 +34,7 @@ export default function About(): JSX.Element {
                 width={200}
                 height={200}
                 className="relative rounded-full border-4 border-yellow-200 object-cover shadow-[0_18px_45px_-28px_rgba(0,0,0,0.4)] dark:border-yellow-400"
+                sizes="200px"
                 priority
               />
             </div>

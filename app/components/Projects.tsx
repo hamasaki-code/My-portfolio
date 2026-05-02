@@ -71,6 +71,7 @@ export default function Projects() {
             alt={`${project.title} のスクリーンショット`}
             width={isSvg ? 160 : 640}
             height={isSvg ? 160 : 360}
+            sizes="(min-width: 768px) 256px, calc(100vw - 96px)"
             className="h-full w-auto object-contain"
           />
         </div>

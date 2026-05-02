@@ -7,6 +7,7 @@ import { GiTennisCourt, GiCctvCamera } from "react-icons/gi";
 import { BsBadgeVr } from "react-icons/bs";
 import Header from "../../components/Header";
 import SeoHead from "../../components/SeoHead";
+import WorksBackLink from "../../components/WorksBackLink";
 import { projects } from "../../data/projects";
 import { toSiteUrl } from "../../../lib/site";
 
@@ -142,7 +143,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
             alt={`${project.title} のスクリーンショット`}
             width={imageWidth}
             height={imageHeight}
+            sizes="(min-width: 1024px) 45vw, calc(100vw - 48px)"
             className={imageClassName}
+            priority
           />
         </div>
       </div>
@@ -167,13 +170,11 @@ export default function ProjectPage({ params }: ProjectPageProps) {
       <div className="pointer-events-none absolute inset-y-0 right-[-20%] w-[60%] rounded-full bg-[radial-gradient(circle,_rgba(250,204,21,0.25)_0%,_rgba(255,255,255,0)_70%)] blur-3xl dark:bg-[radial-gradient(circle,_rgba(202,138,4,0.22)_0%,_rgba(0,0,0,0)_70%)]" />
       <main className="relative z-10 mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-20 pt-32 transition-colors duration-500 lg:px-12">
         <div className="flex items-center justify-between gap-6">
-          <Link
-            href={{ pathname: "/", hash: "projects" }}
-            scroll={false}
+          <WorksBackLink
             className="inline-flex items-center gap-2 rounded-full border border-yellow-500/60 bg-yellow-400/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-yellow-700 transition hover:border-yellow-600 hover:bg-yellow-400/30 hover:text-black dark:border-yellow-300/40 dark:bg-yellow-400/10 dark:text-yellow-200 dark:hover:border-yellow-200/60 dark:hover:bg-yellow-400/15 dark:hover:text-white"
           >
             ← Works
-          </Link>
+          </WorksBackLink>
           {links && (links.site || links.github) && (
             <div className="flex flex-wrap items-center gap-3">
               {links.site && (
