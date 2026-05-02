@@ -48,7 +48,7 @@ export default function Career() {
               </time>
               <h3 className="mt-3 text-2xl font-semibold text-neutral-900 dark:text-yellow-100">ゲーム開発会社</h3>
               <p className="mt-1 text-sm font-semibold text-neutral-700 dark:text-yellow-200">
-                ゲームエンジニア / Verseエンジニア
+                ゲームエンジニア
                 <span className="ml-3 inline-flex items-center rounded-full bg-blue-600/90 px-2.5 py-0.5 text-xs font-semibold text-white">副業</span>
               </p>
               <p className="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-gray-300 md:text-base">
