@@ -9,8 +9,7 @@ import Skills from "./components/Skills";
 import Career from "./components/Career";
 import ContactForm from "./components/ContactForm";
 import LoadingScreen from "./components/LoadingScreen";
-
-const SITE_URL = "https://taishi-hamasaki-portfolio.vercel.app";
+import { SITE_URL } from "../lib/site";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
