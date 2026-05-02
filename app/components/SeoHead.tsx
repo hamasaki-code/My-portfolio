@@ -1,5 +1,7 @@
 import Head from "next/head";
 
+import { SITE_URL, toSiteUrl } from "../../lib/site";
+
 type StructuredData = Record<string, unknown>;
 
 export type SeoHeadProps = {
@@ -18,7 +20,6 @@ export type SeoHeadProps = {
   structuredData?: StructuredData | StructuredData[];
 };
 
-const SITE_URL = "https://taishi-hamasaki-portfolio.vercel.app";
 const DEFAULT_TITLE = "Taishi Hamasaki | Portfolio";
 const DEFAULT_DESCRIPTION =
   "Taishi Hamasaki's portfolio showcasing web development skills in React, Node.js, Flutter, and more. Explore projects and connect with me for collaboration.";
@@ -37,11 +38,7 @@ const DEFAULT_KEYWORDS = [
 ];
 
 const toAbsoluteUrl = (value: string) => {
-  if (value.startsWith("http")) {
-    return value;
-  }
-
-  return value.startsWith("/") ? `${SITE_URL}${value}` : `${SITE_URL}/${value}`;
+  return toSiteUrl(value);
 };
 
 const createDefaultStructuredData = (

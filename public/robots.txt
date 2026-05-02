@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://www.taishi-hamasaki-portfolio.com
+Host: https://taishi-hamasaki-portfolio.vercel.app
 
 # Sitemaps
-Sitemap: https://www.taishi-hamasaki-portfolio.com/sitemap.xml
+Sitemap: https://taishi-hamasaki-portfolio.vercel.app/sitemap.xml

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MdSportsTennis } from "react-icons/md";
 import { GiTennisCourt, GiCctvCamera } from "react-icons/gi";
@@ -7,6 +8,7 @@ import { BsBadgeVr } from "react-icons/bs";
 import Header from "../../components/Header";
 import SeoHead from "../../components/SeoHead";
 import { projects } from "../../data/projects";
+import { toSiteUrl } from "../../../lib/site";
 
 type ProjectLinks = {
   site?: string;
@@ -32,6 +34,45 @@ const projectList = projects as Project[];
 
 export function generateStaticParams() {
   return projectList.map((project) => ({ slug: project.slug }));
+}
+
+export function generateMetadata({ params }: ProjectPageProps): Metadata {
+  const project = projectList.find((item) => item.slug === params.slug);
+
+  if (!project) {
+    return {};
+  }
+
+  const canonicalPath = `/projects/${project.slug}`;
+  const title = project.title;
+  const socialTitle = `${project.title} | Taishi Hamasaki`;
+  const description =
+    project.description[0] ?? "プロジェクトの詳細情報をご覧いただけます。";
+  const image = project.image ? toSiteUrl(project.image) : toSiteUrl("/portfolio.png");
+  const url = toSiteUrl(canonicalPath);
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      type: "article",
+      url,
+      title: socialTitle,
+      description,
+      images: [image],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: socialTitle,
+      description,
+      images: [image],
+      creator: "@OnTAumv5KAoVGN5",
+      site: "@OnTAumv5KAoVGN5",
+    },
+  };
 }
 
 export default function ProjectPage({ params }: ProjectPageProps) {

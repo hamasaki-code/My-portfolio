@@ -5,6 +5,7 @@ import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { SITE_URL } from "../lib/site";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,8 +17,6 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
-
-const SITE_URL = "https://taishi-hamasaki-portfolio.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
