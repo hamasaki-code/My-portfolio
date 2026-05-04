@@ -109,6 +109,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
   const imageClassName = isSvgImage
     ? "relative z-10 h-64 max-w-full w-auto"
     : "relative z-10 w-full max-w-full rounded-2xl object-cover shadow-2xl shadow-black/50";
+
   const renderProjectVisual = () => {
     if (project.slug === "vr-sports-training") {
       return (
@@ -153,6 +154,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
       </div>
     );
   };
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#fef9c3] via-white to-[#fefce8] text-gray-900 transition-colors duration-500 dark:from-black dark:via-[#0f0f0f] dark:to-[#050505] dark:text-white">
       <SeoHead
@@ -221,40 +223,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
                 ))}
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {project.tech.map((tech) => (
-                <span
-                  key={tech}
-                  className="inline-flex items-center rounded-full border border-yellow-500/40 bg-white/70 px-3 py-1 text-xs font-medium uppercase tracking-wide text-yellow-700 backdrop-blur transition-colors dark:border-yellow-400/30 dark:bg-black/60 dark:text-yellow-200"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
           </div>
 
           {renderProjectVisual()}
-        </section>
-
-        <section className="w-full max-w-full min-w-0 space-y-5 rounded-[2rem] border border-yellow-500/25 bg-white/65 p-6 shadow-[0_35px_80px_-55px_rgba(253,224,71,0.5)] backdrop-blur-xl transition-colors dark:border-yellow-500/20 dark:bg-black/45 sm:p-8">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-yellow-700 dark:text-yellow-200">
-              Skills
-            </p>
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              担当領域・関連スキル
-            </h2>
-          </div>
-          <ul className="flex flex-wrap gap-3">
-            {project.skills.map((skill) => (
-              <li
-                key={`${project.slug}-skill-${skill}`}
-                className="rounded-full border border-yellow-500/40 bg-white/80 px-4 py-2 text-sm font-semibold text-yellow-800 shadow-sm shadow-yellow-500/10 transition-colors dark:border-yellow-400/30 dark:bg-black/60 dark:text-yellow-100"
-              >
-                {skill}
-              </li>
-            ))}
-          </ul>
         </section>
 
         <section className="grid w-full max-w-full min-w-0 grid-cols-1 gap-8 rounded-[2.5rem] border border-yellow-500/30 bg-white/70 p-10 shadow-[0_45px_90px_-55px_rgba(253,224,71,0.4)] backdrop-blur-2xl transition-colors dark:border-yellow-500/20 dark:bg-black/50 dark:shadow-[0_45px_90px_-55px_rgba(253,224,71,0.5)] lg:grid-cols-2">

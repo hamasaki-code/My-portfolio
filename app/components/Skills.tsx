@@ -10,12 +10,11 @@ import {
   SiGit,
   SiGithub,
   SiHtml5,
-  SiMysql,
   SiNextdotjs,
+  SiPostgresql,
   SiReact,
   SiRubyonrails,
   SiRuby,
-  SiSqlite,
   SiTypescript,
   SiUnity,
   SiUnrealengine,
@@ -85,7 +84,7 @@ const allCategories: Category[] = [
         name: 'C#',
         icon: <SiCsharp className="h-8 w-8 text-green-600" />,
         description: 'Game Development',
-        level: 2,
+        level: 1,
       },
       {
         name: 'Verse',
@@ -109,13 +108,13 @@ const allCategories: Category[] = [
         name: 'Flutter',
         icon: <SiFlutter className="h-8 w-8 text-blue-400" />,
         description: 'Cross-platform',
-        level: 4,
+        level: 3,
       },
       {
         name: 'Next.js',
         icon: <SiNextdotjs className="h-8 w-8 text-black dark:text-yellow-400" />,
         description: 'React Framework',
-        level: 3,
+        level: 2,
       },
       {
         name: 'React',
@@ -136,17 +135,18 @@ const allCategories: Category[] = [
         level: 2,
       },
       {
-        name: 'MotionBuilder',
-        icon: <SiAutodesk className="h-8 w-8 text-green-600" />,
-        description: 'Mocap Animation',
-        level: 1,
-      },
-      {
         name: 'UEFN',
         icon: <SiUnrealengine className="h-8 w-8 text-gray-900 dark:text-yellow-400" />,
         description: 'Fortnite Creative',
         level: 2,
       },
+      {
+        name: 'MotionBuilder',
+        icon: <SiAutodesk className="h-8 w-8 text-green-600" />,
+        description: 'Mocap Animation',
+        level: 1,
+      },
+
     ],
   },
   {
@@ -177,15 +177,9 @@ const allCategories: Category[] = [
     id: 'databases',
     items: [
       {
-        name: 'MySQL',
-        icon: <SiMysql className="h-8 w-8 text-blue-700" />,
+        name: 'PostgreSQL',
+        icon: <SiPostgresql className="h-8 w-8 text-blue-600" />,
         description: 'Relational DB',
-        level: 1,
-      },
-      {
-        name: 'SQLite',
-        icon: <SiSqlite className="h-8 w-8 text-blue-500" />,
-        description: 'Lightweight DB',
         level: 1,
       },
     ],
