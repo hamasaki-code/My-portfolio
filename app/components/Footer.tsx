@@ -2,29 +2,41 @@
 
 import { useEffect, useState } from "react";
 
+const MAX_TIMEOUT_DELAY = 2_147_483_647;
+
 export default function Footer() {
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
 
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: number | undefined;
+    let isActive = true;
 
     const scheduleYearRollover = () => {
+      if (!isActive) {
+        return;
+      }
+
       const now = new Date();
       const year = now.getFullYear();
       const nextYear = new Date(year + 1, 0, 1);
+      const delayUntilNextYear = nextYear.getTime() - now.getTime();
 
       setCurrentYear(year);
 
-      timeoutId = window.setTimeout(() => {
-        setCurrentYear(new Date().getFullYear());
-        scheduleYearRollover();
-      }, nextYear.getTime() - now.getTime());
+      timeoutId = window.setTimeout(
+        scheduleYearRollover,
+        Math.min(delayUntilNextYear, MAX_TIMEOUT_DELAY),
+      );
     };
 
     scheduleYearRollover();
 
     return () => {
-      window.clearTimeout(timeoutId);
+      isActive = false;
+
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
     };
   }, []);
 
