@@ -6,6 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "./components/ThemeProvider";
 import HistoryNavigationTracker from "./components/HistoryNavigationTracker";
+import Footer from "./components/Footer";
 import { SITE_URL } from "../lib/site";
 
 const geistSans = localFont({
@@ -70,7 +71,10 @@ export default function RootLayout({
       >
         <script dangerouslySetInnerHTML={{ __html: themeInitializer }} />
         <HistoryNavigationTracker />
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <Footer />
+        </ThemeProvider>
         <SpeedInsights />
         <Analytics />
       </body>
