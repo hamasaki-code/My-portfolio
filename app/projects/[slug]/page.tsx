@@ -239,13 +239,13 @@ export default function ProjectPage({ params }: ProjectPageProps) {
             <h3 className="text-sm font-semibold uppercase tracking-[0.3em] text-yellow-700 dark:text-yellow-200">
               Stack &amp; Focus
             </h3>
-            <ul className="grid gap-3 text-sm text-gray-700 dark:text-slate-200 sm:grid-cols-2">
-              {project.tech.map((tech) => (
+            <ul className="flex flex-wrap gap-3">
+              {project.skills.map((skill) => (
                 <li
-                  key={`${tech}-detail`}
-                  className="rounded-2xl border border-yellow-500/40 bg-white/80 px-4 py-3 shadow-sm shadow-yellow-500/10 transition hover:-translate-y-0.5 hover:border-yellow-500/60 hover:shadow-yellow-500/20 dark:border-yellow-500/30 dark:bg-black/60 dark:hover:border-yellow-400/60"
+                  key={`${project.slug}-focus-${skill}`}
+                  className="rounded-full border border-yellow-500/40 bg-white/80 px-4 py-2 text-sm font-semibold text-yellow-800 shadow-sm shadow-yellow-500/10 transition-colors dark:border-yellow-400/30 dark:bg-black/60 dark:text-yellow-100"
                 >
-                  {tech}
+                  {skill}
                 </li>
               ))}
             </ul>
