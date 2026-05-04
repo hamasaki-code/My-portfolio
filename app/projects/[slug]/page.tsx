@@ -235,20 +235,38 @@ export default function ProjectPage({ params }: ProjectPageProps) {
               {project.description[0]}
             </p>
           </div>
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.3em] text-yellow-700 dark:text-yellow-200">
-              Stack &amp; Focus
-            </h3>
-            <ul className="flex flex-wrap gap-3">
-              {project.skills.map((skill) => (
-                <li
-                  key={`${project.slug}-focus-${skill}`}
-                  className="rounded-full border border-yellow-500/40 bg-white/80 px-4 py-2 text-sm font-semibold text-yellow-800 shadow-sm shadow-yellow-500/10 transition-colors dark:border-yellow-400/30 dark:bg-black/60 dark:text-yellow-100"
-                >
-                  {skill}
-                </li>
-              ))}
-            </ul>
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.3em] text-yellow-700 dark:text-yellow-200">
+                Stack
+              </h3>
+              <ul className="flex flex-wrap gap-3">
+                {project.tech.map((tech) => (
+                  <li
+                    key={`${project.slug}-stack-${tech}`}
+                    className="rounded-full border border-yellow-500/30 bg-white/70 px-4 py-2 text-sm font-medium text-yellow-800 shadow-sm shadow-yellow-500/10 transition-colors dark:border-yellow-400/30 dark:bg-black/60 dark:text-yellow-100"
+                  >
+                    {tech}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.3em] text-yellow-700 dark:text-yellow-200">
+                Skills
+              </h3>
+              <ul className="flex flex-wrap gap-3">
+                {project.skills.map((skill) => (
+                  <li
+                    key={`${project.slug}-skill-${skill}`}
+                    className="rounded-full border border-yellow-500/40 bg-white/80 px-4 py-2 text-sm font-semibold text-yellow-800 shadow-sm shadow-yellow-500/10 transition-colors dark:border-yellow-400/30 dark:bg-black/60 dark:text-yellow-100"
+                  >
+                    {skill}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </section>
       </main>
