@@ -6,16 +6,27 @@ export default function Footer() {
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
 
   useEffect(() => {
-    const now = new Date();
-    const nextYear = new Date(now.getFullYear() + 1, 0, 1);
-    const timeout = window.setTimeout(() => {
-      setCurrentYear(new Date().getFullYear());
-    }, nextYear.getTime() - now.getTime());
+    let timeoutId: number;
+
+    const scheduleYearRollover = () => {
+      const now = new Date();
+      const year = now.getFullYear();
+      const nextYear = new Date(year + 1, 0, 1);
+
+      setCurrentYear(year);
+
+      timeoutId = window.setTimeout(() => {
+        setCurrentYear(new Date().getFullYear());
+        scheduleYearRollover();
+      }, nextYear.getTime() - now.getTime());
+    };
+
+    scheduleYearRollover();
 
     return () => {
-      window.clearTimeout(timeout);
+      window.clearTimeout(timeoutId);
     };
-  }, [currentYear]);
+  }, []);
 
   return (
     <footer className="border-t border-black/10 bg-white/70 px-6 py-8 text-center text-sm text-gray-600 transition-colors dark:border-yellow-400/10 dark:bg-black/80 dark:text-yellow-100/70">
