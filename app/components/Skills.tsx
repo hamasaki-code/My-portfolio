@@ -18,9 +18,10 @@ import {
   SiSqlite,
   SiTypescript,
   SiUnity,
+  SiUnrealengine,
   SiVercel,
 } from 'react-icons/si';
-import { FaJsSquare } from 'react-icons/fa';
+import { FaCode, FaJsSquare } from 'react-icons/fa';
 
 import SkillCard, {
   type CategoryName,
@@ -86,6 +87,12 @@ const allCategories: Category[] = [
         description: 'Game Development',
         level: 2,
       },
+      {
+        name: 'Verse',
+        icon: <FaCode className="h-8 w-8 text-purple-500" />,
+        description: 'UEFN Scripting',
+        level: 1,
+      },
     ],
   },
   {
@@ -133,6 +140,12 @@ const allCategories: Category[] = [
         icon: <SiAutodesk className="h-8 w-8 text-green-600" />,
         description: 'Mocap Animation',
         level: 1,
+      },
+      {
+        name: 'UEFN',
+        icon: <SiUnrealengine className="h-8 w-8 text-gray-900 dark:text-yellow-400" />,
+        description: 'Fortnite Creative',
+        level: 2,
       },
     ],
   },
@@ -204,7 +217,7 @@ export default function Skills({ lang = 'en' }: SkillsProps): JSX.Element {
             <h2 className="mt-2 text-4xl font-semibold text-black dark:text-yellow-100">Skills & Technologies</h2>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-300 sm:max-w-md">
-            実務と個人開発で磨いた技術スタックをカテゴリーごとに整理。知りたい分野を絞ってご覧ください。
+            実務と個人開発で触れてきた技術スタックをカテゴリごとに整理しています。
           </p>
         </div>
 
