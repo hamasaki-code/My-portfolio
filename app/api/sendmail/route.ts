@@ -2,10 +2,35 @@ import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
 
 type ContactRequestBody = {
-    name?: string;
-    email?: string;
-    content?: string;
+    name?: unknown;
+    email?: unknown;
+    content?: unknown;
+    recaptchaToken?: unknown;
 };
+
+type ValidatedContactRequest = {
+    name: string;
+    email: string;
+    content: string;
+    recaptchaToken: string;
+};
+
+type RecaptchaVerifyResponse = {
+    success?: boolean;
+    "error-codes"?: string[];
+};
+
+type RecaptchaVerificationResult =
+    | { ok: true }
+    | { ok: false; status: number; error: string };
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_NAME_LENGTH = 100;
+const MAX_EMAIL_LENGTH = 254;
+const MAX_CONTENT_LENGTH = 500;
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX_REQUESTS = 5;
+const rateLimitStore = new Map<string, number[]>();
 
 const parseBoolean = (value: string | undefined, fallback: boolean) => {
     if (value === undefined) {
@@ -46,9 +71,218 @@ const isSelfSignedCertificateError = (error: unknown) => {
     );
 };
 
+const jsonError = (
+    error: string,
+    status: number,
+    fields?: Record<string, string>
+) => {
+    return NextResponse.json(
+        {
+            error,
+            ...(fields ? { fields } : {}),
+        },
+        { status }
+    );
+};
+
+const normalizeString = (value: unknown) => {
+    return typeof value === "string" ? value.trim() : "";
+};
+
+const validateContactRequest = (
+    body: ContactRequestBody
+):
+    | { ok: true; data: ValidatedContactRequest }
+    | { ok: false; fields: Record<string, string> } => {
+    const name = normalizeString(body.name);
+    const email = normalizeString(body.email);
+    const content = normalizeString(body.content);
+    const recaptchaToken = normalizeString(body.recaptchaToken);
+    const fields: Record<string, string> = {};
+
+    if (!name) {
+        fields.name = "お名前を入力してください。";
+    } else if (name.length > MAX_NAME_LENGTH) {
+        fields.name = `お名前は${MAX_NAME_LENGTH}文字以内で入力してください。`;
+    }
+
+    if (!email) {
+        fields.email = "メールアドレスを入力してください。";
+    } else if (email.length > MAX_EMAIL_LENGTH || !EMAIL_PATTERN.test(email)) {
+        fields.email = "有効なメールアドレスを入力してください。";
+    }
+
+    if (!content) {
+        fields.content = "お問い合わせ内容を入力してください。";
+    } else if (content.length > MAX_CONTENT_LENGTH) {
+        fields.content = `お問い合わせ内容は${MAX_CONTENT_LENGTH}文字以内で入力してください。`;
+    }
+
+    if (!recaptchaToken) {
+        fields.recaptchaToken = "reCAPTCHA認証を完了してください。";
+    }
+
+    if (Object.keys(fields).length > 0) {
+        return { ok: false, fields };
+    }
+
+    return {
+        ok: true,
+        data: {
+            name,
+            email,
+            content,
+            recaptchaToken,
+        },
+    };
+};
+
+const getClientIp = (request: Request) => {
+    const forwardedFor = request.headers.get("x-forwarded-for");
+    const forwardedIp = forwardedFor?.split(",")[0]?.trim();
+
+    return (
+        forwardedIp ||
+        request.headers.get("x-real-ip") ||
+        request.headers.get("cf-connecting-ip") ||
+        "unknown"
+    );
+};
+
+const checkRateLimit = (key: string) => {
+    const now = Date.now();
+    const recentRequests = (rateLimitStore.get(key) ?? []).filter(
+        (timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS
+    );
+
+    if (recentRequests.length >= RATE_LIMIT_MAX_REQUESTS) {
+        rateLimitStore.set(key, recentRequests);
+        return false;
+    }
+
+    recentRequests.push(now);
+    rateLimitStore.set(key, recentRequests);
+    return true;
+};
+
+const verifyRecaptcha = async (
+    token: string,
+    clientIp: string
+): Promise<RecaptchaVerificationResult> => {
+    const secret =
+        process.env.RECAPTCHA_SECRET_KEY ?? process.env.RECAPTCHA_SECRET;
+
+    if (!secret) {
+        console.error("Missing reCAPTCHA secret key.");
+        return {
+            ok: false,
+            status: 500,
+            error: "reCAPTCHA設定が不足しています。",
+        };
+    }
+
+    const params = new URLSearchParams({
+        secret,
+        response: token,
+    });
+
+    if (clientIp !== "unknown") {
+        params.set("remoteip", clientIp);
+    }
+
+    try {
+        const response = await fetch(
+            "https://www.google.com/recaptcha/api/siteverify",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: params,
+            }
+        );
+
+        if (!response.ok) {
+            console.error("reCAPTCHA verification request failed.", response.status);
+            return {
+                ok: false,
+                status: 502,
+                error: "reCAPTCHA認証を確認できませんでした。時間をおいて再度お試しください。",
+            };
+        }
+
+        const result = (await response.json()) as RecaptchaVerifyResponse;
+
+        if (!result.success) {
+            console.warn(
+                "reCAPTCHA verification failed.",
+                result["error-codes"] ?? []
+            );
+            return {
+                ok: false,
+                status: 403,
+                error: "reCAPTCHA認証に失敗しました。再度お試しください。",
+            };
+        }
+
+        return { ok: true };
+    } catch (error) {
+        console.error("reCAPTCHA verification error.", error);
+        return {
+            ok: false,
+            status: 502,
+            error: "reCAPTCHA認証を確認できませんでした。時間をおいて再度お試しください。",
+        };
+    }
+};
+
 export async function POST(request: Request) {
     try {
-        const { name, email, content }: ContactRequestBody = await request.json();
+        let body: ContactRequestBody;
+
+        try {
+            const parsedBody = await request.json();
+
+            if (
+                !parsedBody ||
+                typeof parsedBody !== "object" ||
+                Array.isArray(parsedBody)
+            ) {
+                return jsonError("リクエストの形式が正しくありません。", 400);
+            }
+
+            body = parsedBody as ContactRequestBody;
+        } catch {
+            return jsonError("リクエストの形式が正しくありません。", 400);
+        }
+
+        const validation = validateContactRequest(body);
+
+        if (!validation.ok) {
+            return jsonError(
+                "入力内容を確認してください。",
+                400,
+                validation.fields
+            );
+        }
+
+        const clientIp = getClientIp(request);
+
+        if (!checkRateLimit(clientIp)) {
+            return jsonError(
+                "送信回数が多すぎます。時間をおいて再度お試しください。",
+                429
+            );
+        }
+
+        const recaptcha = await verifyRecaptcha(
+            validation.data.recaptchaToken,
+            clientIp
+        );
+
+        if (!recaptcha.ok) {
+            return jsonError(recaptcha.error, recaptcha.status);
+        }
 
         const smtpUser =
             process.env.MAIL_ACCOUNT ??
@@ -64,14 +298,18 @@ export async function POST(request: Request) {
                 "Missing SMTP credentials. Please configure MAIL_ACCOUNT/MAIL_PASSWORD, AUTH_USER/AUTH_PASS, or EMAIL_USER/EMAIL_PASS."
             );
 
-            return NextResponse.json(
-                { error: "メール設定が行われていないため送信に失敗しました。管理者にお問い合わせください。" },
-                { status: 500 }
+            return jsonError(
+                "メール設定が行われていないため送信に失敗しました。管理者にお問い合わせください。",
+                500
             );
         }
 
         const fromAddress = process.env.MAIL_FROM ?? smtpUser;
-        const ownerAddress = process.env.MAIL_TO ?? process.env.CONTACT_TO ?? smtpUser;
+        const ownerAddress =
+            process.env.MAIL_TO ??
+            process.env.CONTACT_TO ??
+            process.env.RECIPIENT_EMAIL ??
+            smtpUser;
 
         const host = process.env.SMTP_HOST ?? process.env.MAIL_HOST ?? "smtp.gmail.com";
         const port = parseNumber(process.env.SMTP_PORT ?? process.env.MAIL_PORT, 465);
@@ -112,25 +350,20 @@ export async function POST(request: Request) {
                 },
             });
 
-        const senderName = name?.trim() || "匿名";
-        const senderEmail = email?.trim();
-        const message = content?.trim() || "(本文なし)";
         const mailSubject = "【Portfolio】お問い合わせフォームに新着メッセージ";
 
         const ownerMail = {
             from: fromAddress,
             to: ownerAddress,
-            replyTo: senderEmail,
+            replyTo: validation.data.email,
             subject: mailSubject,
             text: [
-                `お名前: ${senderName}`,
-                senderEmail ? `メールアドレス: ${senderEmail}` : null,
+                `お名前: ${validation.data.name}`,
+                `メールアドレス: ${validation.data.email}`,
                 "",
                 "お問い合わせ内容:",
-                message,
-            ]
-                .filter((line): line is string => Boolean(line))
-                .join("\n"),
+                validation.data.content,
+            ].join("\n"),
         } satisfies nodemailer.SendMailOptions;
 
         let transporter = createTransporter();
@@ -158,16 +391,13 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: "メールが送信されました。" });
     } catch (error) {
         console.error(error);
-        return NextResponse.json(
-            { error: "メールの送信中にエラーが発生しました。" },
-            { status: 500 }
+        return jsonError(
+            "メールの送信中にエラーが発生しました。",
+            500
         );
     }
 }
 
 export function GET() {
-    return NextResponse.json(
-        { error: "POSTメソッドを使用してください。" },
-        { status: 405 }
-    );
+    return jsonError("POSTメソッドを使用してください。", 405);
 }
