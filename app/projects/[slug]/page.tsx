@@ -6,10 +6,9 @@ import { MdSportsTennis } from "react-icons/md";
 import { GiTennisCourt, GiCctvCamera } from "react-icons/gi";
 import { BsBadgeVr } from "react-icons/bs";
 import Header from "../../components/Header";
-import SeoHead from "../../components/SeoHead";
 import WorksBackLink from "../../components/WorksBackLink";
 import { projects } from "../../data/projects";
-import { toSiteUrl } from "../../../lib/site";
+import { createProjectMetadata } from "../../../lib/seo";
 
 type ProjectLinks = {
   site?: string;
@@ -45,36 +44,7 @@ export function generateMetadata({ params }: ProjectPageProps): Metadata {
     return {};
   }
 
-  const canonicalPath = `/projects/${project.slug}`;
-  const title = project.title;
-  const socialTitle = `${project.title} | Taishi Hamasaki`;
-  const description =
-    project.description[0] ?? "プロジェクトの詳細情報をご覧いただけます。";
-  const image = project.image ? toSiteUrl(project.image) : toSiteUrl("/portfolio.png");
-  const url = toSiteUrl(canonicalPath);
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: url,
-    },
-    openGraph: {
-      type: "article",
-      url,
-      title: socialTitle,
-      description,
-      images: [image],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: socialTitle,
-      description,
-      images: [image],
-      creator: "@OnTAumv5KAoVGN5",
-      site: "@OnTAumv5KAoVGN5",
-    },
-  };
+  return createProjectMetadata(project);
 }
 
 export default function ProjectPage({ params }: ProjectPageProps) {
@@ -83,24 +53,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
   if (!project) {
     notFound();
   }
-
-  const canonicalPath = `/projects/${project.slug}`;
-  const pageTitle = `${project.title} | Taishi Hamasaki`;
-  const pageDescription =
-    project.description[0] ?? "プロジェクトの詳細情報をご覧いただけます。";
-  const ogImage = project.image ?? "/portfolio.png";
-  const keywords = Array.from(
-    new Set(
-      [
-        project.title,
-        "Taishi Hamasaki",
-        "Taishi Hamasaki | Portfolio",
-        "portfolio",
-        ...project.tech,
-        ...project.skills,
-      ].filter(Boolean),
-    ),
-  );
 
   const links = project.links;
   const isSvgImage = project.image?.endsWith(".svg") ?? false;
@@ -158,19 +110,12 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#fef9c3] via-white to-[#fefce8] text-gray-900 transition-colors duration-500 dark:from-black dark:via-[#0f0f0f] dark:to-[#050505] dark:text-white">
-      <SeoHead
-        title={pageTitle}
-        description={pageDescription}
-        canonicalUrl={canonicalPath}
-        keywords={keywords}
-        ogImage={ogImage}
-        ogUrl={canonicalPath}
-        ogType="article"
-        twitterHandle="@OnTAumv5KAoVGN5"
-        twitterImage={ogImage}
-      />
       <Header />
-      <div id="top" className="absolute left-0 top-0 h-0 w-0 overflow-hidden" aria-hidden />
+      <div
+        id="top"
+        className="absolute left-0 top-0 h-0 w-0 overflow-hidden"
+        aria-hidden
+      />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(250,204,21,0.2),_transparent_55%)] opacity-80 dark:bg-[radial-gradient(circle_at_top,_rgba(253,224,71,0.18),_transparent_55%)]" />
       <div className="pointer-events-none absolute inset-y-0 right-[-20%] w-[60%] rounded-full bg-[radial-gradient(circle,_rgba(250,204,21,0.25)_0%,_rgba(255,255,255,0)_70%)] blur-3xl dark:bg-[radial-gradient(circle,_rgba(202,138,4,0.22)_0%,_rgba(0,0,0,0)_70%)]" />
       <main className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-16 overflow-x-hidden px-6 pb-20 pt-32 transition-colors duration-500 lg:px-12">
@@ -218,7 +163,10 @@ export default function ProjectPage({ params }: ProjectPageProps) {
               <div className="h-1 w-28 rounded-full bg-gradient-to-r from-yellow-500 via-yellow-400 to-amber-300" />
               <div className="max-w-full space-y-4 break-words text-base leading-relaxed text-gray-700 [overflow-wrap:anywhere] dark:text-slate-200">
                 {project.description.map((description, index) => (
-                  <p className="max-w-full" key={`${project.slug}-description-${index}`}>
+                  <p
+                    className="max-w-full"
+                    key={`${project.slug}-description-${index}`}
+                  >
                     {description}
                   </p>
                 ))}
@@ -231,7 +179,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 
         <section className="grid w-full max-w-full min-w-0 grid-cols-1 gap-8 rounded-[2.5rem] border border-yellow-500/30 bg-white/70 p-10 shadow-[0_45px_90px_-55px_rgba(253,224,71,0.4)] backdrop-blur-2xl transition-colors dark:border-yellow-500/20 dark:bg-black/50 dark:shadow-[0_45px_90px_-55px_rgba(253,224,71,0.5)] lg:grid-cols-2">
           <div className="space-y-4">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Project Highlights</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+              Project Highlights
+            </h2>
             <p className="text-base leading-relaxed text-gray-700 dark:text-slate-200">
               {project.description[0]}
             </p>
