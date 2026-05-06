@@ -235,12 +235,25 @@ const getRateLimitKey = (clientIp: string | null) => {
     return "anonymous:global";
 };
 
+const enforceRateLimitStoreCapacity = (now: number) => {
+    if (rateLimitStore.size <= RATE_LIMIT_MAX_BUCKETS) {
+        return;
+    }
+
+    cleanupStaleRateLimitBuckets(now, true);
+
+    if (rateLimitStore.size > RATE_LIMIT_MAX_BUCKETS) {
+        pruneRateLimitBucketsToMax();
+    }
+};
+
 const checkRateLimit = (key: string) => {
     const now = Date.now();
     cleanupStaleRateLimitBuckets(
         now,
         rateLimitStore.size >= RATE_LIMIT_MAX_BUCKETS
     );
+    enforceRateLimitStoreCapacity(now);
 
     const recentRequests = (rateLimitStore.get(key) ?? []).filter(
         (timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS
@@ -248,19 +261,13 @@ const checkRateLimit = (key: string) => {
 
     if (recentRequests.length >= RATE_LIMIT_MAX_REQUESTS) {
         rateLimitStore.set(key, recentRequests);
+        enforceRateLimitStoreCapacity(now);
         return false;
     }
 
     recentRequests.push(now);
     rateLimitStore.set(key, recentRequests);
-
-    if (rateLimitStore.size > RATE_LIMIT_MAX_BUCKETS) {
-        cleanupStaleRateLimitBuckets(now, true);
-
-        if (rateLimitStore.size > RATE_LIMIT_MAX_BUCKETS) {
-            pruneRateLimitBucketsToMax();
-        }
-    }
+    enforceRateLimitStoreCapacity(now);
 
     return true;
 };
