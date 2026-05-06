@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { createHash } from "node:crypto";
 import { isIP } from "node:net";
 import { NextResponse } from "next/server";
 
@@ -30,8 +31,10 @@ const MAX_NAME_LENGTH = 100;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_CONTENT_LENGTH = 500;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_CLEANUP_INTERVAL_MS = 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
 const rateLimitStore = new Map<string, number[]>();
+let lastRateLimitCleanupAt = 0;
 
 const parseBoolean = (value: string | undefined, fallback: boolean) => {
     if (value === undefined) {
@@ -170,8 +173,40 @@ const getClientIp = (request: Request): string | null => {
     );
 };
 
+const cleanupStaleRateLimitBuckets = (now: number) => {
+    if (now - lastRateLimitCleanupAt < RATE_LIMIT_CLEANUP_INTERVAL_MS) {
+        return;
+    }
+
+    lastRateLimitCleanupAt = now;
+
+    rateLimitStore.forEach((timestamps, key) => {
+        const recentRequests = timestamps.filter(
+            (timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS
+        );
+
+        if (recentRequests.length === 0) {
+            rateLimitStore.delete(key);
+        } else if (recentRequests.length !== timestamps.length) {
+            rateLimitStore.set(key, recentRequests);
+        }
+    });
+};
+
+const getRateLimitKey = (clientIp: string | null, email: string) => {
+    if (clientIp) {
+        return `ip:${clientIp}`;
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const emailHash = createHash("sha256").update(normalizedEmail).digest("hex");
+    return `email:${emailHash}`;
+};
+
 const checkRateLimit = (key: string) => {
     const now = Date.now();
+    cleanupStaleRateLimitBuckets(now);
+
     const recentRequests = (rateLimitStore.get(key) ?? []).filter(
         (timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS
     );
@@ -288,8 +323,9 @@ export async function POST(request: Request) {
         }
 
         const clientIp = getClientIp(request);
+        const rateLimitKey = getRateLimitKey(clientIp, validation.data.email);
 
-        if (clientIp && !checkRateLimit(clientIp)) {
+        if (!checkRateLimit(rateLimitKey)) {
             return jsonError(
                 "送信回数が多すぎます。時間をおいて再度お試しください。",
                 429
