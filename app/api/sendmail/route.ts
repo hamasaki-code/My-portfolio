@@ -182,7 +182,11 @@ const getClientIp = (request: Request): string | null => {
     }
 
     const forwardedFor = request.headers.get("x-forwarded-for");
-    const forwardedIp = sanitizeIpAddress(forwardedFor?.split(",").at(-1));
+    const forwardedIp =
+        forwardedFor
+            ?.split(",")
+            .map((value) => sanitizeIpAddress(value))
+            .find((value): value is string => value !== null) ?? null;
 
     return (
         sanitizeIpAddress(request.headers.get("cf-connecting-ip")) ||
