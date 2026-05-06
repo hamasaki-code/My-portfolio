@@ -297,7 +297,9 @@ const verifyRecaptcha = async (
         RECAPTCHA_MIN_TIMEOUT_MS
     );
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    const timeoutId = setTimeout(() => {
+        controller.abort(new DOMException("Timed out", "TimeoutError"));
+    }, timeoutMs);
 
     try {
         const response = await fetch(
