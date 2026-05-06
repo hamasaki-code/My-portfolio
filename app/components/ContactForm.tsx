@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { FiUser, FiMail, FiMessageSquare, FiSend, FiLoader, FiCheck, FiGithub } from "react-icons/fi";
 import { RiTwitterXLine, RiAccountCircleLine } from "react-icons/ri";
@@ -17,8 +17,6 @@ type ContactFieldErrors = Partial<
     Record<keyof ContactFormValues | "recaptcha", string>
 >;
 
-const ignoreRecaptchaChange = () => undefined;
-
 export default function ContactForm() {
     const [form, setForm] = useState(DEFAULT_FORM);
     const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
@@ -26,6 +24,7 @@ export default function ContactForm() {
     const [fieldErrors, setFieldErrors] = useState<ContactFieldErrors>({});
     const modalRef = useRef<HTMLDivElement>(null);
     const recaptchaRef = useRef<RecaptchaHandle>(null);
+    const handleRecaptchaChange = useCallback(() => undefined, []);
 
     useEffect(() => {
         if (status === "success" || status === "error") {
@@ -260,7 +259,7 @@ export default function ContactForm() {
 
                     <Recaptcha
                         ref={recaptchaRef}
-                        onChange={ignoreRecaptchaChange}
+                        onChange={handleRecaptchaChange}
                     />
                     {fieldErrors.recaptcha && (
                         <p className="text-center text-sm text-red-600 dark:text-red-400">
