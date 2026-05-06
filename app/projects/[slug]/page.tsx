@@ -5,10 +5,14 @@ import { notFound } from "next/navigation";
 import { MdSportsTennis } from "react-icons/md";
 import { GiTennisCourt, GiCctvCamera } from "react-icons/gi";
 import { BsBadgeVr } from "react-icons/bs";
+import JsonLd from "../../components/JsonLd";
 import Header from "../../components/Header";
 import WorksBackLink from "../../components/WorksBackLink";
 import { projects } from "../../data/projects";
-import { createProjectMetadata } from "../../../lib/seo";
+import {
+  createProjectMetadata,
+  createProjectStructuredData,
+} from "../../../lib/seo";
 
 type ProjectLinks = {
   site?: string;
@@ -110,6 +114,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#fef9c3] via-white to-[#fefce8] text-gray-900 transition-colors duration-500 dark:from-black dark:via-[#0f0f0f] dark:to-[#050505] dark:text-white">
+      <JsonLd data={createProjectStructuredData(project)} />
       <Header />
       <div
         id="top"

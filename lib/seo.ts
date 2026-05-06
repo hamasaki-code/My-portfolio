@@ -34,6 +34,15 @@ type ProjectMetadataInput = {
   skills: string[];
 };
 
+export type StructuredData = Record<string, unknown>;
+
+type StructuredDataParams = {
+  title: string;
+  description: string;
+  canonicalUrl: string;
+  image: string;
+};
+
 const PROJECT_FALLBACK_DESCRIPTION =
   "View project details from Taishi Hamasaki's portfolio.";
 
@@ -54,6 +63,111 @@ const getProjectOgImage = (image: string | null) => {
   }
 
   return image;
+};
+
+export const createDefaultStructuredData = ({
+  title,
+  description,
+  canonicalUrl,
+  image,
+}: StructuredDataParams): StructuredData[] => {
+  const url = toSiteUrl(canonicalUrl);
+  const imageUrl = toSiteUrl(image);
+
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: "Taishi Hamasaki",
+      jobTitle: "Web Developer",
+      url,
+      image: imageUrl,
+      description,
+      sameAs: [
+        "https://github.com/hamasaki-code",
+        "https://www.linkedin.com/in/taishi-hamasaki-628424350",
+        "https://x.com/OnTAumv5KAoVGN5",
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: title,
+      url,
+      description,
+      inLanguage: "ja",
+      publisher: {
+        "@type": "Person",
+        name: "Taishi Hamasaki",
+      },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${SITE_URL}/?s={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ];
+};
+
+export const createHomeStructuredData = () =>
+  createDefaultStructuredData({
+    title: DEFAULT_TITLE,
+    description: HOME_DESCRIPTION,
+    canonicalUrl: SITE_URL,
+    image: DEFAULT_OG_IMAGE,
+  });
+
+export const createProjectStructuredData = (project: ProjectMetadataInput) => {
+  const image = getProjectOgImage(project.image);
+
+  return createDefaultStructuredData({
+    title: `${project.title} | Taishi Hamasaki`,
+    description: project.description[0] ?? PROJECT_FALLBACK_DESCRIPTION,
+    canonicalUrl: `/projects/${project.slug}`,
+    image,
+  });
+};
+
+const JSON_LD_ESCAPE_REGEX = /[<>&'\/\u2028\u2029]/g;
+const JSON_LD_ESCAPE_MAP: Record<string, string> = {
+  "<": "\\u003c",
+  ">": "\\u003e",
+  "&": "\\u0026",
+  "'": "\\u0027",
+  "/": "\\/",
+  [String.fromCharCode(0x2028)]: "\\u2028",
+  [String.fromCharCode(0x2029)]: "\\u2029",
+};
+
+const escapeJsonForHtml = (value: string) =>
+  value.replace(JSON_LD_ESCAPE_REGEX, (character) => {
+    const mapped = JSON_LD_ESCAPE_MAP[character];
+
+    if (mapped) {
+      return mapped;
+    }
+
+    const codePoint = character.charCodeAt(0).toString(16).padStart(4, "0");
+
+    return `\\u${codePoint}`;
+  });
+
+export const serializeJsonLd = (payload: StructuredData) => {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return null;
+  }
+
+  try {
+    const serialized = JSON.stringify(payload);
+
+    if (typeof serialized !== "string" || serialized.length === 0) {
+      return null;
+    }
+
+    return escapeJsonForHtml(serialized);
+  } catch {
+    return null;
+  }
 };
 
 export const createHomeMetadata = (): Metadata => {
