@@ -137,7 +137,7 @@ const validateContactRequest = (
     };
 };
 
-const getClientIp = (request: Request) => {
+const getClientIp = (request: Request): string | null => {
     const forwardedFor = request.headers.get("x-forwarded-for");
     const forwardedIp = forwardedFor?.split(",")[0]?.trim();
 
@@ -145,7 +145,7 @@ const getClientIp = (request: Request) => {
         forwardedIp ||
         request.headers.get("x-real-ip") ||
         request.headers.get("cf-connecting-ip") ||
-        "unknown"
+        null
     );
 };
 
@@ -167,7 +167,7 @@ const checkRateLimit = (key: string) => {
 
 const verifyRecaptcha = async (
     token: string,
-    clientIp: string
+    clientIp: string | null
 ): Promise<RecaptchaVerificationResult> => {
     const secret =
         process.env.RECAPTCHA_SECRET_KEY ?? process.env.RECAPTCHA_SECRET;
@@ -186,7 +186,7 @@ const verifyRecaptcha = async (
         response: token,
     });
 
-    if (clientIp !== "unknown") {
+    if (clientIp) {
         params.set("remoteip", clientIp);
     }
 
@@ -268,7 +268,7 @@ export async function POST(request: Request) {
 
         const clientIp = getClientIp(request);
 
-        if (!checkRateLimit(clientIp)) {
+        if (clientIp && !checkRateLimit(clientIp)) {
             return jsonError(
                 "送信回数が多すぎます。時間をおいて再度お試しください。",
                 429
