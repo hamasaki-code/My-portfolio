@@ -166,8 +166,26 @@ const shouldTrustForwardedIpHeaders = () => {
     );
 };
 
-const sanitizeIpAddress = (value: string | null | undefined) => {
+const normalizeIpAddressCandidate = (value: string | null | undefined) => {
     const candidate = value?.trim();
+
+    if (!candidate) {
+        return null;
+    }
+
+    const bracketedAddress = candidate.match(/^\[([^\]]+)\](?::\d+)?$/)?.[1];
+
+    if (bracketedAddress) {
+        return bracketedAddress;
+    }
+
+    const ipv4WithPort = candidate.match(/^(\d{1,3}(?:\.\d{1,3}){3}):\d+$/)?.[1];
+
+    return ipv4WithPort ?? candidate;
+};
+
+const sanitizeIpAddress = (value: string | null | undefined) => {
+    const candidate = normalizeIpAddressCandidate(value);
 
     if (!candidate || !isIP(candidate)) {
         return null;
