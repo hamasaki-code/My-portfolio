@@ -33,6 +33,7 @@ const MAX_CONTENT_LENGTH = 500;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_CLEANUP_INTERVAL_MS = 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
+const RECAPTCHA_TIMEOUT_MS = 8000;
 const rateLimitStore = new Map<string, number[]>();
 let lastRateLimitCleanupAt = 0;
 
@@ -62,6 +63,14 @@ const parseNumber = (value: string | undefined, fallback: number) => {
     return Number.isFinite(parsed) ? parsed : fallback;
 };
 
+const parseMinimumNumber = (
+    value: string | undefined,
+    fallback: number,
+    minimum: number
+) => {
+    return Math.max(parseNumber(value, fallback), minimum);
+};
+
 const isSelfSignedCertificateError = (error: unknown) => {
     if (!(error instanceof Error)) {
         return false;
@@ -73,6 +82,10 @@ const isSelfSignedCertificateError = (error: unknown) => {
         message.includes("self-signed certificate") ||
         message.includes("unable to verify the first certificate")
     );
+};
+
+const isAbortError = (error: unknown) => {
+    return error instanceof DOMException && error.name === "AbortError";
 };
 
 const jsonError = (
@@ -260,6 +273,14 @@ const verifyRecaptcha = async (
         params.set("remoteip", clientIp);
     }
 
+    const timeoutMs = parseMinimumNumber(
+        process.env.RECAPTCHA_VERIFY_TIMEOUT_MS,
+        RECAPTCHA_TIMEOUT_MS,
+        1000
+    );
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
     try {
         const response = await fetch(
             "https://www.google.com/recaptcha/api/siteverify",
@@ -269,6 +290,7 @@ const verifyRecaptcha = async (
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: params,
+                signal: controller.signal,
             }
         );
 
@@ -297,12 +319,23 @@ const verifyRecaptcha = async (
 
         return { ok: true };
     } catch (error) {
+        if (isAbortError(error)) {
+            console.error("reCAPTCHA verification timed out.", { timeoutMs });
+            return {
+                ok: false,
+                status: 502,
+                error: "reCAPTCHA認証がタイムアウトしました。時間をおいて再度お試しください。",
+            };
+        }
+
         console.error("reCAPTCHA verification error.", error);
         return {
             ok: false,
             status: 502,
             error: "reCAPTCHA認証を確認できませんでした。時間をおいて再度お試しください。",
         };
+    } finally {
+        clearTimeout(timeoutId);
     }
 };
 
