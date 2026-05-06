@@ -33,7 +33,7 @@ const MAX_CONTENT_LENGTH = 500;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_CLEANUP_INTERVAL_MS = 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
-const RECAPTCHA_TIMEOUT_MS = 8000;
+const RECAPTCHA_TIMEOUT_MS = 5000;
 const rateLimitStore = new Map<string, number[]>();
 let lastRateLimitCleanupAt = 0;
 
