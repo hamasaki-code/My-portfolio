@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { isIP } from "node:net";
 import { NextResponse } from "next/server";
 
 type ContactRequestBody = {
@@ -137,15 +138,35 @@ const validateContactRequest = (
     };
 };
 
+const shouldTrustForwardedIpHeaders = () => {
+    return parseBoolean(
+        process.env.TRUST_FORWARDED_IP_HEADERS,
+        process.env.VERCEL === "1"
+    );
+};
+
+const sanitizeIpAddress = (value: string | null | undefined) => {
+    const candidate = value?.trim();
+
+    if (!candidate || !isIP(candidate)) {
+        return null;
+    }
+
+    return candidate;
+};
+
 const getClientIp = (request: Request): string | null => {
+    if (!shouldTrustForwardedIpHeaders()) {
+        return null;
+    }
+
     const forwardedFor = request.headers.get("x-forwarded-for");
-    const forwardedIp = forwardedFor?.split(",")[0]?.trim();
+    const forwardedIp = sanitizeIpAddress(forwardedFor?.split(",")[0]);
 
     return (
-        forwardedIp ||
-        request.headers.get("x-real-ip") ||
-        request.headers.get("cf-connecting-ip") ||
-        null
+        sanitizeIpAddress(request.headers.get("cf-connecting-ip")) ||
+        sanitizeIpAddress(request.headers.get("x-real-ip")) ||
+        forwardedIp
     );
 };
 
