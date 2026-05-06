@@ -182,7 +182,7 @@ const getClientIp = (request: Request): string | null => {
     }
 
     const forwardedFor = request.headers.get("x-forwarded-for");
-    const forwardedIp = sanitizeIpAddress(forwardedFor?.split(",")[0]);
+    const forwardedIp = sanitizeIpAddress(forwardedFor?.split(",").at(-1));
 
     return (
         sanitizeIpAddress(request.headers.get("cf-connecting-ip")) ||
@@ -212,15 +212,19 @@ const cleanupStaleRateLimitBuckets = (now: number) => {
 };
 
 const pruneRateLimitBucketsToMax = () => {
-    while (rateLimitStore.size > RATE_LIMIT_MAX_BUCKETS) {
-        const oldestKey = rateLimitStore.keys().next().value;
-
-        if (typeof oldestKey !== "string") {
-            return;
-        }
-
-        rateLimitStore.delete(oldestKey);
+    if (rateLimitStore.size <= RATE_LIMIT_MAX_BUCKETS) {
+        return;
     }
+
+    const overflowCount = rateLimitStore.size - RATE_LIMIT_MAX_BUCKETS;
+    const oldestBuckets = Array.from(rateLimitStore, ([key, timestamps]) => ({
+        key,
+        oldestTimestamp: timestamps[0] ?? 0,
+    })).sort((left, right) => left.oldestTimestamp - right.oldestTimestamp);
+
+    oldestBuckets.slice(0, overflowCount).forEach(({ key }) => {
+        rateLimitStore.delete(key);
+    });
 };
 
 const getRateLimitKey = (clientIp: string | null) => {
