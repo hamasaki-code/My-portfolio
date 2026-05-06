@@ -17,6 +17,8 @@ type ContactFieldErrors = Partial<
     Record<keyof ContactFormValues | "recaptcha", string>
 >;
 
+const ignoreRecaptchaChange = () => undefined;
+
 export default function ContactForm() {
     const [form, setForm] = useState(DEFAULT_FORM);
     const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
@@ -258,7 +260,7 @@ export default function ContactForm() {
 
                     <Recaptcha
                         ref={recaptchaRef}
-                        onChange={() => undefined}
+                        onChange={ignoreRecaptchaChange}
                     />
                     {fieldErrors.recaptcha && (
                         <p className="text-center text-sm text-red-600 dark:text-red-400">
