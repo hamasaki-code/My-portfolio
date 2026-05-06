@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-import { createHash } from "node:crypto";
 import { isIP } from "node:net";
 import { NextResponse } from "next/server";
 
@@ -206,28 +205,12 @@ const cleanupStaleRateLimitBuckets = (now: number) => {
     });
 };
 
-const normalizeRateLimitMetadata = (value: string | null) => {
-    return value?.trim().replace(/\s+/g, " ").slice(0, 200).toLowerCase() || "missing";
-};
-
-const getAnonymousRateLimitKey = (request: Request) => {
-    const metadata = [
-        normalizeRateLimitMetadata(request.headers.get("user-agent")),
-        normalizeRateLimitMetadata(request.headers.get("accept-language")),
-        normalizeRateLimitMetadata(request.headers.get("accept")),
-        normalizeRateLimitMetadata(request.headers.get("origin")),
-    ].join("|");
-    const metadataHash = createHash("sha256").update(metadata).digest("hex");
-
-    return `anonymous:${metadataHash}`;
-};
-
-const getRateLimitKey = (request: Request, clientIp: string | null) => {
+const getRateLimitKey = (clientIp: string | null) => {
     if (clientIp) {
         return `ip:${clientIp}`;
     }
 
-    return getAnonymousRateLimitKey(request);
+    return "anonymous:global";
 };
 
 const checkRateLimit = (key: string) => {
@@ -370,7 +353,7 @@ export async function POST(request: Request) {
         }
 
         const clientIp = getClientIp(request);
-        const rateLimitKey = getRateLimitKey(request, clientIp);
+        const rateLimitKey = getRateLimitKey(clientIp);
 
         if (!checkRateLimit(rateLimitKey)) {
             return jsonError(
