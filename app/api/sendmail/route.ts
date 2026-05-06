@@ -299,6 +299,7 @@ const verifyRecaptcha = async (
     const timeoutId = setTimeout(() => {
         controller.abort(new DOMException("Timed out", "TimeoutError"));
     }, timeoutMs);
+    timeoutId.unref?.();
 
     try {
         const response = await fetch(
