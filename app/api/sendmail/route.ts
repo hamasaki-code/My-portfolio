@@ -32,6 +32,7 @@ const MAX_CONTENT_LENGTH = 500;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_CLEANUP_INTERVAL_MS = 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
+const RATE_LIMIT_MAX_BUCKETS = 5000;
 const RECAPTCHA_TIMEOUT_MS = 5000;
 const RECAPTCHA_MIN_TIMEOUT_MS = 1000;
 const rateLimitStore = new Map<string, number[]>();
@@ -84,8 +85,12 @@ const isSelfSignedCertificateError = (error: unknown) => {
     );
 };
 
-const isAbortError = (error: unknown) => {
-    return error instanceof DOMException && error.name === "AbortError";
+const isTimeoutError = (error: unknown) => {
+    if (!(error instanceof Error || error instanceof DOMException)) {
+        return false;
+    }
+
+    return error.name === "AbortError" || error.name === "TimeoutError";
 };
 
 const jsonError = (
@@ -206,6 +211,18 @@ const cleanupStaleRateLimitBuckets = (now: number) => {
     });
 };
 
+const pruneRateLimitBucketsToMax = () => {
+    while (rateLimitStore.size > RATE_LIMIT_MAX_BUCKETS) {
+        const oldestKey = rateLimitStore.keys().next().value;
+
+        if (typeof oldestKey !== "string") {
+            return;
+        }
+
+        rateLimitStore.delete(oldestKey);
+    }
+};
+
 const getRateLimitKey = (clientIp: string | null) => {
     if (clientIp) {
         return `ip:${clientIp}`;
@@ -229,6 +246,7 @@ const checkRateLimit = (key: string) => {
 
     recentRequests.push(now);
     rateLimitStore.set(key, recentRequests);
+    pruneRateLimitBucketsToMax();
     return true;
 };
 
@@ -262,8 +280,6 @@ const verifyRecaptcha = async (
         RECAPTCHA_TIMEOUT_MS,
         RECAPTCHA_MIN_TIMEOUT_MS
     );
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
         const response = await fetch(
@@ -274,7 +290,7 @@ const verifyRecaptcha = async (
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: params,
-                signal: controller.signal,
+                signal: AbortSignal.timeout(timeoutMs),
             }
         );
 
@@ -303,7 +319,7 @@ const verifyRecaptcha = async (
 
         return { ok: true };
     } catch (error) {
-        if (isAbortError(error)) {
+        if (isTimeoutError(error)) {
             console.error("reCAPTCHA verification timed out.", { timeoutMs });
             return {
                 ok: false,
@@ -318,8 +334,6 @@ const verifyRecaptcha = async (
             status: 502,
             error: "reCAPTCHA認証を確認できませんでした。時間をおいて再度お試しください。",
         };
-    } finally {
-        clearTimeout(timeoutId);
     }
 };
 
