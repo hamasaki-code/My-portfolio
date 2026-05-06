@@ -191,8 +191,8 @@ const getClientIp = (request: Request): string | null => {
     );
 };
 
-const cleanupStaleRateLimitBuckets = (now: number) => {
-    if (now - lastRateLimitCleanupAt < RATE_LIMIT_CLEANUP_INTERVAL_MS) {
+const cleanupStaleRateLimitBuckets = (now: number, force = false) => {
+    if (!force && now - lastRateLimitCleanupAt < RATE_LIMIT_CLEANUP_INTERVAL_MS) {
         return;
     }
 
@@ -237,7 +237,10 @@ const getRateLimitKey = (clientIp: string | null) => {
 
 const checkRateLimit = (key: string) => {
     const now = Date.now();
-    cleanupStaleRateLimitBuckets(now);
+    cleanupStaleRateLimitBuckets(
+        now,
+        rateLimitStore.size >= RATE_LIMIT_MAX_BUCKETS
+    );
 
     const recentRequests = (rateLimitStore.get(key) ?? []).filter(
         (timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS
