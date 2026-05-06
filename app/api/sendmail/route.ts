@@ -182,11 +182,7 @@ const getClientIp = (request: Request): string | null => {
     }
 
     const forwardedFor = request.headers.get("x-forwarded-for");
-    const forwardedIp =
-        forwardedFor
-            ?.split(",")
-            .map((value) => sanitizeIpAddress(value))
-            .find((value): value is string => value !== null) ?? null;
+    const forwardedIp = sanitizeIpAddress(forwardedFor?.split(",")[0]);
 
     return (
         sanitizeIpAddress(request.headers.get("cf-connecting-ip")) ||
@@ -260,9 +256,12 @@ const checkRateLimit = (key: string) => {
 
     if (rateLimitStore.size > RATE_LIMIT_MAX_BUCKETS) {
         cleanupStaleRateLimitBuckets(now, true);
+
+        if (rateLimitStore.size > RATE_LIMIT_MAX_BUCKETS) {
+            pruneRateLimitBucketsToMax();
+        }
     }
 
-    pruneRateLimitBucketsToMax();
     return true;
 };
 
