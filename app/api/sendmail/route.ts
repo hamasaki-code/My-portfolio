@@ -284,6 +284,8 @@ const verifyRecaptcha = async (
         RECAPTCHA_TIMEOUT_MS,
         RECAPTCHA_MIN_TIMEOUT_MS
     );
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
         const response = await fetch(
@@ -294,7 +296,7 @@ const verifyRecaptcha = async (
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: params,
-                signal: AbortSignal.timeout(timeoutMs),
+                signal: controller.signal,
             }
         );
 
@@ -338,6 +340,8 @@ const verifyRecaptcha = async (
             status: 502,
             error: "reCAPTCHA認証を確認できませんでした。時間をおいて再度お試しください。",
         };
+    } finally {
+        clearTimeout(timeoutId);
     }
 };
 
