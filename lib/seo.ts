@@ -109,6 +109,14 @@ export const createDefaultStructuredData = ({
   ];
 };
 
+export const createSiteStructuredData = () =>
+  createDefaultStructuredData({
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    canonicalUrl: SITE_URL,
+    image: DEFAULT_OG_IMAGE,
+  });
+
 export const createHomeStructuredData = () =>
   createDefaultStructuredData({
     title: DEFAULT_TITLE,

@@ -5,6 +5,7 @@ import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "./components/ThemeProvider";
+import JsonLd from "./components/JsonLd";
 import HistoryNavigationTracker from "./components/HistoryNavigationTracker";
 import Footer from "./components/Footer";
 import { SITE_URL } from "../lib/site";
@@ -18,6 +19,7 @@ import {
   TITLE_TEMPLATE,
   TWITTER_HANDLE,
   absoluteOgImage,
+  createSiteStructuredData,
 } from "../lib/seo";
 
 const geistSans = localFont({
@@ -105,6 +107,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <script dangerouslySetInnerHTML={{ __html: themeInitializer }} />
+        <JsonLd data={createSiteStructuredData()} />
         <HistoryNavigationTracker />
         <ThemeProvider>
           {children}
