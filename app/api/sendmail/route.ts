@@ -257,6 +257,11 @@ const checkRateLimit = (key: string) => {
 
     recentRequests.push(now);
     rateLimitStore.set(key, recentRequests);
+
+    if (rateLimitStore.size > RATE_LIMIT_MAX_BUCKETS) {
+        cleanupStaleRateLimitBuckets(now, true);
+    }
+
     pruneRateLimitBucketsToMax();
     return true;
 };
