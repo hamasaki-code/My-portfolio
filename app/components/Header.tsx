@@ -133,15 +133,18 @@ export default function Header() {
 
       {/* ヘッダー */}
       <header
-        className={`fixed top-0 w-full z-50 text-black dark:text-yellow-400 p-6 border-b border-black/10 dark:border-yellow-400/10 transition-transform duration-500 ease-in-out ${isScrolled
-          ? "bg-yellow-400 dark:bg-black shadow-lg scale-100"
-          : "bg-yellow-400/70 dark:bg-black/70 backdrop-blur-md scale-95"
-          } ${scrollDirection === "down" && !isMenuOpen
+        className={`fixed top-0 w-full z-50 text-black dark:text-yellow-400 border-b border-black/10 dark:border-yellow-400/10 transition-transform duration-500 ease-in-out ${isMenuOpen
+          ? "bg-yellow-400 opacity-100 shadow-lg dark:bg-black"
+          : `${isScrolled
+            ? "bg-yellow-400 dark:bg-black shadow-lg scale-100"
+            : "bg-yellow-400/70 dark:bg-black/70 backdrop-blur-md scale-95"
+          } ${scrollDirection === "down"
             ? "-translate-y-full opacity-0"
             : "translate-y-0 opacity-100"
-          }`}
+          }`
+        }`}
       >
-        <nav className="container mx-auto flex justify-between items-center">
+        <nav className="container mx-auto flex items-center justify-between p-6">
           <h1 className="text-3xl font-extrabold tracking-tight font-mono">
             <a
               href="#top"
@@ -153,8 +156,10 @@ export default function Header() {
 
           {/* ハンバーガーメニュー */}
           <button
-            className="block md:hidden w-12 h-12 flex items-center justify-center text-yellow-400 bg-black/80 rounded-md border border-yellow-400 shadow-md"
+            className="relative z-[60] block md:hidden w-12 h-12 flex items-center justify-center text-yellow-400 bg-black/80 rounded-md border border-yellow-400 shadow-md"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-controls="menu"
+            aria-expanded={isMenuOpen}
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (
@@ -171,30 +176,29 @@ export default function Header() {
           {/* ナビゲーションリスト */}
           <ul
             ref={menuRef}
-            className={`fixed inset-0 z-50 flex flex-col items-center justify-center
-              bg-yellow-400 dark:bg-black
-              space-y-6 text-xl font-bold transition-transform duration-500 ease-in-out
+            className={`absolute left-0 top-full z-50 flex max-h-[calc(100dvh-6rem)] w-full origin-top flex-col items-center gap-2 overflow-y-auto overscroll-contain
+              border-t border-black/10 bg-yellow-400 px-6 py-4 shadow-lg dark:border-yellow-400/10 dark:bg-black
+              text-base font-bold transition duration-200 ease-out
               ${isMenuOpen
-                ? "translate-x-0 opacity-100 scale-100"
-                : "translate-x-full opacity-0 scale-105 pointer-events-none"
+                ? "translate-y-0 opacity-100"
+                : "-translate-y-2 opacity-0 pointer-events-none"
               }
-              md:static md:flex md:flex-row md:items-center md:space-x-6 md:space-y-0 md:bg-transparent md:text-base md:font-normal md:translate-x-0 md:opacity-100 md:scale-100 md:pointer-events-auto`}
+              md:static md:flex md:max-h-none md:w-auto md:flex-row md:items-center md:justify-start md:gap-0 md:overflow-visible md:border-0 md:bg-transparent md:p-0 md:text-base md:font-normal md:translate-y-0 md:opacity-100 md:shadow-none md:pointer-events-auto md:space-x-6`}
             id="menu"
             role="menubar"
           >
-            {navItems.map(({ id, label, title, delay }) => (
+            {navItems.map(({ id, label, title }) => (
               <li key={id} role="none">
                 <Link
                   href={sectionHref(id)}
                   role="menuitem"
                   aria-label={title}
                   aria-current={activeSection === id ? "page" : undefined}
-                  className={`relative p-2 font-semibold group transition-transform hover:scale-105 text-black dark:text-yellow-400 ${isMenuOpen ? `animate-slide-up-fade [animation-delay:${delay}]` : ""
-                    }`}
+                  className="relative block px-2 py-0.5 font-semibold group transition-transform hover:scale-105 text-black dark:text-yellow-400 md:p-2"
                   onClick={(e) => handleSectionClick(e, id)}
                 >
                   <span
-                    className={`relative z-10 px-2 py-1 rounded-md transition-all duration-300 ${activeSection === id
+                    className={`relative z-10 block min-w-36 rounded-md px-3 py-1.5 text-center transition-all duration-300 md:min-w-0 md:px-2 md:py-1 ${activeSection === id
                       ? "bg-black text-yellow-400 dark:bg-yellow-400 dark:text-black font-bold"
                       : "hover:bg-black/10 dark:hover:bg-yellow-100/10"
                       }`}
@@ -212,17 +216,17 @@ export default function Header() {
             <li role="none">
               <button
                 onClick={handleToggleDark}
-                className={`w-10 h-10 flex items-center justify-center rounded-full bg-black text-yellow-400 dark:bg-yellow-400 dark:text-black transition-transform hover:scale-110 ${flash ? "animate-flash-bg" : ""
+                className={`mt-1 w-8 h-8 md:mt-0 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-black text-yellow-400 dark:bg-yellow-400 dark:text-black transition-transform hover:scale-110 ${flash ? "animate-flash-bg" : ""
                   }`}
                 aria-label="Toggle dark mode"
                 aria-pressed={isDarkMode}
               >
                 <FiSun
-                  className={`absolute w-6 h-6 transition-opacity duration-500 ${isDarkMode ? "opacity-100" : "opacity-0"
+                  className={`absolute w-5 h-5 md:w-6 md:h-6 transition-opacity duration-500 ${isDarkMode ? "opacity-100" : "opacity-0"
                     }`}
                 />
                 <FiMoon
-                  className={`absolute w-6 h-6 transition-opacity duration-500 ${isDarkMode ? "opacity-0" : "opacity-100"
+                  className={`absolute w-5 h-5 md:w-6 md:h-6 transition-opacity duration-500 ${isDarkMode ? "opacity-0" : "opacity-100"
                     }`}
                 />
               </button>
