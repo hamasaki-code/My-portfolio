@@ -8,14 +8,22 @@ const ORIGINAL_ENV = {
   NEXT_PUBLIC_RECAPTCHA_SIZE: process.env.NEXT_PUBLIC_RECAPTCHA_SIZE,
 };
 
+const restoreEnvValue = (key: keyof typeof ORIGINAL_ENV) => {
+  const value = ORIGINAL_ENV[key];
+
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+
+  process.env[key] = value;
+};
+
 describe("GET /api/recaptcha-config", () => {
   afterEach(() => {
-    process.env.NEXT_PUBLIC_RECAPTCHA_BADGE =
-      ORIGINAL_ENV.NEXT_PUBLIC_RECAPTCHA_BADGE;
-    process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY =
-      ORIGINAL_ENV.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-    process.env.NEXT_PUBLIC_RECAPTCHA_SIZE =
-      ORIGINAL_ENV.NEXT_PUBLIC_RECAPTCHA_SIZE;
+    restoreEnvValue("NEXT_PUBLIC_RECAPTCHA_BADGE");
+    restoreEnvValue("NEXT_PUBLIC_RECAPTCHA_SITE_KEY");
+    restoreEnvValue("NEXT_PUBLIC_RECAPTCHA_SIZE");
   });
 
   it("returns normalized public reCAPTCHA settings without caching", async () => {
