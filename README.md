@@ -78,6 +78,16 @@ cp .env.example .env.local  # ファイルがない場合は README の一覧を
 npm run dev
 ```
 
+## Test
+
+Unit and route smoke tests run with Vitest.
+
+```bash
+npm test
+```
+
+CI can run the same command after `npm install`.
+
 ### 必須環境変数
 
 | 変数名               | 説明                                                 |
