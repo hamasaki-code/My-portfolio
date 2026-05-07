@@ -182,9 +182,7 @@ export const createHomeMetadata = (): Metadata => {
   const image = absoluteOgImage();
 
   return {
-    title: {
-      absolute: DEFAULT_TITLE,
-    },
+    title: DEFAULT_TITLE,
     description: HOME_DESCRIPTION,
     keywords: DEFAULT_KEYWORDS,
     alternates: {
