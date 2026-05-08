@@ -48,7 +48,27 @@ export const metadata: Metadata = {
     canonical: SITE_URL,
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      {
+        url: "/icon.png?v=th-logo-20260509",
+        type: "image/png",
+        sizes: "512x512",
+      },
+    ],
+    shortcut: [
+      {
+        url: "/favicon.ico?v=th-logo-20260509",
+        type: "image/x-icon",
+        sizes: "any",
+      },
+    ],
+    apple: [
+      {
+        url: "/apple-icon.png?v=th-logo-20260509",
+        type: "image/png",
+        sizes: "180x180",
+      },
+    ],
   },
   openGraph: {
     type: "website",
