@@ -10,17 +10,17 @@ import {
   SiGit,
   SiGithub,
   SiHtml5,
-  SiMysql,
   SiNextdotjs,
+  SiPostgresql,
   SiReact,
   SiRubyonrails,
   SiRuby,
-  SiSqlite,
   SiTypescript,
   SiUnity,
+  SiUnrealengine,
   SiVercel,
 } from 'react-icons/si';
-import { FaJsSquare } from 'react-icons/fa';
+import { FaCode, FaJsSquare } from 'react-icons/fa';
 
 import SkillCard, {
   type CategoryName,
@@ -84,7 +84,13 @@ const allCategories: Category[] = [
         name: 'C#',
         icon: <SiCsharp className="h-8 w-8 text-green-600" />,
         description: 'Game Development',
-        level: 2,
+        level: 1,
+      },
+      {
+        name: 'Verse',
+        icon: <FaCode className="h-8 w-8 text-purple-500" />,
+        description: 'UEFN Scripting',
+        level: 1,
       },
     ],
   },
@@ -102,13 +108,13 @@ const allCategories: Category[] = [
         name: 'Flutter',
         icon: <SiFlutter className="h-8 w-8 text-blue-400" />,
         description: 'Cross-platform',
-        level: 4,
+        level: 3,
       },
       {
         name: 'Next.js',
         icon: <SiNextdotjs className="h-8 w-8 text-black dark:text-yellow-400" />,
         description: 'React Framework',
-        level: 3,
+        level: 2,
       },
       {
         name: 'React',
@@ -129,11 +135,18 @@ const allCategories: Category[] = [
         level: 2,
       },
       {
+        name: 'UEFN',
+        icon: <SiUnrealengine className="h-8 w-8 text-gray-900 dark:text-yellow-400" />,
+        description: 'Fortnite Creative',
+        level: 2,
+      },
+      {
         name: 'MotionBuilder',
         icon: <SiAutodesk className="h-8 w-8 text-green-600" />,
         description: 'Mocap Animation',
         level: 1,
       },
+
     ],
   },
   {
@@ -164,15 +177,9 @@ const allCategories: Category[] = [
     id: 'databases',
     items: [
       {
-        name: 'MySQL',
-        icon: <SiMysql className="h-8 w-8 text-blue-700" />,
+        name: 'PostgreSQL',
+        icon: <SiPostgresql className="h-8 w-8 text-blue-600" />,
         description: 'Relational DB',
-        level: 1,
-      },
-      {
-        name: 'SQLite',
-        icon: <SiSqlite className="h-8 w-8 text-blue-500" />,
-        description: 'Lightweight DB',
         level: 1,
       },
     ],
@@ -204,7 +211,7 @@ export default function Skills({ lang = 'en' }: SkillsProps): JSX.Element {
             <h2 className="mt-2 text-4xl font-semibold text-black dark:text-yellow-100">Skills & Technologies</h2>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-300 sm:max-w-md">
-            実務と個人開発で磨いた技術スタックをカテゴリーごとに整理。知りたい分野を絞ってご覧ください。
+            実務と個人開発で触れてきた技術スタックをカテゴリごとに整理しています。
           </p>
         </div>
 

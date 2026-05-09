@@ -1,12 +1,26 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "./components/ThemeProvider";
+import JsonLd from "./components/JsonLd";
 import HistoryNavigationTracker from "./components/HistoryNavigationTracker";
+import Footer from "./components/Footer";
 import { SITE_URL } from "../lib/site";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_KEYWORDS,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_TITLE,
+  SITE_NAME,
+  THEME_COLOR,
+  TITLE_TEMPLATE,
+  TWITTER_HANDLE,
+  absoluteOgImage,
+  createSiteStructuredData,
+} from "../lib/seo";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -22,28 +36,72 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Taishi Hamasaki | Portfolio",
-    template: "%s | Taishi Hamasaki",
+    default: DEFAULT_TITLE,
+    template: TITLE_TEMPLATE,
   },
-  description:
-    "Taishi Hamasaki's portfolio showcasing web development projects, skills, and professional experience.",
+  description: DEFAULT_DESCRIPTION,
+  keywords: DEFAULT_KEYWORDS,
+  authors: [{ name: "Taishi Hamasaki", url: SITE_URL }],
+  creator: "Taishi Hamasaki",
+  publisher: "Taishi Hamasaki",
   alternates: {
     canonical: SITE_URL,
+  },
+  icons: {
+    icon: [
+      {
+        url: "/icon.png?v=th-logo-20260509",
+        type: "image/png",
+        sizes: "512x512",
+      },
+    ],
+    shortcut: [
+      {
+        url: "/favicon.ico?v=th-logo-20260509",
+        type: "image/x-icon",
+        sizes: "any",
+      },
+    ],
+    apple: [
+      {
+        url: "/apple-icon.png?v=th-logo-20260509",
+        type: "image/png",
+        sizes: "180x180",
+      },
+    ],
   },
   openGraph: {
     type: "website",
     url: SITE_URL,
     locale: "ja_JP",
-    siteName: "Taishi Hamasaki Portfolio",
-    title: "Taishi Hamasaki | Portfolio",
-    description:
-      "Discover Taishi Hamasaki's web development projects, technical stack, and career history.",
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    images: [
+      {
+        url: absoluteOgImage(DEFAULT_OG_IMAGE),
+        alt: DEFAULT_TITLE,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    creator: "@OnTAumv5KAoVGN5",
-    site: "@OnTAumv5KAoVGN5",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    images: [absoluteOgImage(DEFAULT_OG_IMAGE)],
+    creator: TWITTER_HANDLE,
+    site: TWITTER_HANDLE,
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: THEME_COLOR,
 };
 
 const themeInitializer = `(() => {
@@ -69,8 +127,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <script dangerouslySetInnerHTML={{ __html: themeInitializer }} />
+        <JsonLd data={createSiteStructuredData()} />
         <HistoryNavigationTracker />
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <Footer />
+        </ThemeProvider>
         <SpeedInsights />
         <Analytics />
       </body>

@@ -5,11 +5,14 @@ import { notFound } from "next/navigation";
 import { MdSportsTennis } from "react-icons/md";
 import { GiTennisCourt, GiCctvCamera } from "react-icons/gi";
 import { BsBadgeVr } from "react-icons/bs";
+import JsonLd from "../../components/JsonLd";
 import Header from "../../components/Header";
-import SeoHead from "../../components/SeoHead";
 import WorksBackLink from "../../components/WorksBackLink";
 import { projects } from "../../data/projects";
-import { toSiteUrl } from "../../../lib/site";
+import {
+  createProjectMetadata,
+  createProjectStructuredData,
+} from "../../../lib/seo";
 
 type ProjectLinks = {
   site?: string;
@@ -22,6 +25,7 @@ type Project = {
   image: string | null;
   description: string[];
   tech: string[];
+  skills: string[];
   links?: ProjectLinks;
 };
 
@@ -44,36 +48,7 @@ export function generateMetadata({ params }: ProjectPageProps): Metadata {
     return {};
   }
 
-  const canonicalPath = `/projects/${project.slug}`;
-  const title = project.title;
-  const socialTitle = `${project.title} | Taishi Hamasaki`;
-  const description =
-    project.description[0] ?? "プロジェクトの詳細情報をご覧いただけます。";
-  const image = project.image ? toSiteUrl(project.image) : toSiteUrl("/portfolio.png");
-  const url = toSiteUrl(canonicalPath);
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: url,
-    },
-    openGraph: {
-      type: "article",
-      url,
-      title: socialTitle,
-      description,
-      images: [image],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: socialTitle,
-      description,
-      images: [image],
-      creator: "@OnTAumv5KAoVGN5",
-      site: "@OnTAumv5KAoVGN5",
-    },
-  };
+  return createProjectMetadata(project);
 }
 
 export default function ProjectPage({ params }: ProjectPageProps) {
@@ -83,35 +58,20 @@ export default function ProjectPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  const canonicalPath = `/projects/${project.slug}`;
-  const pageTitle = `${project.title} | Taishi Hamasaki`;
-  const pageDescription =
-    project.description[0] ?? "プロジェクトの詳細情報をご覧いただけます。";
-  const ogImage = project.image ?? "/portfolio.png";
-  const keywords = Array.from(
-    new Set(
-      [
-        project.title,
-        "Taishi Hamasaki",
-        "Taishi Hamasaki | Portfolio",
-        "portfolio",
-        ...project.tech,
-      ].filter(Boolean),
-    ),
-  );
-
   const links = project.links;
   const isSvgImage = project.image?.endsWith(".svg") ?? false;
   const imageWidth = isSvgImage ? 320 : 960;
   const imageHeight = isSvgImage ? 320 : 600;
   const imageClassName = isSvgImage
-    ? "relative z-10 h-64 w-auto"
-    : "relative z-10 w-full rounded-2xl object-cover shadow-2xl shadow-black/50";
+    ? "relative z-10 h-64 max-w-full w-auto"
+    : "relative z-10 w-full max-w-full rounded-2xl object-cover shadow-2xl shadow-black/50";
+  const stackAndSkills = Array.from(new Set([...project.tech, ...project.skills]));
+
   const renderProjectVisual = () => {
     if (project.slug === "vr-sports-training") {
       return (
-        <div className="relative overflow-hidden rounded-[2.5rem] border border-yellow-500/30 bg-white p-10 shadow-[0_45px_90px_-45px_rgba(253,224,71,0.45)] transition-colors dark:bg-white">
-          <div className="relative mx-auto flex h-full max-h-[420px] w-full items-center justify-center">
+        <div className="relative w-full max-w-full min-w-0 overflow-hidden rounded-[2.5rem] border border-yellow-500/30 bg-white p-10 shadow-[0_45px_90px_-45px_rgba(253,224,71,0.45)] transition-colors dark:bg-white">
+          <div className="relative mx-auto flex h-full max-h-[420px] w-full min-w-0 items-center justify-center">
             <div className="flex flex-wrap items-center justify-center gap-6 text-yellow-700">
               <span className="grid h-20 w-20 place-items-center rounded-full border border-yellow-400/40 bg-white shadow-sm">
                 <MdSportsTennis className="h-11 w-11" aria-hidden />
@@ -136,8 +96,8 @@ export default function ProjectPage({ params }: ProjectPageProps) {
     }
 
     return (
-      <div className="relative overflow-hidden rounded-[2.5rem] border border-yellow-500/30 bg-white p-6 shadow-[0_45px_90px_-45px_rgba(253,224,71,0.45)] transition-colors dark:bg-white">
-        <div className="relative mx-auto flex h-full max-h-[480px] items-center justify-center">
+      <div className="relative w-full max-w-full min-w-0 overflow-hidden rounded-[2.5rem] border border-yellow-500/30 bg-white p-6 shadow-[0_45px_90px_-45px_rgba(253,224,71,0.45)] transition-colors dark:bg-white">
+        <div className="relative mx-auto flex h-full max-h-[480px] min-w-0 items-center justify-center">
           <Image
             src={project.image}
             alt={`${project.title} のスクリーンショット`}
@@ -151,29 +111,24 @@ export default function ProjectPage({ params }: ProjectPageProps) {
       </div>
     );
   };
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#fef9c3] via-white to-[#fefce8] text-gray-900 transition-colors duration-500 dark:from-black dark:via-[#0f0f0f] dark:to-[#050505] dark:text-white">
-      <SeoHead
-        title={pageTitle}
-        description={pageDescription}
-        canonicalUrl={canonicalPath}
-        keywords={keywords}
-        ogImage={ogImage}
-        ogUrl={canonicalPath}
-        ogType="article"
-        twitterHandle="@OnTAumv5KAoVGN5"
-        twitterImage={ogImage}
-      />
+      <JsonLd data={createProjectStructuredData(project)} />
       <Header />
-      <div id="top" className="absolute left-0 top-0 h-0 w-0 overflow-hidden" aria-hidden />
+      <div
+        id="top"
+        className="absolute left-0 top-0 h-0 w-0 overflow-hidden"
+        aria-hidden
+      />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(250,204,21,0.2),_transparent_55%)] opacity-80 dark:bg-[radial-gradient(circle_at_top,_rgba(253,224,71,0.18),_transparent_55%)]" />
       <div className="pointer-events-none absolute inset-y-0 right-[-20%] w-[60%] rounded-full bg-[radial-gradient(circle,_rgba(250,204,21,0.25)_0%,_rgba(255,255,255,0)_70%)] blur-3xl dark:bg-[radial-gradient(circle,_rgba(202,138,4,0.22)_0%,_rgba(0,0,0,0)_70%)]" />
-      <main className="relative z-10 mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-20 pt-32 transition-colors duration-500 lg:px-12">
+      <main className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-16 overflow-x-hidden px-6 pb-20 pt-32 transition-colors duration-500 lg:px-12">
         <div className="flex items-center justify-between gap-6">
           <WorksBackLink
             className="inline-flex items-center gap-2 rounded-full border border-yellow-500/60 bg-yellow-400/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-yellow-700 transition hover:border-yellow-600 hover:bg-yellow-400/30 hover:text-black dark:border-yellow-300/40 dark:bg-yellow-400/10 dark:text-yellow-200 dark:hover:border-yellow-200/60 dark:hover:bg-yellow-400/15 dark:hover:text-white"
           >
-            ← Works
+            &larr; Works
           </WorksBackLink>
           {links && (links.site || links.github) && (
             <div className="flex flex-wrap items-center gap-3">
@@ -201,8 +156,8 @@ export default function ProjectPage({ params }: ProjectPageProps) {
           )}
         </div>
 
-        <section className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div className="space-y-8">
+        <section className="grid min-w-0 grid-cols-1 gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div className="min-w-0 space-y-8">
             <span className="inline-flex items-center gap-2 rounded-full border border-yellow-500/50 bg-yellow-400/20 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-yellow-700 dark:border-yellow-300/30 dark:bg-yellow-400/10 dark:text-yellow-200">
               Featured Work
             </span>
@@ -211,45 +166,42 @@ export default function ProjectPage({ params }: ProjectPageProps) {
                 {project.title}
               </h1>
               <div className="h-1 w-28 rounded-full bg-gradient-to-r from-yellow-500 via-yellow-400 to-amber-300" />
-              <div className="space-y-4 text-base leading-relaxed text-gray-700 dark:text-slate-200">
+              <div className="max-w-full space-y-4 break-words text-base leading-relaxed text-gray-700 [overflow-wrap:anywhere] dark:text-slate-200">
                 {project.description.map((description, index) => (
-                  <p key={`${project.slug}-description-${index}`}>{description}</p>
+                  <p
+                    className="max-w-full"
+                    key={`${project.slug}-description-${index}`}
+                  >
+                    {description}
+                  </p>
                 ))}
               </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {project.tech.map((tech) => (
-                <span
-                  key={tech}
-                  className="inline-flex items-center rounded-full border border-yellow-500/40 bg-white/70 px-3 py-1 text-xs font-medium uppercase tracking-wide text-yellow-700 backdrop-blur transition-colors dark:border-yellow-400/30 dark:bg-black/60 dark:text-yellow-200"
-                >
-                  {tech}
-                </span>
-              ))}
             </div>
           </div>
 
           {renderProjectVisual()}
         </section>
 
-        <section className="grid gap-8 rounded-[2.5rem] border border-yellow-500/30 bg-white/70 p-10 shadow-[0_45px_90px_-55px_rgba(253,224,71,0.4)] backdrop-blur-2xl transition-colors dark:border-yellow-500/20 dark:bg-black/50 dark:shadow-[0_45px_90px_-55px_rgba(253,224,71,0.5)] lg:grid-cols-2">
+        <section className="grid w-full max-w-full min-w-0 grid-cols-1 gap-8 rounded-[2.5rem] border border-yellow-500/30 bg-white/70 p-10 shadow-[0_45px_90px_-55px_rgba(253,224,71,0.4)] backdrop-blur-2xl transition-colors dark:border-yellow-500/20 dark:bg-black/50 dark:shadow-[0_45px_90px_-55px_rgba(253,224,71,0.5)] lg:grid-cols-2">
           <div className="space-y-4">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Project Highlights</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+              Project Highlights
+            </h2>
             <p className="text-base leading-relaxed text-gray-700 dark:text-slate-200">
               {project.description[0]}
             </p>
           </div>
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-[0.3em] text-yellow-700 dark:text-yellow-200">
-              Stack &amp; Focus
+              Stack &amp; Skills
             </h3>
-            <ul className="grid gap-3 text-sm text-gray-700 dark:text-slate-200 sm:grid-cols-2">
-              {project.tech.map((tech) => (
+            <ul className="flex flex-wrap gap-3">
+              {stackAndSkills.map((item) => (
                 <li
-                  key={`${tech}-detail`}
-                  className="rounded-2xl border border-yellow-500/40 bg-white/80 px-4 py-3 shadow-sm shadow-yellow-500/10 transition hover:-translate-y-0.5 hover:border-yellow-500/60 hover:shadow-yellow-500/20 dark:border-yellow-500/30 dark:bg-black/60 dark:hover:border-yellow-400/60"
+                  key={`${project.slug}-stack-skill-${item}`}
+                  className="rounded-full border border-yellow-500/40 bg-white/80 px-4 py-2 text-sm font-semibold text-yellow-800 shadow-sm shadow-yellow-500/10 transition-colors dark:border-yellow-400/30 dark:bg-black/60 dark:text-yellow-100"
                 >
-                  {tech}
+                  {item}
                 </li>
               ))}
             </ul>

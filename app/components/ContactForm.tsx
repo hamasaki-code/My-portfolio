@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { FiUser, FiMail, FiMessageSquare, FiSend, FiLoader, FiCheck, FiGithub } from "react-icons/fi";
 import { RiTwitterXLine, RiAccountCircleLine } from "react-icons/ri";
 import { SiWantedly, SiLinkedin } from "react-icons/si";
+import Recaptcha, { type RecaptchaHandle } from "./Recaptcha";
 
 const DEFAULT_FORM = {
     name: "",
@@ -12,12 +13,18 @@ const DEFAULT_FORM = {
     message: "",
 };
 type ContactFormValues = typeof DEFAULT_FORM;
+type ContactFieldErrors = Partial<
+    Record<keyof ContactFormValues | "recaptcha", string>
+>;
 
 export default function ContactForm() {
     const [form, setForm] = useState(DEFAULT_FORM);
     const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [fieldErrors, setFieldErrors] = useState<ContactFieldErrors>({});
     const modalRef = useRef<HTMLDivElement>(null);
+    const recaptchaRef = useRef<RecaptchaHandle>(null);
+    const handleRecaptchaChange = useCallback(() => undefined, []);
 
     useEffect(() => {
         if (status === "success" || status === "error") {
@@ -37,6 +44,15 @@ export default function ContactForm() {
                 ...prev,
                 [field]: value,
             }));
+            setFieldErrors((prev) => {
+                if (!prev[field]) {
+                    return prev;
+                }
+
+                const next = { ...prev };
+                delete next[field];
+                return next;
+            });
 
             if (status === "error") {
                 setStatus("idle");
@@ -44,13 +60,45 @@ export default function ContactForm() {
             }
         };
 
+    const extractFieldErrors = (data: unknown): ContactFieldErrors => {
+        if (!data || typeof data !== "object" || !("fields" in data)) {
+            return {};
+        }
+
+        const fields = (data as { fields?: unknown }).fields;
+
+        if (!fields || typeof fields !== "object") {
+            return {};
+        }
+
+        const rawFields = fields as Record<string, unknown>;
+
+        return {
+            name: typeof rawFields.name === "string" ? rawFields.name : undefined,
+            email: typeof rawFields.email === "string" ? rawFields.email : undefined,
+            message: typeof rawFields.content === "string" ? rawFields.content : undefined,
+            recaptcha:
+                typeof rawFields.recaptchaToken === "string"
+                    ? rawFields.recaptchaToken
+                    : undefined,
+        };
+    };
+
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         setStatus("sending");
         setErrorMessage(null);
+        setFieldErrors({});
 
         try {
+            const token = await recaptchaRef.current?.execute();
+
+            if (!token) {
+                setFieldErrors({ recaptcha: "Please complete the reCAPTCHA challenge." });
+                throw new Error("Please complete the reCAPTCHA challenge.");
+            }
+
             const res = await fetch("/api/sendmail", {
                 method: "POST",
                 headers: {
@@ -60,11 +108,13 @@ export default function ContactForm() {
                     name: form.name,
                     email: form.email,
                     content: form.message,
+                    recaptchaToken: token,
                 }),
             });
 
             if (!res.ok) {
                 const data = await res.json().catch(() => null);
+                setFieldErrors(extractFieldErrors(data));
                 const message =
                     data && typeof data === "object" && "error" in data && typeof data.error === "string"
                         ? data.error
@@ -74,14 +124,22 @@ export default function ContactForm() {
 
             setStatus("success");
             setForm({ ...DEFAULT_FORM });
+            setFieldErrors({});
+            recaptchaRef.current?.reset();
         } catch (error) {
             console.error(error);
             setStatus("error");
-            setErrorMessage(
+            const message =
                 error instanceof Error && error.message
                     ? error.message
-                    : "メールの送信中にエラーが発生しました。"
+                    : "メールの送信中にエラーが発生しました。";
+            setErrorMessage(
+                message
             );
+            if (message.toLowerCase().includes("recaptcha")) {
+                setFieldErrors((prev) => ({ ...prev, recaptcha: message }));
+            }
+            recaptchaRef.current?.reset();
         }
     };
 
@@ -133,9 +191,16 @@ export default function ContactForm() {
                                     onChange={handleFieldChange("name")}
                                     placeholder="Your name"
                                     required
+                                    aria-invalid={Boolean(fieldErrors.name)}
+                                    aria-describedby={fieldErrors.name ? "name-error" : undefined}
                                     className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                                 />
                             </div>
+                            {fieldErrors.name && (
+                                <p id="name-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
+                                    {fieldErrors.name}
+                                </p>
+                            )}
                         </div>
                         <div>
                             <label htmlFor="email" className="block mb-2 font-semibold">
@@ -150,9 +215,16 @@ export default function ContactForm() {
                                     onChange={handleFieldChange("email")}
                                     placeholder="you@example.com"
                                     required
+                                    aria-invalid={Boolean(fieldErrors.email)}
+                                    aria-describedby={fieldErrors.email ? "email-error" : undefined}
                                     className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                                 />
                             </div>
+                            {fieldErrors.email && (
+                                <p id="email-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
+                                    {fieldErrors.email}
+                                </p>
+                            )}
                         </div>
                     </div>
 
@@ -170,13 +242,31 @@ export default function ContactForm() {
                                 rows={5}
                                 maxLength={500}
                                 required
+                                aria-invalid={Boolean(fieldErrors.message)}
+                                aria-describedby={fieldErrors.message ? "message-error" : undefined}
                                 className="w-full rounded-xl border border-yellow-500/30 bg-white/70 px-10 py-3 text-black placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 focus:ring-offset-yellow-100 dark:border-yellow-500/30 dark:bg-white/10 dark:text-yellow-200 dark:placeholder-yellow-200 dark:focus:ring-yellow-400 dark:focus:ring-offset-0"
                             />
                         </div>
+                        {fieldErrors.message && (
+                            <p id="message-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
+                                {fieldErrors.message}
+                            </p>
+                        )}
                         <p className="text-sm text-right text-gray-600 dark:text-yellow-200">
                             {form.message.length}/500
                         </p>
                     </div>
+
+                    <Recaptcha
+                        ref={recaptchaRef}
+                        onChange={handleRecaptchaChange}
+                        size="invisible"
+                    />
+                    {fieldErrors.recaptcha && (
+                        <p className="text-center text-sm text-red-600 dark:text-red-400">
+                            {fieldErrors.recaptcha}
+                        </p>
+                    )}
 
                     <button
                         type="submit"
@@ -187,6 +277,28 @@ export default function ContactForm() {
                         {status === "idle" && <FiSend />}
                         {status === "sending" ? "Sending..." : "Send"}
                     </button>
+
+                    <p className="text-center text-[11px] leading-relaxed text-gray-500 dark:text-yellow-100/60">
+                        This site is protected by reCAPTCHA and the Google{" "}
+                        <a
+                            href="https://policies.google.com/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline underline-offset-2 hover:text-gray-700 dark:hover:text-yellow-100"
+                        >
+                            Privacy Policy
+                        </a>{" "}
+                        and{" "}
+                        <a
+                            href="https://policies.google.com/terms"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline underline-offset-2 hover:text-gray-700 dark:hover:text-yellow-100"
+                        >
+                            Terms of Service
+                        </a>{" "}
+                        apply.
+                    </p>
                 </form>
 
                 <div className="border-t border-yellow-500/30 pt-8 dark:border-yellow-500/40">
