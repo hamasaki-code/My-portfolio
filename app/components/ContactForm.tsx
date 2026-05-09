@@ -260,6 +260,7 @@ export default function ContactForm() {
                     <Recaptcha
                         ref={recaptchaRef}
                         onChange={handleRecaptchaChange}
+                        size="invisible"
                     />
                     {fieldErrors.recaptcha && (
                         <p className="text-center text-sm text-red-600 dark:text-red-400">
@@ -276,6 +277,28 @@ export default function ContactForm() {
                         {status === "idle" && <FiSend />}
                         {status === "sending" ? "Sending..." : "Send"}
                     </button>
+
+                    <p className="text-center text-[11px] leading-relaxed text-gray-500 dark:text-yellow-100/60">
+                        This site is protected by reCAPTCHA and the Google{" "}
+                        <a
+                            href="https://policies.google.com/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline underline-offset-2 hover:text-gray-700 dark:hover:text-yellow-100"
+                        >
+                            Privacy Policy
+                        </a>{" "}
+                        and{" "}
+                        <a
+                            href="https://policies.google.com/terms"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline underline-offset-2 hover:text-gray-700 dark:hover:text-yellow-100"
+                        >
+                            Terms of Service
+                        </a>{" "}
+                        apply.
+                    </p>
                 </form>
 
                 <div className="border-t border-yellow-500/30 pt-8 dark:border-yellow-500/40">
